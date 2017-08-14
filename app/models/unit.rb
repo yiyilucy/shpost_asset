@@ -1,4 +1,4 @@
-class Unit < ActiveRecord::Asset
+class Unit < ActiveRecord::Base
   has_many :users, dependent: :destroy
   has_many :units, as: :parent
   # has_many :tarrif_items, dependent: :destroy
