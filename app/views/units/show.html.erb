@@ -14,16 +14,18 @@
   <dd><%= @unit.desc %></dd>
   <dt><strong><%= model_class.human_attribute_name(:tcbd_khdh) %>:</strong></dt>
   <dd><%= @unit.tcbd_khdh %></dd>
-  <dt><strong><%= model_class.human_attribute_name(:level) %>:</strong></dt>
-  <dd><%= @unit.level %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:unit_level) %>:</strong></dt>
+  <dd><%= @unit.unit_level %></dd>
   <dt><strong><%= model_class.human_attribute_name(:parent_id) %>:</strong></dt>
   <dd><%= @unit.parent_id.blank? ? "" : Unit.find_by(id:@unit.parent_id).name %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:is_facility_management_unit) %>:</strong></dt>
+  <dd><%= @unit.is_facility_management_unit_name %></dd>
 </dl>
 
 <%= link_to t('.back', :default => t("helpers.links.back")),
               units_path, :class => 'btn btn-default'  %>
 <%= link_to t('.edit', :default => t("helpers.links.edit")),
-              edit_unit_path(@unit), :class => 'btn btn-default' %>
+              update_unit_unit_path(@unit), :class => 'btn btn-default' %>
 <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
               unit_path(@unit),
               :method => 'delete',

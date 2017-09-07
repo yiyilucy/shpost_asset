@@ -1,4 +1,5 @@
 ShpostAsset::Application.routes.draw do
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -60,11 +61,49 @@ ShpostAsset::Application.routes.draw do
   resources :user_logs, only: [:index, :show, :destroy]
 
   resources :units do
+    collection do
+      # get 'select_level3_parents'
+      post 'update_unit_info'
+    end
     resources :users, :controller => 'unit_users'
+    member do 
+      get 'index'
+      get 'newsub'
+      get 'update_unit'
+      get 'destroy_unit'
+    end
   end
 
   resources :users do
      resources :roles, :controller => 'user_roles'
   end
-  
+
+  resources :fixed_asset_catalogs do
+    collection do
+      get 'fixed_asset_catalog_import'
+      post 'fixed_asset_catalog_import' => 'fixed_asset_catalogs#fixed_asset_catalog_import'
+    end
+  end
+
+  resources :low_value_consumption_catalogs do
+    collection do
+      get 'low_value_consumption_catalog_import'
+      post 'low_value_consumption_catalog_import' => 'low_value_consumption_catalogs#low_value_consumption_catalog_import'
+    end
+  end
+
+  resources :fixed_asset_infos do
+    collection do
+      get 'fixed_asset_info_import'
+      post 'fixed_asset_info_import' => 'fixed_asset_infos#fixed_asset_info_import'
+      post 'export'
+    end
+  end
+
+  # resources :low_value_consumption_infos do
+  #   collection do
+  #     post 'export'
+  #   end
+  # end
+
 end

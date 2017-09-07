@@ -1,0 +1,2 @@
+module FixedAssetCatalogsHelper
+end

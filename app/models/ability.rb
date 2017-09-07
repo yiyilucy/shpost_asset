@@ -35,6 +35,10 @@ class Ability
         # cannot :role, User, role: 'unitadmin'
         cannot [:create, :destroy, :update], User, role: ['unitadmin', 'superadmin']
         can :update, User, id: user.id
+        can :manage, FixedAssetCatalog
+        can :manage, LowValueConsumptionCatalog
+        can :manage, FixedAssetInfo
+        # can :manage, LowValueConsumptionInfo
 
         # can :manage,BusinessRelationship
         
@@ -43,7 +47,11 @@ class Ability
         can :read, UserLog, user: {id: user.id}
 
         can :read, Unit, id: user.unit_id
-
+        can :read, User, id: user.id
+        can :read, FixedAssetCatalog
+        can :read, LowValueConsumptionCatalog
+        can :read, FixedAssetInfo, id: user.unit_id
+        # can :read, LowValueConsumptionInfo, id: user.unit_id
     else
         cannot :manage, :all
         #can :update, User, id: user.id

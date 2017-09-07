@@ -1,0 +1,111 @@
+<%= form_for @unit, :html => { :class => 'form-horizontal' } do |f| %>
+<%= hidden_field_tag('parentid',@unit.parent_id)%>
+
+  <div class="control-group">
+    <%= f.label :no, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :no, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :name, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :name, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :short_name, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :short_name, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :desc, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :desc, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :tcbd_khdh, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :tcbd_khdh, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :unit_level, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.select(:unit_level, Unit::UNIT_LEVEL.invert) %>
+    </div>
+  </div>
+  <div id="level2_parent", class="control-group">
+    <%= label_tag 'level2', '二级单位:', class: 'control-group' %>
+    <div class="controls">
+      <%= select("unit","parent_id", Unit.where(unit_level:2).order(:id).map{|u| [u.name,u.id]}.insert(0,"请选择"),class: 'control-label') %>
+    </div>
+  </div>
+  <div  id="level3_parent", class="control-group">
+    <%= label_tag 'level3', '三级单位:', class: 'control-group' %>
+    <div class="controls">
+      <% if !@level3_parents.blank? %>
+      <%= select("unit","level3_parent_id", @level3_parents,class: 'control-label') %>
+      <% else %>
+      <%= select_tag "level3_parent_id", options_for_select("请选择") %>
+      <% end %>
+    </div>
+  </div>
+  
+  <%= f.submit nil, :class => 'btn btn-primary' %>
+  <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+            units_path, :class => 'btn btn-default' %>
+ 
+<% end %>
+
+
+<script language="javascript" type="text/javascript"> 
+
+$(document).ready(function(){
+  $("#level2_parent").hide();
+  $("#level3_parent").hide();
+
+  $('#unit_unit_level').change(function(){
+    if ($('#unit_unit_level').val() ==1){
+      $("#level2_parent").hide();
+      $("#level3_parent").hide();
+      $('#parentid').val("");
+    }
+    if ($('#unit_unit_level').val() ==2){
+      $("#level2_parent").hide();
+      $("#level3_parent").hide();
+      $('#parentid').val("<%= Unit.find_by(unit_level:1).id %>");
+    }
+    if ($('#unit_unit_level').val() == 3){
+      $("#level2_parent").show();
+      $("#level3_parent").hide();
+    }
+    if ($('#unit_unit_level').val() == 4){
+      $("#level2_parent").show();
+      $("#level3_parent").show();
+    }
+  }); 
+
+  $('#unit_parent_id').click(function(){
+    if ($('#unit_unit_level').val() == 3){
+      $('#parentid').val($('#unit_parent_id').val());
+    }
+    if ($('#unit_unit_level').val() == 4){
+      $.ajax({
+        type : 'GET',
+        url : '/units/select_level3_parents/',
+        data: { unit_level: $('#unit_unit_level').val(),level2_parent: $('#unit_parent_id').val()},
+        dataType : 'script'
+      });
+    }
+   return false;
+  }); 
+
+  $('#level3_parent_id').click(function(){
+    $('#parentid').val($('#level3_parent_id').val());
+  });
+})
+
+</script>

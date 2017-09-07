@@ -1,0 +1,58 @@
+<%- model_class = FixedAssetInfo -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human %></h1>
+</div>  
+<%= render partial: 'grid'%>
+<div>
+  <%= form_tag('', name: 'form1') %>
+  <div style="float:right">
+    <% if can? :fixed_asset_info_import, FixedAssetInfo %>
+      <%= link_to t('.import', :default => t("helpers.links.import")),
+                  "/fixed_asset_infos/fixed_asset_info_import",
+                  :class => 'btn btn-primary' %>
+    <% end %>
+    <%= submit_tag "信息导出",:class => 'btn btn-primary', onclick: "form1.action='/fixed_asset_infos/export.xls';form1.submit();" %>
+  </div>
+  <div class="index-filters">
+    <table>
+    <tr>
+      <td>资产名称:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :asset_name_filter)%></td>
+      <td>资产编号:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :asset_no_filter)%></td>
+      <td>类别目录:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :fixed_asset_catalog_id_filter)%></td>
+      <td>归口管理部门:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :relevant_department_filter)%></td>
+      <td>购买日期:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :buy_at_filter)%></td>
+      <td>领用日期:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :use_at_filter)%></td>
+    </tr>
+    <tr>
+      <td>计量单位:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :measurement_unit_filter)%></td>
+      <td>使用部门:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :unit_id_filter)%></td>
+      <td>所在网点:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :branch_filter)%></td>
+      <td>所在地点:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :location_filter)%></td>
+      <td>使用人:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :user_filter)%></td>
+      <td>状态:</td>
+      <td><%= grid_filter(@fixed_asset_infos, :status_filter)%></td>
+    </tr>
+    </table>
+  </div>
+  <div align='right'>
+    <button class="wg-external-submit-button" data-grid-name="grid">递交</button>
+    <button class="wg-external-reset-button" data-grid-name="grid">重置</button>
+  </div>  
+  </form>
+  </div>
+<div class="clearfix"></div> 
+<%= render_grid(@fixed_asset_infos)%>
+
+
+

@@ -149,6 +149,7 @@ zh-CN:
       back: 返回
       users: 用户管理
       roles: 角色管理
+      import: 信息导入
     titles:
       edit: 编辑%{model}
       new: 新增%{model}
@@ -275,6 +276,18 @@ zh-CN:
       role:
         one: 角色管理
         other: 角色管理
+      fixed_asset_catalog:
+        one: 固定资产目录
+        other: 固定资产目录
+      low_value_consumption_catalog:
+        one: 低值易耗品目录
+        other: 低值易耗品目录
+      fixed_asset_info:
+        one: 固定资产信息
+        other: 固定资产信息
+      low_value_consumption_info:
+        one: 低值易耗品信息
+        other: 低值易耗品信息
     attributes:
       user:
         email: "电子邮件"
@@ -293,8 +306,9 @@ zh-CN:
         desc: "单位描述"
         short_name: "英文缩写"
         tcbd_khdh: "商务投递客户编号"
-        level: "单位级别"
+        unit_level: "单位级别"
         parent_id: "上级单位"
+        is_facility_management_unit: "是否为设备管理单位"
       role:
         user_id: "用户"
         unit_id: "单位"
@@ -307,6 +321,58 @@ zh-CN:
         object_id: "对象主键"
         object_symbol: "对象标识"
         created_at: "创建时间"
+      fixed_asset_catalog:
+        code: "编码"
+        name: "名称"
+        measurement_unit: "计量单位"
+        years: "建议使用年限"
+        desc: "说明"
+      low_value_consumption_catalog:
+        code: "编码"
+        name: "名称"
+        measurement_unit: "计量单位"
+        years: "建议使用年限"
+        desc: "说明"
+      fixed_asset_info:
+        sn: "序号"
+        asset_name: "资产名称"
+        asset_no: "资产编号"
+        fixed_asset_catalog_id: "类别目录"
+        relevant_department: "归口管理部门"
+        buy_at: "购买日期"
+        use_at: "领用日期"
+        measurement_unit: "计量单位"
+        amount: "数量"
+        sum: "金额"
+        unit_id: "使用部门"
+        branch: "所在网点"
+        location: "所在地点"
+        user: "使用人"
+        change_log: "变动记录"
+        accounting_department: "核算部门"
+        status: "状态"
+        print_times: "标签打印次数"
+      low_value_consumption_info:
+        sn: "序号"
+        asset_name: "资产名称"
+        asset_no: "资产编号"
+        fixed_asset_catalog_id: "类别目录"
+        relevant_department: "归口管理部门"
+        buy_at: "购买日期"
+        use_at: "领用日期"
+        measurement_unit: "计量单位"
+        sum: "金额"
+        use_unit_id: "使用部门"
+        branch: "所在网点"
+        location: "所在地点"
+        user: "使用人"
+        change_log: "变动记录"
+        status: "状态"
+        print_times: "标签打印次数"
+        brand_model: "品牌型号"
+        batch_no: "生产批次"
+        purchase_id: "采购单号"
+        manage_unit_id: "管理单位"
   menu:
     permission:
       name: "权限管理"
@@ -341,6 +407,41 @@ zh-CN:
           name: "日志查询"
           link: "/user_logs"
           need_count: false
+    fixed_assets:
+      name: "固定资产"
+      submenu:
+        fixed_asset_catalog:
+          name: "固定资产目录"
+          link: "/fixed_asset_catalogs"
+          need_count: false
+          needrole:
+            can: :read
+            role: :FixedAssetCatalog
+        fixed_asset_info:
+          name: "固定资产信息"
+          link: "/fixed_asset_infos"
+          need_count: false
+          needrole:
+            can: :read
+            role: :FixedAssetInfo
+    low_value_consumptions:
+      name: "低值易耗品"
+      submenu:
+        low_value_consumption_catalog:
+          name: "低值易耗品目录"
+          link: "/low_value_consumption_catalogs"
+          need_count: false
+          needrole:
+            can: :read
+            role: :LowValueConsumptionCatalog
+        # low_value_consumption_info:
+        #   name: "低值易耗品信息"
+        #   link: "/low_value_consumption_infos"
+        #   need_count: false
+        #   needrole:
+        #     can: :read
+        #     role: :LowValueConsumptionInfo
+        
         # interface_log:
         #   name: "接口信息(info)"
         #   link: "/interface_infos"

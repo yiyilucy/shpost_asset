@@ -1,0 +1,2 @@
+module LowValueConsumptionCatalogsHelper
+end
