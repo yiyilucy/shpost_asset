@@ -1,0 +1,79 @@
+<%- model_class = Purchase -%>
+<div class="page-header">
+  <h1>处理中采购单</h1>
+</div>
+
+<%= grid(@purchases_grid) do |g|
+    g.after_row do |purchase, number_of_columns|
+      content_tag(:tr, class: 'extra-row') do
+        content_tag(:td, content_tag(:div, content_tag(:dl, class: "dl-horizontal") do
+            # without buffer only the last tag will appear
+            buffer = content_tag(:b,"变动记录")
+            buffer += content_tag(:p, "#{purchase.change_log.blank? ? "" : purchase.change_log[0,purchase.change_log.length-1]}")
+            raw buffer
+                       
+          end), colspan:11)
+      end
+    end
+
+    g.column name: '采购单号', attribute: 'no'
+
+    g.column name: model_class.human_attribute_name(:name), attribute: 'name'
+
+    g.column name: model_class.human_attribute_name(:status), attribute: 'status',custom_filter: Purchase::STATUS.map {|k, v| [model_class.human_attribute_name("status_#{k}"), v]} do |purchase| 
+      purchase.status_name
+
+    end
+
+    g.column name: model_class.human_attribute_name(:create_user_id), attribute: 'create_user_id' do |purchase|
+        User.find_by(id: purchase.create_user_id).blank? ? "" : User.find_by(id: purchase.create_user_id).try(:username)
+    end
+
+    g.column name: model_class.human_attribute_name(:to_check_user_id), attribute: 'to_check_user_id' do |purchase|
+        User.find_by(id: purchase.to_check_user_id).blank? ? "" : User.find_by(id: purchase.to_check_user_id).try(:username)
+    end
+
+    g.column name: model_class.human_attribute_name(:checked_user_id), attribute: 'checked_user_id' do |purchase|
+        User.find_by(id: purchase.checked_user_id).blank? ? "" : User.find_by(id: purchase.checked_user_id).try(:username)
+    end
+
+    g.column name: model_class.human_attribute_name(:create_unit_id), attribute: 'create_unit_id' do |purchase|
+        Unit.find_by(id: purchase.create_unit_id).blank? ? "" : Unit.find_by(id: purchase.create_unit_id).try(:name)
+    end
+
+    g.column name: model_class.human_attribute_name(:manage_unit_id), attribute: 'manage_unit_id' do |purchase|
+        Unit.find_by(id: purchase.manage_unit_id).blank? ? "" : Unit.find_by(id: purchase.manage_unit_id).try(:name)
+    end
+
+    g.column name: model_class.human_attribute_name(:is_send), attribute: 'is_send' do |purchase|
+      purchase.is_send_name
+    end
+
+    g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log' do |purchase|
+      purchase.change_log.blank? ? "" : purchase.change_log[0,purchase.change_log.length-1]
+    end
+
+    g.column name: model_class.human_attribute_name(:desc), attribute: 'desc'
+
+    g.column do |purchase|
+      ActiveSupport::SafeBuffer.new << 
+      (link_to t('.low_value_consumption_infos', :default => t("helpers.links.low_value_consumption_infos")),
+                purchase_low_value_consumption_infos_path(purchase), :class => 'btn btn-xs btn-primary' if (can? :read, LowValueConsumptionInfo))<< ' ' <<
+      button_tag("变动记录", class: "btn btn-xs btn-primary")
+    end
+
+    
+  end 
+%>
+
+<script language="javascript" type="text/javascript"> 
+
+
+$(document).on("page:load ready", function(){
+    $("button").click(function(){
+        $(this).parents('tr').next('.extra-row').slideToggle("fast");
+        return false;
+    });
+});
+
+</script>

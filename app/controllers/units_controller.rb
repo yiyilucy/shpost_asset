@@ -45,19 +45,29 @@ class UnitsController < ApplicationController
   # POST /units.json
   def create
     # binding.pry
-    parent = Unit.find_by(id:params["parentid"].to_i)
-    @unit.parent_id = parent.id
-    @unit.unit_level = parent.unit_level+1
-    is_facility_management_unit = params["checkbox"]["is_facility_management_unit"]
-    @unit.is_facility_management_unit = (is_facility_management_unit.eql?"1") ? true : false
-    
-    respond_to do |format|
-      if @unit.save
-        format.html { render action: 'show', notice: I18n.t('controller.create_success_notice', model: '单位')}
-        format.json { head :no_content }
-      else
+    if !params["parentid"].blank?
+      parent = Unit.find_by(id:params["parentid"].to_i)
+      @unit.parent_id = parent.id
+      @unit.unit_level = parent.unit_level+1
+
+      if !params["checkbox"].blank? and !params["checkbox"]["is_facility_management_unit"].blank?
+        is_facility_management_unit = params["checkbox"]["is_facility_management_unit"]
+        @unit.is_facility_management_unit = (is_facility_management_unit.eql?"1") ? true : false
+      end
+      
+      respond_to do |format|
+        if @unit.save
+          format.html { render action: 'show', notice: I18n.t('controller.create_success_notice', model: '单位')}
+          format.json { head :no_content }
+        else
+          format.html { render action: 'new' }
+          format.json { render json: @unit.errors, status: :unprocessable_entity }
+        end
+      end
+    else
+      respond_to do |format|
         format.html { render action: 'new' }
-        format.json { render json: @unit.errors, status: :unprocessable_entity }
+          format.json { render json: @unit.errors, status: :unprocessable_entity }
       end
     end
   end

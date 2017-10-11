@@ -9,49 +9,55 @@ class Ability
         can :manage, UserLog
         can :manage, Role
         can :role, :unitadmin
-        can :role, :user
+        can :role, :deviceadmin
+        can :role, :accountant
 
         # cannot :role, :superadmin
         cannot [:role, :create, :destroy, :update], User, role: 'superadmin'
         can :update, User, id: user.id
 
+        can :manage, FixedAssetCatalog
+        can :manage, LowValueConsumptionCatalog
+        can :read, FixedAssetInfo
+        can :read, LowValueConsumptionInfo
+        can [:new, :read], Purchase
+        can :manage, Sequence
+
         
     elsif user.unitadmin?
     #can :manage, :all
-        
 
         can :manage, Unit, id: user.unit_id
-
-        can :read, UserLog, user: {unit_id: user.unit_id}
-        can :destroy, UserLog, operation: '订单导入'
 
         can :manage, User, unit_id: user.unit_id
 
         can :manage, Role
         cannot :role, User, role: 'superadmin'
         can :role, :unitadmin
-        can :role, :user
+        can :role, :deviceadmin
+        can :role, :accountant
         
         # cannot :role, User, role: 'unitadmin'
-        cannot [:create, :destroy, :update], User, role: ['unitadmin', 'superadmin']
+        # cannot [:create, :destroy, :update], User, role: ['unitadmin', 'superadmin']
         can :update, User, id: user.id
-        can :manage, FixedAssetCatalog
-        can :manage, LowValueConsumptionCatalog
-        can :manage, FixedAssetInfo
-        # can :manage, LowValueConsumptionInfo
-
-        # can :manage,BusinessRelationship
         
-    elsif user.user?
-        can :update, User, id: user.id
-        can :read, UserLog, user: {id: user.id}
 
-        can :read, Unit, id: user.unit_id
-        can :read, User, id: user.id
+    elsif user.deviceadmin?
         can :read, FixedAssetCatalog
         can :read, LowValueConsumptionCatalog
-        can :read, FixedAssetInfo, id: user.unit_id
-        # can :read, LowValueConsumptionInfo, id: user.unit_id
+        can :manage, FixedAssetInfo, unit_id: user.unit_id
+        can :manage, LowValueConsumptionInfo
+        can :manage, Purchase
+        cannot [:approve, :decline], Purchase
+        can :manage, Unit
+
+    elsif user.accountant?
+        can :read, FixedAssetCatalog
+        can :read, LowValueConsumptionCatalog
+        can :read, FixedAssetInfo, unit_id: user.unit_id
+        can :read, LowValueConsumptionInfo
+        can [:to_do_index, :doing_index, :done_index, :read, :approve, :decline], Purchase
+        
     else
         cannot :manage, :all
         #can :update, User, id: user.id

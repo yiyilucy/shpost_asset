@@ -3,7 +3,9 @@ class FixedAssetCatalogsController < ApplicationController
 
   def index
     # @fixed_asset_catalogs = FixedAssetCatalog.all
-    @fixed_asset_catalogs = initialize_grid(@fixed_asset_catalogs)
+    @fixed_asset_catalogs = initialize_grid(@fixed_asset_catalogs,
+         :order => 'fixed_asset_catalogs.code',
+         :order_direction => 'asc')
   end
 
   def show

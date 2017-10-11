@@ -1,17 +1,32 @@
-<%= form_for(@low_value_consumption_info) do |f| %>
-  <% if @low_value_consumption_info.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@low_value_consumption_info.errors.count, "error") %> prohibited this low_value_consumption_info from being saved:</h2>
-
-      <ul>
-      <% @low_value_consumption_info.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+<%= form_for @low_value_consumption_info, :html => { :class => 'form-horizontal' } do |f| %>
+<%= f.error_messages %>
+  <div class="control-group">
+    <%= f.label :location, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :location, :class => 'text_field' %>
     </div>
-  <% end %>
-
-  <div class="actions">
-    <%= f.submit %>
   </div>
+  <div class="control-group">
+    <%= f.label :user, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :user, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :relevant_unit_id, :class => 'control-label' %>
+    <div class="controls">
+      <%= relevant_department_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :use_unit_id, :class => 'control-label' %>
+    <div class="controls">
+      <%= use_unit_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
+    </div>
+  </div>
+
+  <%= f.submit nil, :class => 'btn btn-primary' %>
+  <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+            low_value_consumption_infos_path(@low_value_consumption_info), :class => 'btn btn-default' %>
+ 
 <% end %>

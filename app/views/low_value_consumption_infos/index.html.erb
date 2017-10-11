@@ -1,25 +1,8 @@
-<h1>Listing low_value_consumption_infos</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @low_value_consumption_infos.each do |low_value_consumption_info| %>
-      <tr>
-        <td><%= link_to 'Show', low_value_consumption_info %></td>
-        <td><%= link_to 'Edit', edit_low_value_consumption_info_path(low_value_consumption_info) %></td>
-        <td><%= link_to 'Destroy', low_value_consumption_info, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<br>
-
-<%= link_to 'New Low value consumption info', new_low_value_consumption_info_path %>
+<%- model_class = LowValueConsumptionInfo -%>
+<div class="page-header">
+  <h1>在用低值易耗品信息</h1>
+  <div style="float:right">
+  <button class="wg-external-csv-export-button" data-grid-name="low_value_consumption_infos">导出</button>
+  </div>
+</div>
+<%= render :partial => 'low_value_consumption_infos_grid' %>

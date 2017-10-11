@@ -150,6 +150,13 @@ zh-CN:
       users: 用户管理
       roles: 角色管理
       import: 信息导入
+      to_send: 下发
+      to_check: 送审
+      low_value_consumption_infos: 低值易耗品信息
+      approve: 通过
+      decline: 拒绝
+      revoke: 撤回
+      cancel: 取消
     titles:
       edit: 编辑%{model}
       new: 新增%{model}
@@ -257,6 +264,14 @@ zh-CN:
     success_notice: "%{model}%{operation}成功"
     create_success_notice: "%{model}创建成功"
     update_success_notice: "%{model}更新成功"
+    send_success_notice: "%{model}下发成功"
+    to_check_success_notice: "%{model}送审成功"
+    purchase_exist_no_notice: "%{model}号已存在"
+    approve_success_notice: "%{model}审核通过"
+    decline_success_notice: "%{model}审核否决"
+    revoke_success_notice: "%{model}撤回成功"
+    cancel_success_notice: "%{model}取消成功"
+    purchase_low_value_consumption_info_no_amount_notice: "请填写数量"
   activemodel:
     errors:
       <<: *errors
@@ -288,6 +303,9 @@ zh-CN:
       low_value_consumption_info:
         one: 低值易耗品信息
         other: 低值易耗品信息
+      purchase:
+        one: 采购单
+        other: 采购单
     attributes:
       user:
         email: "电子邮件"
@@ -356,8 +374,8 @@ zh-CN:
         sn: "序号"
         asset_name: "资产名称"
         asset_no: "资产编号"
-        fixed_asset_catalog_id: "类别目录"
-        relevant_department: "归口管理部门"
+        low_value_consumption_catalog_id: "类别目录"
+        relevant_unit_id: "归口管理部门"
         buy_at: "购买日期"
         use_at: "领用日期"
         measurement_unit: "计量单位"
@@ -373,6 +391,33 @@ zh-CN:
         batch_no: "生产批次"
         purchase_id: "采购单号"
         manage_unit_id: "管理单位"
+        status_waiting: "待处理"
+        status_checking: "待复核"
+        status_declined: "否决"
+        status_canceled: "取消"
+        status_in_use: "在用"
+        status_revoked: "撤回"
+        status_discard: "报废"
+        log: "日志"
+      purchase:
+        no: "采购单号"
+        name: "采购单名称"
+        status: "状态"
+        create_user_id: "创建人"
+        create_unit_id: "创建单位"
+        manage_unit_id: "管理单位"
+        is_send: "是否已下发"
+        to_check_user_id: "送审人"
+        checked_user_id: "审核人"
+        change_log: "变动记录"
+        desc: "备注"
+        use_unit_id: "下发单位"
+        status_waiting: "待处理"
+        status_checking: "待复核"
+        status_declined: "否决"
+        status_canceled: "取消"
+        status_done: "完成"
+        status_revoked: "撤回"
   menu:
     permission:
       name: "权限管理"
@@ -400,13 +445,13 @@ zh-CN:
         #   needrole:
         #     can: :read
         #     role: :User
-    logs:
-      name: "日志查询"
-      submenu:
-        user_log:
-          name: "日志查询"
-          link: "/user_logs"
-          need_count: false
+    # logs:
+    #   name: "日志查询"
+    #   submenu:
+    #     user_log:
+    #       name: "日志查询"
+    #       link: "/user_logs"
+    #       need_count: false
     fixed_assets:
       name: "固定资产"
       submenu:
@@ -434,14 +479,54 @@ zh-CN:
           needrole:
             can: :read
             role: :LowValueConsumptionCatalog
-        # low_value_consumption_info:
-        #   name: "低值易耗品信息"
-        #   link: "/low_value_consumption_infos"
-        #   need_count: false
-        #   needrole:
-        #     can: :read
-        #     role: :LowValueConsumptionInfo
-        
+        low_value_consumption_info_inuse:
+          name: "在用低值易耗品信息"
+          link: "/low_value_consumption_infos"
+          need_count: false
+          needrole:
+            can: :read
+            role: :LowValueConsumptionInfo
+        low_value_consumption_info_discard:
+          name: "报废低值易耗品信息"
+          link: "/low_value_consumption_infos/discard_index"
+          need_count: false
+          needrole:
+            can: :read
+            role: :LowValueConsumptionInfo
+    purchases:
+      name: "采购单"    
+      submenu:
+        new_purchase:
+          name: "创建采购单"
+          link: "/purchases"
+          need_count: false
+          needrole:
+            can: :new
+            role: :Purchase
+        to_do_purchase:
+          name: "待处理采购单"
+          link: "/purchases/to_do_index"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Purchase
+        doing_purchase:
+          name: "处理中采购单"
+          link: "/purchases/doing_index"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Purchase
+        done_purchase:
+          name: "已完成采购单"
+          link: "/purchases/done_index"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Purchase
+
+
+
         # interface_log:
         #   name: "接口信息(info)"
         #   link: "/interface_infos"

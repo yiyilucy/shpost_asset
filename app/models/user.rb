@@ -12,7 +12,7 @@ class User < ActiveRecord::Base
 
   validates_uniqueness_of :username, :message => '该用户已存在'
 
-  ROLE = { superadmin: '超级管理员', unitadmin: '机构管理员', user: '用户' }
+  ROLE = { superadmin: '超级管理员', unitadmin: '机构管理员', deviceadmin: '设备管理员', accountant: '财务' }
 
   def rolename
     User::ROLE[role.to_sym]
@@ -28,6 +28,14 @@ class User < ActiveRecord::Base
 
   def user?
     (role.eql? 'user') ? true : false
+  end
+
+  def deviceadmin?
+    (role.eql? 'deviceadmin') ? true : false
+  end
+
+  def accountant?
+    (role.eql? 'accountant') ? true : false
   end
 
   def email_required?

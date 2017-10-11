@@ -30,7 +30,7 @@
       <%= f.text_field :tcbd_khdh, :class => 'text_field' %>
     </div>
   </div>
-  <% if @unit.unit_level == 2 %>
+  <% if (@unit.unit_level == 2) or (!@parentid.blank? and Unit.find_by(id: @parentid).unit_level == 1) %>
   <div class="control-group">
     <%= f.label :is_facility_management_unit, :class => 'control-label' %> 
     <div class="controls">

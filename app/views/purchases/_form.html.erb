@@ -1,0 +1,28 @@
+<%= form_for @purchase, :html => { :class => 'form-horizontal' } do |f| %>
+  <%= f.error_messages %>
+  <div class="control-group">
+    <%= f.label "采购单号", :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :no, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :name, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :name, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :desc, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :desc, :class => 'text_field' %>
+    </div>
+  </div>
+ 
+
+  <%= f.submit nil, :class => 'btn btn-primary', onclick: "if($('#purchase_no').val() == ''){ alert('请输入采购单号'); return false;}; " %>
+  <% if can? :index, Purchase %>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+              purchases_path, :class => 'btn btn-default' %>
+  <% end %>
+<% end %>

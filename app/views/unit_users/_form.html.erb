@@ -30,7 +30,7 @@
   <div class="control-group">
     <%= f.label :role, :class => 'control-label' %>
     <div class="controls">
-      <%= f.select(:role, User::ROLE.invert.select{|k, v| v.to_s.size() <= current_user.role.size()}) %>
+      <%= f.select(:role, User::ROLE.invert.select{|k, v| can? :role, v.to_sym}) %>
     </div>
   </div>
   <% else %>

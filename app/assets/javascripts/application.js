@@ -20,3 +20,33 @@
 //= require twitter/bootstrap
 //= require turbolinks
 //= require_tree .
+
+
+function ajaxunits() {
+	$('#relevant_department_name').bind('railsAutocomplete.select', function(event, data){
+    /* Do something here */
+    var ruid = "#"+data.item.obj+"_relevant_unit_id";
+    $(ruid).val(data.item.id);
+  });
+
+	$('#use_unit_name').bind('railsAutocomplete.select', function(event, data){
+    /* Do something here */
+    var useid = "#"+data.item.obj+"_use_unit_id";
+    $(useid).val(data.item.id);
+  });
+
+	$('#send_unit_name').bind('railsAutocomplete.select', function(event, data){
+    /* Do something here */
+    var sendid = "#"+data.item.obj+"_use_unit_id";
+    $(sendid).val(data.item.id);
+  });
+
+  $('#low_value_consumption_catalog_name').bind('railsAutocomplete.select', function(event, data){
+    /* Do something here */
+    var catalogid = "#"+data.item.obj+"_low_value_consumption_catalog_id";
+    $(catalogid).val(data.item.id);
+  });
+}
+
+$(document).ready(ready);
+$(document).on('page:load', ready);

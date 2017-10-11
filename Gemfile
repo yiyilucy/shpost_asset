@@ -109,3 +109,5 @@ gem 'whenever'
 gem 'rqrcode'
 
 gem 'rqrcode_png'
+
+gem 'awesome_nested_set'

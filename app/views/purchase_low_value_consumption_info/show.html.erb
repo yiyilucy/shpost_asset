@@ -1,0 +1,45 @@
+<%- model_class = LowValueConsumptionInfo -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:sn) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.sn %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:low_value_consumption_catalog_id) %>:</strong></dt>
+  <dd><%= LowValueConsumptionCatalog.find_by(id:@low_value_consumption_info.low_value_consumption_catalog_id).try(:name) %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:asset_name) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.asset_name %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:batch_no) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.batch_no %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:brand_model) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.brand_model %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:measurement_unit) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.measurement_unit %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:sum) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.sum %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:buy_at) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.buy_at.blank? ? "" : @low_value_consumption_info.buy_at.strftime('%Y-%m-%d') %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:branch) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.branch %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:location) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.location %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:user) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.user %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:relevant_unit_id) %>:</strong></dt>
+  <dd><%= Unit.find_by(id:@low_value_consumption_info.relevant_unit_id).try(:name) %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:use_unit_id) %>:</strong></dt>
+  <dd><%= Unit.find_by(id:@low_value_consumption_info.use_unit_id).try(:name) %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:change_log) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.change_log%></dd>
+</dl>
+
+<%= link_to t('.back', :default => t("helpers.links.back")),
+              purchase_low_value_consumption_infos_path(@purchase), :class => 'btn btn-default'  %>
+<%= link_to t('.edit', :default => t("helpers.links.edit")),
+              edit_purchase_low_value_consumption_info_path(@purchase,@low_value_consumption_info), :class => 'btn btn-default' %>
+<%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+              purchase_low_value_consumption_info_path(@purchase,@low_value_consumption_info),
+              :method => 'delete',
+              :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => '确定删除?')) },
+              :class => 'btn btn-danger' %>

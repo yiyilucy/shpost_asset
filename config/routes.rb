@@ -1,5 +1,6 @@
 ShpostAsset::Application.routes.draw do
   
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -66,6 +67,7 @@ ShpostAsset::Application.routes.draw do
       post 'update_unit_info'
     end
     resources :users, :controller => 'unit_users'
+    resources :sequences, :controller => 'unit_sequences'
     member do 
       get 'index'
       get 'newsub'
@@ -105,5 +107,47 @@ ShpostAsset::Application.routes.draw do
   #     post 'export'
   #   end
   # end
+
+  resources :purchases do 
+    collection do
+      post 'do_send'
+      get 'to_do_index'
+      get 'doing_index'
+      get 'done_index'
+    end
+
+    member do 
+      get 'to_send'
+      get 'to_check'
+      get 'approve'
+      get 'decline'
+      get 'revoke'
+      get 'cancel'
+    end
+
+    resources :low_value_consumption_infos, :controller => 'purchase_low_value_consumption_info' do
+      collection do
+        get 'batch_destroy'
+        get 'batch_edit'
+        post 'batch_update'
+      end
+    end
+      
+  end
+
+  resources :low_value_consumption_infos do
+    collection do
+      get 'discard_index'
+    end
+  end
+
+  resources :unit_autocom do
+    collection do
+      get 'p_autocomplete_relevant_department_name'
+      get 'p_autocomplete_use_unit_name'
+      get 'p_autocomplete_send_unit_name'
+      get 'p_autocomplete_low_value_consumption_catalog'
+    end
+  end
 
 end

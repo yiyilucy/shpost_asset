@@ -1,0 +1,1 @@
+json.extract! @low_value_consumption_info, :id

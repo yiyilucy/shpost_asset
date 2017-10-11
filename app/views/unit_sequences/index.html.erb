@@ -1,0 +1,13 @@
+<%- model_class = Sequence -%>
+<div class="page-header">
+  <h1><%=@unit.name%>--<%=t '.title', :default => model_class.model_name.human%></h1>
+</div>
+
+<%= grid(@sequences_grid) do |g|
+
+    g.column name: model_class.human_attribute_name(:class), attribute: 'class'
+
+    g.column name: model_class.human_attribute_name(:count), attribute: 'count'
+
+  end 
+%>

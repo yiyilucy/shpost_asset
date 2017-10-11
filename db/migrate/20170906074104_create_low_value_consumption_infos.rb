@@ -3,9 +3,9 @@ class CreateLowValueConsumptionInfos < ActiveRecord::Migration
     create_table :low_value_consumption_infos do |t|
       t.string :sn
       t.string :asset_name, :null => false
-      t.string :asset_no, :null => false
-      t.integer :fixed_asset_catalog_id, :null => false
-      t.string :relevant_department
+      t.string :asset_no
+      t.integer :low_value_consumption_catalog_id, :null => false
+      t.integer :relevant_unit_id
       t.datetime :buy_at
       t.datetime :use_at
       t.string :measurement_unit

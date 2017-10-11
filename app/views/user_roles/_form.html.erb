@@ -4,7 +4,7 @@
   <div class="control-group">
     <%= f.label :unit_id, :class => 'control-label' %>
     <div class="controls">
-      <%= f.select(:unit_id, Unit.where(parent_id: @user.unit_id).accessible_by(current_ability).map{|u| [u.name,u.id]}) %>
+      <%= f.select(:unit_id, Unit.where("units.parent_id = ? or units.id = ?", @user.unit_id, @user.unit_id).accessible_by(current_ability).map{|u| [u.name,u.id]}) %>
     </div>
   </div>
   <div class="control-group">

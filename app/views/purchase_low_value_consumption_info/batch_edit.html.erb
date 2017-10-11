@@ -1,0 +1,97 @@
+<%- model_class = LowValueConsumptionInfo -%>
+<div class="page-header">
+  <h1>批量更新</h1>
+</div>
+<div>
+   <%= form_tag(batch_update_purchase_low_value_consumption_infos_path, method: "post")%>
+   <%= hidden_field_tag('lvcids',@lvcids)%>
+   <% if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked" %>
+      <div class="control-group">
+	      <%= label_tag(:sn, "序号") %>
+	      <div class="controls">
+	      <%= text_field_tag(:sn,@low_value_consumption_info.sn) %>
+		  </div>
+      </div>
+      <div class="control-group">
+	      <%= label_tag(:low_value_consumption_catalog_id, "类别目录") %>
+	      <div class="controls">
+	      <%= low_value_consumption_catalog_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
+		  </div>
+      </div>
+      <div class="control-group">
+	      <%= label_tag(:asset_name, "资产名称") %>
+	      <div class="controls">
+	      <%= text_field_tag(:asset_name,@low_value_consumption_info.asset_name) %>
+		  </div>
+      </div>
+      <div class="control-group">
+	      <%= label_tag(:batch_no, "生产批次") %>
+	      <div class="controls">
+	      <%= text_field_tag(:batch_no,@low_value_consumption_info.batch_no) %>
+		  </div>
+      </div>
+      <div class="control-group">
+	      <%= label_tag(:brand_model, "品牌型号") %>
+	      <div class="controls">
+	      <%= text_field_tag(:brand_model,@low_value_consumption_info.brand_model) %>
+		  </div>
+      </div>
+      <div class="control-group">
+	      <%= label_tag(:measurement_unit, "计量单位") %>
+	      <div class="controls">
+	      <%= text_field_tag(:measurement_unit,@low_value_consumption_info.measurement_unit) %>
+		  </div>
+      </div>
+      <div class="control-group">
+	      <%= label_tag(:sum, "金额") %>
+	      <div class="controls">
+	      <%= text_field_tag(:sum,@low_value_consumption_info.sum) %>
+		  </div>
+      </div>
+      <div class="control-group">
+	      <%= label_tag(:branch, "所在网点") %>
+	      <div class="controls">
+	      <%= text_field_tag(:branch,@low_value_consumption_info.branch) %>
+		  </div>
+      </div>
+   <% end %>
+      <div class="control-group">
+	      <%= label_tag(:location, "所在地点") %>
+	      <div class="controls">
+	      <%= text_field_tag(:location,@low_value_consumption_info.location) %>
+		  </div>
+      </div>
+      <div class="control-group">
+	      <%= label_tag(:user, "使用人") %>
+	      <div class="controls">
+	      <%= text_field_tag(:user,@low_value_consumption_info.user) %>
+		  </div>
+      </div>
+      <div class="control-group">
+	      <%= label_tag(:relevant_unit_id, "归口管理部门") %>
+	      <div class="controls">
+	      <%= relevant_department_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
+		  </div>
+      </div>
+      <div class="control-group">
+	      <%= label_tag(:use_unit_id, "使用部门") %>
+	      <div class="controls">
+	      <%= use_unit_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
+		  </div>
+      </div>
+   <% if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked" %>
+      <div class="control-group">
+	      <%= label_tag(:change_log, "变动记录") %>
+	      <div class="controls">
+	      <%= text_field_tag(:change_log,@low_value_consumption_info.change_log) %>
+		  </div>
+      </div>
+   <% end %>
+
+  <div>
+    <%= submit_tag "批量更新",:class => 'btn btn-primary' %>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+            purchase_low_value_consumption_infos_path(@purchase), :class => 'btn btn-default' %>
+  </div>
+  </form>
+</div>

@@ -3,7 +3,9 @@ class FixedAssetInfosController < ApplicationController
 
   def index
     # @fixed_asset_infos = FixedAssetInfo.all
-    @fixed_asset_infos = initialize_grid(@fixed_asset_infos)
+    @fixed_asset_infos = initialize_grid(@fixed_asset_infos,
+         :order => 'fixed_asset_infos.sn',
+         :order_direction => 'asc')
   end
 
   def show

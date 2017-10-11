@@ -1,0 +1,69 @@
+<%- model_class = LowValueConsumptionInfo -%>
+<%= grid(@low_value_consumption_infos_grid) do |g|
+  # binding.pry
+   g.column name: '', attribute: 'id', in_csv: false do |low_value_consumption_info|
+    check_box_tag("lvcids[]","#{low_value_consumption_info.id}",false) 
+   end
+
+    g.column name: model_class.human_attribute_name(:sn), attribute: 'sn'
+
+    g.column name: model_class.human_attribute_name(:low_value_consumption_catalog_id), attribute: 'id', assoc: :low_value_consumption_catalog do |low_value_consumption_info|
+        low_value_consumption_info.low_value_consumption_catalog.try :name
+    end
+  
+    g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name'
+
+    g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no'
+
+    g.column name: model_class.human_attribute_name(:brand_model), attribute: 'brand_model'
+
+    g.column name: model_class.human_attribute_name(:batch_no), attribute: 'batch_no'
+    
+    g.column name: model_class.human_attribute_name(:measurement_unit), attribute: 'measurement_unit'
+
+    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum'
+
+    g.column name: model_class.human_attribute_name(:buy_at), attribute: 'buy_at' do |low_value_consumption_info|
+      low_value_consumption_info.buy_at.blank? ? "" : DateTime.parse(low_value_consumption_info.buy_at.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:use_at), attribute: 'use_at' do |low_value_consumption_info|
+      low_value_consumption_info.use_at.blank? ? "" : DateTime.parse(low_value_consumption_info.use_at.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:status), attribute: 'status',custom_filter: LowValueConsumptionInfo::STATUS.map {|k, v| [model_class.human_attribute_name("status_#{k}"), v]} do |low_value_consumption_info| 
+      low_value_consumption_info.status_name
+
+    end
+
+    g.column name: model_class.human_attribute_name(:print_times), attribute: 'print_times'
+
+    g.column name: model_class.human_attribute_name(:manage_unit_id), attribute: 'manage_unit_id' do |low_value_consumption_info|
+        Unit.find_by(id: low_value_consumption_info.manage_unit_id).blank? ? "" : Unit.find_by(id: low_value_consumption_info.manage_unit_id).try(:name)
+    end
+
+    g.column name: model_class.human_attribute_name(:use_unit_id), attribute: 'use_unit_id' do |low_value_consumption_info|
+        Unit.find_by(id: low_value_consumption_info.use_unit_id).blank? ? "" : Unit.find_by(id: low_value_consumption_info.use_unit_id).try(:name)
+    end
+
+    g.column name: model_class.human_attribute_name(:relevant_unit_id), attribute: 'relevant_unit_id' do |low_value_consumption_info|
+        Unit.find_by(id: low_value_consumption_info.relevant_unit_id).blank? ? "" : Unit.find_by(id: low_value_consumption_info.relevant_unit_id).try(:name)
+    end
+    
+    g.column name: model_class.human_attribute_name(:branch), attribute: 'branch'
+
+    g.column name: model_class.human_attribute_name(:location), attribute: 'location'
+
+    g.column name: model_class.human_attribute_name(:user), attribute: 'user' 
+
+    g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log' do |low_value_consumption_info|
+      low_value_consumption_info.change_log.blank? ? "" : low_value_consumption_info.change_log[0,low_value_consumption_info.change_log.length-1]
+    end
+
+    g.column in_csv: false do |low_value_consumption_info|
+      ActiveSupport::SafeBuffer.new << 
+      (link_to t('.edit', :default => t("helpers.links.edit")), edit_purchase_low_value_consumption_info_path(@purchase,low_value_consumption_info), :class => 'btn btn-xs btn-primary' if (can? :update, low_value_consumption_info) and ((@purchase.create_user_id == current_user.id and @purchase.status.eql?"waiting" and !@purchase.is_send)  or (@purchase.manage_unit_id == current_user.unit_id and @purchase.status.eql?"waiting" and @purchase.is_send) or (@purchase.status.eql?"revoked" and @purchase.create_user_id == current_user.id) or (@purchase.status.eql?"declined" and @purchase.is_send and @purchase.manage_unit_id == current_user.unit_id) or (@purchase.status.eql?"declined" and !@purchase.is_send and @purchase.create_user_id == current_user.id) )) << ' ' <<
+      (link_to t('.destroy', :default => t("helpers.links.destroy")), purchase_low_value_consumption_info_path(@purchase,low_value_consumption_info), :method => :delete, :data => { :confirm => t('wice_grid.saved_query_deletion_confirmation', :default => t("helpers.links.confirm", :default =>"确定删除?" )) }, :class => 'btn btn-xs btn-danger' if (can? :destroy, low_value_consumption_info)  and (@purchase.status.eql?"waiting" and !@purchase.is_send and @purchase.create_user_id == current_user.id )) 
+    end
+  end 
+%>

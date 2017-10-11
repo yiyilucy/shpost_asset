@@ -7,5 +7,15 @@ ready = ->
     changeMonth:true,
     changeYear:true
   });
+  $('#purchase_buy_at').datepicker({
+    showAnim:"blind",
+    changeMonth:true,
+    changeYear:true
+  });
+  $('#low_value_consumption_info_buy_at').datepicker({
+    showAnim:"blind",
+    changeMonth:true,
+    changeYear:true
+  });
 $(document).ready(ready)
 $(document).on('page:load', ready)

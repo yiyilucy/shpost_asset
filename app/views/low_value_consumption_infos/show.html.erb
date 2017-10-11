@@ -1,4 +1,21 @@
-<p id="notice"><%= notice %></p>
+<%- model_class = LowValueConsumptionInfo -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
 
-<%= link_to 'Edit', edit_low_value_consumption_info_path(@low_value_consumption_info) %> |
-<%= link_to 'Back', low_value_consumption_infos_path %>
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:location) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.location %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:user) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.user %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:relevant_unit_id) %>:</strong></dt>
+  <dd><%= Unit.find_by(id:@low_value_consumption_info.relevant_unit_id).try(:name) %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:use_unit_id) %>:</strong></dt>
+  <dd><%= Unit.find_by(id:@low_value_consumption_info.use_unit_id).try(:name) %></dd>
+</dl>
+
+<%= link_to t('.back', :default => t("helpers.links.back")),
+              low_value_consumption_infos_path(@low_value_consumption_info), :class => 'btn btn-default'  %>
+<%= link_to t('.edit', :default => t("helpers.links.edit")),
+              edit_low_value_consumption_info_path(@low_value_consumption_info), :class => 'btn btn-default' %>
+

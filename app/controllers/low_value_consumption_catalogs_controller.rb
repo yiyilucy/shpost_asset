@@ -2,7 +2,9 @@ class LowValueConsumptionCatalogsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @low_value_consumption_catalogs = initialize_grid(@low_value_consumption_catalogs)
+    @low_value_consumption_catalogs = initialize_grid(@low_value_consumption_catalogs,
+         :order => 'low_value_consumption_catalogs.code',
+         :order_direction => 'asc')
   end
 
   def show
