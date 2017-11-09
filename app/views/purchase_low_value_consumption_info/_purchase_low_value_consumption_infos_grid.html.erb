@@ -7,7 +7,7 @@
 
     g.column name: model_class.human_attribute_name(:sn), attribute: 'sn'
 
-    g.column name: model_class.human_attribute_name(:low_value_consumption_catalog_id), attribute: 'id', assoc: :low_value_consumption_catalog do |low_value_consumption_info|
+    g.column name: model_class.human_attribute_name(:low_value_consumption_catalog_id), attribute: 'name', assoc: :low_value_consumption_catalog do |low_value_consumption_info|
         low_value_consumption_info.low_value_consumption_catalog.try :name
     end
   
@@ -38,17 +38,11 @@
 
     g.column name: model_class.human_attribute_name(:print_times), attribute: 'print_times'
 
-    g.column name: model_class.human_attribute_name(:manage_unit_id), attribute: 'manage_unit_id' do |low_value_consumption_info|
-        Unit.find_by(id: low_value_consumption_info.manage_unit_id).blank? ? "" : Unit.find_by(id: low_value_consumption_info.manage_unit_id).try(:name)
-    end
+    g.column name: model_class.human_attribute_name(:relevant_unit_id), assoc: :relevant_unit, attribute: 'name'
 
-    g.column name: model_class.human_attribute_name(:use_unit_id), attribute: 'use_unit_id' do |low_value_consumption_info|
-        Unit.find_by(id: low_value_consumption_info.use_unit_id).blank? ? "" : Unit.find_by(id: low_value_consumption_info.use_unit_id).try(:name)
-    end
+    g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_low_value_consumption_infos'
 
-    g.column name: model_class.human_attribute_name(:relevant_unit_id), attribute: 'relevant_unit_id' do |low_value_consumption_info|
-        Unit.find_by(id: low_value_consumption_info.relevant_unit_id).blank? ? "" : Unit.find_by(id: low_value_consumption_info.relevant_unit_id).try(:name)
-    end
+    g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name', table_alias: 'use_units_low_value_consumption_infos'
     
     g.column name: model_class.human_attribute_name(:branch), attribute: 'branch'
 
@@ -56,8 +50,10 @@
 
     g.column name: model_class.human_attribute_name(:user), attribute: 'user' 
 
-    g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log' do |low_value_consumption_info|
-      low_value_consumption_info.change_log.blank? ? "" : low_value_consumption_info.change_log[0,low_value_consumption_info.change_log.length-1]
+    g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log'
+
+    g.column name: model_class.human_attribute_name(:log), attribute: 'log' do |low_value_consumption_info|
+      low_value_consumption_info.log.blank? ? "" : low_value_consumption_info.log[0,low_value_consumption_info.log.length-1]
     end
 
     g.column in_csv: false do |low_value_consumption_info|

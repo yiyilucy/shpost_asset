@@ -1,0 +1,50 @@
+<%- model_class = FixedAssetInventoryDetail -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+<div>
+<%= form_tag('', name: 'form1') %>
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:asset_no) %>:</strong></dt>
+  <dd><%= @fixed_asset_inventory_detail.try :asset_no %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:asset_name) %>:</strong></dt>
+  <dd><%= @fixed_asset_inventory_detail.try :asset_name %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:use_at) %>:</strong></dt>
+  <dd><%= @fixed_asset_inventory_detail.try :use_at %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:unit_id) %>:</strong></dt>
+  <dd><%= @fixed_asset_inventory_detail.unit.blank? ? "" : @fixed_asset_inventory_detail.unit.name %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:branch) %>:</strong></dt>
+  <dd><%= @fixed_asset_inventory_detail.try :branch %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:location) %>:</strong></dt>
+  <dd><%= @fixed_asset_inventory_detail.try :location %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:user) %>:</strong></dt>
+  <dd><%= @fixed_asset_inventory_detail.try :user %></dd>
+</dl>
+</div>
+<div>
+  
+</div>
+<% if @fixed_asset_inventory_detail.inventory_status.eql?"waiting" and @fixed_asset_inventory.status.eql?"doing" %>
+<div>
+  <%= button_tag "匹配", onclick: "if(!confirm('确定匹配?')){return false;} form1.action='/fixed_asset_inventory_details/#{@fixed_asset_inventory_detail.id}/match';form1.submit();", :class => 'btn btn-primary' %>
+  <%= button_tag "不匹配",:class => 'btn btn-primary', :id => "unmatch", :type => "button" %>
+</div>
+<% end %>
+<div id="desc">
+   <%= label_tag 'desc_name', '备注:', class: 'control-group' %>
+   <%= text_field_tag 'desc_content', nil, class: "controls" %>
+   <%= button_tag "确定", onclick: "if(!confirm('确定不匹配?')){return false;} form1.action='/fixed_asset_inventory_details/#{@fixed_asset_inventory_detail.id}/unmatch';form1.submit();", :class => 'btn btn-primary' %>
+</div>
+</form>
+
+<script language="javascript" type="text/javascript"> 
+
+$(document).ready(function(){
+  $("#desc").hide();
+
+  $("#unmatch").click(function() { 
+    $("#desc").show();
+  })
+})
+
+</script>

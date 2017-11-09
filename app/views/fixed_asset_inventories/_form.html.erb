@@ -1,0 +1,68 @@
+<%- model_class = FixedAssetInventory -%>
+<%= form_for @inventory, :html => { :class => 'form-horizontal' } do |f| %>
+  <%= f.error_messages %>
+  <div class="control-group">
+    <%= f.label "盘点单号", :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :no, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :name, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :name, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :start_time, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field  :start_time %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :end_time, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field  :end_time %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :desc, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field  :desc %>
+    </div>
+  </div>
+
+  <div class="control-group"><%= f.label "盘点单位", :class => 'control-label' %></div>
+  <div id="grid1">
+
+  <%= grid(@units_grid) do |g|
+    g.action_column 
+
+    g.column name: model_class.human_attribute_name(:unit) do |unit|
+      unit.name
+    end
+
+  end 
+  %>
+  </div>
+
+  <div class="control-group"><%= f.label "资产归口单位", :class => 'control-label' %></div>
+  <div id="grid2">
+
+  <%= grid(@relevant_departments_grid) do |g|
+    g.action_column 
+
+    g.column name: model_class.human_attribute_name(:unit) do |unit|
+      unit.name
+    end
+
+  end 
+  %>
+  </div>
+
+  <%= f.submit nil, :class => 'btn btn-primary', onclick: "if(!confirm('确定创建?')){return false;}" %>
+  <% if can? :index, FixedAssetInventory %>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+              fixed_asset_inventories_path, :class => 'btn btn-default' %>
+  <% end %>
+<% end %>

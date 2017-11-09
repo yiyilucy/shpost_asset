@@ -11,6 +11,7 @@ class Ability
         can :role, :unitadmin
         can :role, :deviceadmin
         can :role, :accountant
+        can :role, :inventoryadmin
 
         # cannot :role, :superadmin
         cannot [:role, :create, :destroy, :update], User, role: 'superadmin'
@@ -22,9 +23,11 @@ class Ability
         can :read, LowValueConsumptionInfo
         can [:new, :read], Purchase
         can :manage, Sequence
-
+        # can :manage, FixedAssetInventory
+        # can :manage, FixedAssetInventoryDetail
+    end
         
-    elsif user.unitadmin?
+    if user.unitadmin?
     #can :manage, :all
 
         can :manage, Unit, id: user.unit_id
@@ -36,13 +39,14 @@ class Ability
         can :role, :unitadmin
         can :role, :deviceadmin
         can :role, :accountant
+        can :role, :inventoryadmin
         
         # cannot :role, User, role: 'unitadmin'
         # cannot [:create, :destroy, :update], User, role: ['unitadmin', 'superadmin']
         can :update, User, id: user.id
-        
+    end    
 
-    elsif user.deviceadmin?
+    if user.deviceadmin?
         can :read, FixedAssetCatalog
         can :read, LowValueConsumptionCatalog
         can :manage, FixedAssetInfo, unit_id: user.unit_id
@@ -50,23 +54,24 @@ class Ability
         can :manage, Purchase
         cannot [:approve, :decline], Purchase
         can :manage, Unit
+    end
 
-    elsif user.accountant?
+    if user.accountant?
         can :read, FixedAssetCatalog
         can :read, LowValueConsumptionCatalog
         can :read, FixedAssetInfo, unit_id: user.unit_id
         can :read, LowValueConsumptionInfo
         can [:to_do_index, :doing_index, :done_index, :read, :approve, :decline], Purchase
         
-    else
-        cannot :manage, :all
-        #can :update, User, id: user.id
-        cannot :read, User
-        
+    end
+    
+    if user.inventoryadmin?
+        can :manage, FixedAssetInventory
+        can :manage, FixedAssetInventoryDetail
     end
 
 
-    end
+  end
 end
 
 

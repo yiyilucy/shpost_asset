@@ -5,7 +5,7 @@ class Unit < ActiveRecord::Base
   belongs_to :parent, :class_name => 'Unit'
   has_many :children, :class_name => 'Unit',:foreign_key => 'parent_id',:dependent => :destroy
   has_many :fixed_asset_infos, dependent: :destroy
-
+  
   validates_presence_of :name, :short_name, :message => '不能为空'
   validates_uniqueness_of :name, :message => '该单位已存在'
 

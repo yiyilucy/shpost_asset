@@ -1,0 +1,54 @@
+<%- model_class = FixedAssetInfo -%>
+<%= grid(@fixed_asset_infos_grid) do |g|
+    g.column name: model_class.human_attribute_name(:sn), attribute: 'sn'
+
+	  g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name'
+
+    g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no'
+
+    g.column name: model_class.human_attribute_name(:fixed_asset_catalog_id), attribute: 'code', assoc: :fixed_asset_catalog do |fixed_asset_info|
+      fixed_asset_info.fixed_asset_catalog.try :code
+    end
+
+    g.column name: model_class.human_attribute_name(:relevant_unit_id), attribute: 'relevant_unit_id' do |fixed_asset_info|
+      fixed_asset_info.relevant_unit_id.blank? ? "" : Unit.find(fixed_asset_info.relevant_unit_id).name
+    end
+
+    g.column name: model_class.human_attribute_name(:buy_at), attribute: 'buy_at' do |fixed_asset_info|
+      fixed_asset_info.buy_at.blank? ? "" : DateTime.parse(fixed_asset_info.buy_at.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:use_at), attribute: 'use_at' do |fixed_asset_info|
+      fixed_asset_info.use_at.blank? ? "" : DateTime.parse(fixed_asset_info.use_at.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:measurement_unit), attribute: 'measurement_unit'
+
+    g.column name: model_class.human_attribute_name(:amount), attribute: 'amount'
+
+    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum'
+
+    g.column name: model_class.human_attribute_name(:unit_id), attribute: 'name', assoc: :unit do |fixed_asset_info|
+      fixed_asset_info.unit.try :name
+    end
+
+    g.column name: model_class.human_attribute_name(:branch), attribute: 'branch'
+
+    g.column name: model_class.human_attribute_name(:location), attribute: 'location'
+
+    g.column name: model_class.human_attribute_name(:user), attribute: 'user'
+
+    g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log'
+
+    g.column name: model_class.human_attribute_name(:accounting_department), attribute: 'accounting_department'
+
+    g.column name: model_class.human_attribute_name(:status), attribute: 'status' , custom_filter: FixedAssetInfo::STATUS.invert do |fixed_asset_info|
+      fixed_asset_info.status_name
+    end
+
+    g.column name: model_class.human_attribute_name(:print_times), attribute: 'print_times'
+
+
+
+  end 
+%>

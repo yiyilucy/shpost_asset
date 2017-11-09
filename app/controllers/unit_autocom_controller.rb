@@ -9,7 +9,7 @@ class UnitAutocomController < ApplicationController
 	    obj = params[:obj]
 	    # binding.pry
 	    
-	    relevant_units = Unit.where(unit_level: [1,2]).where("units.name like ?","%#{term}%").order(:no).all
+	    relevant_units = Unit.where(unit_level: 2, is_facility_management_unit: true).where("units.name like ?","%#{term}%").order(:no).all
 	      
 	    # binding.pry
 	    render :json => relevant_units.map { |relevant_unit| {:id => relevant_unit.id, :label => relevant_unit.name, :value => relevant_unit.name, :obj => obj_id} }

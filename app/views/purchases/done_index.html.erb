@@ -25,32 +25,24 @@
 
     end
 
-    g.column name: model_class.human_attribute_name(:create_user_id), attribute: 'create_user_id' do |purchase|
-        User.find_by(id: purchase.create_user_id).blank? ? "" : User.find_by(id: purchase.create_user_id).try(:username)
-    end
+    g.column name: model_class.human_attribute_name(:create_user_id), assoc: :create_user, attribute: 'name'
 
-    g.column name: model_class.human_attribute_name(:to_check_user_id), attribute: 'to_check_user_id' do |purchase|
-        User.find_by(id: purchase.to_check_user_id).blank? ? "" : User.find_by(id: purchase.to_check_user_id).try(:username)
-    end
+    g.column name: model_class.human_attribute_name(:to_check_user_id), assoc: :to_check_user, attribute: 'name', table_alias: 'to_check_users_purchases'
 
-    g.column name: model_class.human_attribute_name(:checked_user_id), attribute: 'checked_user_id' do |purchase|
-        User.find_by(id: purchase.checked_user_id).blank? ? "" : User.find_by(id: purchase.checked_user_id).try(:username)
-    end
+    g.column name: model_class.human_attribute_name(:checked_user_id), assoc: :checked_user, attribute: 'name', table_alias: 'checked_users_purchases'
 
-    g.column name: model_class.human_attribute_name(:create_unit_id), attribute: 'create_unit_id' do |purchase|
-        Unit.find_by(id: purchase.create_unit_id).blank? ? "" : Unit.find_by(id: purchase.create_unit_id).try(:name)
-    end
+    g.column name: model_class.human_attribute_name(:create_unit_id), assoc: :create_unit, attribute: 'name'
 
-    g.column name: model_class.human_attribute_name(:manage_unit_id), attribute: 'manage_unit_id' do |purchase|
-        Unit.find_by(id: purchase.manage_unit_id).blank? ? "" : Unit.find_by(id: purchase.manage_unit_id).try(:name)
-    end
+    g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_purchases'
+
+    g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name', table_alias: 'use_units_purchases'
 
     g.column name: model_class.human_attribute_name(:is_send), attribute: 'is_send' do |purchase|
       purchase.is_send_name
     end
 
 
-    g.column name: model_class.human_attribute_name(:name), attribute: 'name'
+    g.column name: model_class.human_attribute_name(:desc), attribute: 'desc'
 
     g.column do |purchase|
       ActiveSupport::SafeBuffer.new << 

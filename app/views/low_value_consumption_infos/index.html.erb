@@ -1,8 +1,14 @@
+<object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0> 
+  <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 pluginspage="install_lodop.exe"></embed>
+</object>
 <%- model_class = LowValueConsumptionInfo -%>
 <div class="page-header">
   <h1>在用低值易耗品信息</h1>
   <div style="float:right">
-  <button class="wg-external-csv-export-button" data-grid-name="low_value_consumption_infos">导出</button>
+  	<%=link_to t('打印'), "/low_value_consumption_infos/print?ids=#{@low_value_consumption_infos.map{|o| o.id if (o.status=='in_use')}.compact.join(",")}", target: '_blank',:class => 'btn btn-xs btn-primary' %>
+  	
+    <button class="wg-external-csv-export-button" data-grid-name="low_value_consumption_infos">导出</button>
   </div>
 </div>
 <%= render :partial => 'low_value_consumption_infos_grid' %>
+

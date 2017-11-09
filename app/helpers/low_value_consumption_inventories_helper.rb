@@ -1,0 +1,2 @@
+module LowValueConsumptionInventoriesHelper
+end

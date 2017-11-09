@@ -5,7 +5,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
   def index
     # binding.pry
     @low_value_consumption_infos_grid = initialize_grid(@low_value_consumption_infos,
-      :order => 'low_value_consumption_infos.sn',
+      :order => 'low_value_consumption_infos.asset_no',
       :order_direction => 'asc', per_page: 50,
       :name => 'purchase_low_value_consumption_infos',
       :enable_export_to_csv => true,

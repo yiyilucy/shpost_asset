@@ -5,33 +5,42 @@
 <div>
    <%= form_tag("/units/update_unit_info", method: "post")%>
    <%= hidden_field_tag('unitid',@unit.id)%>
-   <table>
-    <tr style="height:70px;">
-      <td><%= label_tag(:no, "编号") %></td>
-      <td><%= text_field_tag(:no,@unit.no) %></td>
-	  </tr>
-    <tr style="height:70px;">
-      <td><%= label_tag(:name, "单位名称") %></td>
-      <td><%= text_field_tag(:name,@unit.name) %></td>
-	  </tr>
-    <tr style="height:70px;">
-      <td><%= label_tag(:short_name, "英文缩写") %></td>
-      <td><%= text_field_tag(:short_name,@unit.short_name) %></td>
-	  </tr>
-    <tr style="height:70px;">
-      <td><%= label_tag(:desc, "单位描述") %></td>
-      <td><%= text_field_tag(:desc,@unit.desc) %></td>
-	  </tr>
-    <tr style="height:70px;">
-      <td><%= label_tag(:tcbd_khdh, "商务投递客户编号") %></td>
-      <td><%= text_field_tag(:tcbd_khdh,@unit.tcbd_khdh) %></td>
-	  </tr>
+  <div class="control-group">
+      <%= label_tag(:no, "编号") %>
+      <div class="controls">
+      <%= text_field_tag(:no,@unit.no) %>
+      </div>
+  </div>
+	<div class="control-group">
+      <%= label_tag(:name, "单位名称") %>
+      <div class="controls">
+      <%= text_field_tag(:name,@unit.name) %>
+      </div>
+  </div>
+	<div class="control-group">
+      <%= label_tag(:short_name, "英文缩写") %>
+      <div class="controls">
+      <%= text_field_tag(:short_name,@unit.short_name) %>
+      </div>
+  </div>
+	<div class="control-group">
+      <%= label_tag(:desc, "单位描述") %>
+      <div class="controls">
+      <%= text_field_tag(:desc,@unit.desc) %>
+      </div>
+  </div>
+  <div class="control-group">
+      <%= label_tag(:tcbd_khdh, "商务投递客户编号") %>
+      <div class="controls">
+      <%= text_field_tag(:tcbd_khdh,@unit.tcbd_khdh) %>
+	    </div>
+  </div>
    <% if @unit.unit_level == 2 %>
-    <tr style="height:70px;">
-    <td><%= check_box_tag 'is_facility_management_unit' %>是否为设备管理单位</td>
-    </tr>
+    <div class="control-group">
+    <%= check_box_tag 'is_facility_management_unit' %>是否为设备管理单位
+    </div>
    <% end %>
-  </table>
+  
   <div>
     <%= submit_tag "更新单位管理",:class => 'btn btn-primary' %>
     <%= link_to t('.cancel', :default => t("helpers.links.cancel")),

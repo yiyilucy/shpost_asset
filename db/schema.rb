@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171011044519) do
+ActiveRecord::Schema.define(version: 20171109054333) do
 
   create_table "fixed_asset_catalogs", force: true do |t|
     t.string   "code",             limit: 8, null: false
@@ -26,15 +26,15 @@ ActiveRecord::Schema.define(version: 20171011044519) do
   create_table "fixed_asset_infos", force: true do |t|
     t.string   "sn"
     t.string   "asset_name"
-    t.string   "asset_no",               null: false
-    t.integer  "fixed_asset_catalog_id", null: false
-    t.string   "relevant_department"
+    t.string   "asset_no",                           null: false
+    t.integer  "fixed_asset_catalog_id",             null: false
+    t.integer  "relevant_unit_id",       limit: 255
     t.datetime "buy_at"
     t.datetime "use_at"
     t.string   "measurement_unit"
     t.integer  "amount"
     t.float    "sum"
-    t.integer  "unit_id",                null: false
+    t.integer  "unit_id",                            null: false
     t.string   "branch"
     t.string   "location"
     t.string   "user"
@@ -42,6 +42,58 @@ ActiveRecord::Schema.define(version: 20171011044519) do
     t.string   "accounting_department"
     t.string   "status"
     t.integer  "print_times"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "manage_unit_id"
+  end
+
+  create_table "fixed_asset_inventories", force: true do |t|
+    t.string   "no"
+    t.string   "name"
+    t.string   "desc"
+    t.string   "status"
+    t.integer  "create_user_id"
+    t.integer  "create_unit_id"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "is_lv2_unit",    default: false
+  end
+
+  create_table "fixed_asset_inventory_details", force: true do |t|
+    t.string   "sn"
+    t.string   "asset_name"
+    t.string   "asset_no",                                      null: false
+    t.integer  "fixed_asset_catalog_id",                        null: false
+    t.string   "relevant_unit_id"
+    t.datetime "buy_at"
+    t.datetime "use_at"
+    t.string   "measurement_unit"
+    t.integer  "amount"
+    t.float    "sum"
+    t.integer  "unit_id",                                       null: false
+    t.string   "branch"
+    t.string   "location"
+    t.string   "user"
+    t.string   "change_log"
+    t.string   "accounting_department"
+    t.string   "asset_status"
+    t.integer  "print_times"
+    t.integer  "manage_unit_id"
+    t.integer  "fixed_asset_inventory_id"
+    t.string   "inventory_status"
+    t.boolean  "is_check",                      default: false
+    t.string   "desc"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "fixed_asset_inventory_unit_id"
+  end
+
+  create_table "fixed_asset_inventory_units", force: true do |t|
+    t.integer  "unit_id"
+    t.integer  "fixed_asset_inventory_id"
+    t.string   "status"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -80,6 +132,58 @@ ActiveRecord::Schema.define(version: 20171011044519) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "log"
+  end
+
+  create_table "low_value_consumption_inventories", force: true do |t|
+    t.string   "no"
+    t.string   "name"
+    t.string   "desc"
+    t.string   "status"
+    t.integer  "create_user_id"
+    t.integer  "create_unit_id"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.boolean  "is_lv2_unit",    default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "low_value_consumption_inventory_details", force: true do |t|
+    t.string   "sn"
+    t.string   "asset_name",                                              null: false
+    t.string   "asset_no"
+    t.integer  "low_value_consumption_catalog_id",                        null: false
+    t.integer  "relevant_unit_id"
+    t.datetime "buy_at"
+    t.datetime "use_at"
+    t.string   "measurement_unit"
+    t.float    "sum"
+    t.integer  "use_unit_id"
+    t.string   "branch"
+    t.string   "location"
+    t.string   "user"
+    t.string   "change_log"
+    t.string   "consumption_status"
+    t.integer  "print_times"
+    t.string   "brand_model"
+    t.string   "batch_no"
+    t.integer  "purchase_id"
+    t.integer  "manage_unit_id"
+    t.integer  "low_value_consumption_inventory_id"
+    t.string   "inventory_status"
+    t.boolean  "is_check",                                default: false
+    t.string   "desc"
+    t.integer  "low_value_consumption_inventory_unit_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "low_value_consumption_inventory_units", force: true do |t|
+    t.integer  "unit_id"
+    t.integer  "low_value_consumption_inventory_id"
+    t.string   "status"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "purchases", force: true do |t|

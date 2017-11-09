@@ -1,0 +1,17 @@
+<%= form_for(@low_value_consumption_inventory_detail) do |f| %>
+  <% if @low_value_consumption_inventory_detail.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@low_value_consumption_inventory_detail.errors.count, "error") %> prohibited this low_value_consumption_inventory_detail from being saved:</h2>
+
+      <ul>
+      <% @low_value_consumption_inventory_detail.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

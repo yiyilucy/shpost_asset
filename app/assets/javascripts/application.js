@@ -48,5 +48,59 @@ function ajaxunits() {
   });
 }
 
+var ready;
+var lastMenuId = "";
+ready = function() {
+  //set menu selected
+  $(".mu-a").click(function(){
+    lastMenuId = $(this).parent().parent().parent().attr("id").replace(/menu-group-/,"");
+  });
+  if (lastMenuId != "") {
+    $("#menu-group-" + lastMenuId + " .menu-title").addClass("selected");
+    var parentIdsArray = lastMenuId.split("-");
+    var toDisplayId = parentIdsArray[0];
+    for (var i = 1; i < parentIdsArray.length - 1; i++) {
+      toDisplayId += "-" + parentIdsArray[i];
+      $("#menu-" + toDisplayId).addClass("in");
+    };
+  };
+
+  $("a.showmask").click(function(event) {
+    showMask();
+  });
+
+  $("input.showmask").click(function(event) {
+    showMask();
+  });
+
+  $("button.wg-external-submit-button").click(function(event) {
+    showMask();
+  });
+
+  $("button.wg-external-reset-button").click(function(event) {
+    showMask();
+  });
+
+  $("a.btn#confirm").click(function(event) {
+    // alert("start");
+    // event.preventDefault();
+
+    var ahref = $(this).attr('href');
+    var amethod = $(this).attr('data-method');
+    // alert(ahref);
+    // var a = document.createElement('A');
+    // a.href = ahref;  // 设置相对路径给a
+    // ahref = a.href;  // 此时相对路径已经变成绝对路径
+    alert("已生成");
+
+    // $.get(ahref, function(){
+    //   // alert("get");
+    //   return;
+    // });
+    return;
+  });
+}
+
+
 $(document).ready(ready);
 $(document).on('page:load', ready);

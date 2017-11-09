@@ -1,0 +1,25 @@
+<h1>Listing low_value_consumption_inventory_units</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @low_value_consumption_inventory_units.each do |low_value_consumption_inventory_unit| %>
+      <tr>
+        <td><%= link_to 'Show', low_value_consumption_inventory_unit %></td>
+        <td><%= link_to 'Edit', edit_low_value_consumption_inventory_unit_path(low_value_consumption_inventory_unit) %></td>
+        <td><%= link_to 'Destroy', low_value_consumption_inventory_unit, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Low value consumption inventory unit', new_low_value_consumption_inventory_unit_path %>
