@@ -27,5 +27,15 @@ ready = ->
     changeMonth:true,
     changeYear:true
   });
+  $('#low_value_consumption_inventory_start_time').datepicker({
+    showAnim:"blind",
+    changeMonth:true,
+    changeYear:true
+  });
+  $('#low_value_consumption_inventory_end_time').datepicker({
+    showAnim:"blind",
+    changeMonth:true,
+    changeYear:true
+  });
 $(document).ready(ready)
 $(document).on('page:load', ready)

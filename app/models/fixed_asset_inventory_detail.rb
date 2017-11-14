@@ -5,6 +5,7 @@ class FixedAssetInventoryDetail < ActiveRecord::Base
 	belongs_to :fixed_asset_inventory_unit
 	belongs_to :relevant_unit, class_name: 'Unit'
 	belongs_to :manage_unit, class_name: 'Unit'
+	belongs_to :fixed_asset_info
 
 	INVENTORY_STATUS = { waiting: '待扫描', match: '匹配', unmatch: '不匹配'}
 

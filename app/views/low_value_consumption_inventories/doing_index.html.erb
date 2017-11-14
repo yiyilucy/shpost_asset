@@ -1,0 +1,37 @@
+<%- model_class = LowValueConsumptionInventory -%>
+<div class="page-header">
+  <h1>待处理低值易耗品盘点单</h1>
+</div>
+
+<%= grid(@low_value_consumption_inventories_grid) do |g|
+    g.column name: '盘点单号', attribute: 'no'
+
+    g.column name: model_class.human_attribute_name(:name), attribute: 'name'
+
+    g.column name: model_class.human_attribute_name(:status), attribute: 'status',custom_filter: LowValueConsumptionInventory::STATUS.map {|k, v| [model_class.human_attribute_name("status_#{k}"), v]} do |low_value_consumption_inventory| 
+      low_value_consumption_inventory.status_name
+    end
+
+    g.column name: model_class.human_attribute_name(:create_user_id), assoc: :create_user, attribute: 'name'
+
+    g.column name: model_class.human_attribute_name(:create_unit_id), assoc: :create_unit, attribute: 'name'
+
+    g.column name: model_class.human_attribute_name(:start_time), attribute: 'start_time' do |low_value_consumption_inventory|
+      low_value_consumption_inventory.start_time.blank? ? "" : DateTime.parse(low_value_consumption_inventory.start_time.to_s).strftime('%Y-%m-%d %H:%M:%S').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:end_time), attribute: 'end_time' do |low_value_consumption_inventory|
+      low_value_consumption_inventory.end_time.blank? ? "" : DateTime.parse(low_value_consumption_inventory.end_time.to_s).strftime('%Y-%m-%d %H:%M:%S').to_s
+    end
+
+    g.column do |low_value_consumption_inventory|
+      ActiveSupport::SafeBuffer.new << 
+      (link_to t('.sub_done', :default => t("helpers.links.sub_done")), "/low_value_consumption_inventories/" + low_value_consumption_inventory.id.to_s + "/sub_done", :data => { :confirm => "确定完成?" }, :class => 'btn btn-xs btn-primary' if (can? :sub_done, low_value_consumption_inventory) and (low_value_consumption_inventory.status.eql?"doing") and (low_value_consumption_inventory.low_value_consumption_inventory_units.find_by(unit_id: current_user.unit_id).status.eql?"unfinished") )<< ' ' <<
+      (link_to '盘点单明细',
+                doing_index_low_value_consumption_inventory_low_value_consumption_inventory_details_path(low_value_consumption_inventory), :class => 'btn btn-xs btn-primary' )
+    end
+
+
+    
+  end 
+%>

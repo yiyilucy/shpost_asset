@@ -1,9 +1,10 @@
 <%- model_class = LowValueConsumptionInfo -%>
 <%= grid(@low_value_consumption_infos_grid) do |g|
   # binding.pry
-   g.column name: '', attribute: 'id', in_csv: false do |low_value_consumption_info|
-    check_box_tag("lvcids[]","#{low_value_consumption_info.id}",false) 
-   end
+   # g.column name: '', attribute: 'id', in_csv: false do |low_value_consumption_info|
+   #  check_box_tag("lvcids[]","#{low_value_consumption_info.id}",false) 
+   # end
+    g.action_column select_all_buttons: true
 
     g.column name: model_class.human_attribute_name(:sn), attribute: 'sn'
 

@@ -1,12 +1,6 @@
 ShpostAsset::Application.routes.draw do
   
   
-  
-  resources :low_value_consumption_inventory_details
-
-  resources :low_value_consumption_inventory_units
-
-  resources :low_value_consumption_inventories
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -105,7 +99,11 @@ ShpostAsset::Application.routes.draw do
     collection do
       get 'fixed_asset_info_import'
       post 'fixed_asset_info_import' => 'fixed_asset_infos#fixed_asset_info_import'
+      get 'print'
       # post 'export'
+    end
+    member do 
+      get 'to_scan'
     end
   end
 
@@ -146,7 +144,10 @@ ShpostAsset::Application.routes.draw do
   resources :low_value_consumption_infos do
     collection do
       get 'discard_index'
-      get 'print'
+      get 'print'      
+    end
+    member do 
+      get 'to_scan'
     end
   end
 
@@ -188,7 +189,38 @@ ShpostAsset::Application.routes.draw do
 
       
     end
+  end 
+  
+  resources :low_value_consumption_inventory_details do
+    member do
+      get 'recheck'
+      get 'scan'
+      post 'match'
+      post 'unmatch'
+    end
   end
+
+  resources :low_value_consumption_inventory_units
+
+  resources :low_value_consumption_inventories do 
+    collection do
+      get 'doing_index'
+    end
+
+    member do 
+      get 'cancel'
+      get 'done'
+      get 'sub_done'
+    end
+
+    resources :low_value_consumption_inventory_details, :controller => 'low_value_consumption_inventory_low_value_consumption_inventory_detail' do 
+      collection do
+        get 'doing_index'
+      end
+
+      
+    end
+  end 
 
 
 end

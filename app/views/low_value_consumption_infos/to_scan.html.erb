@@ -1,0 +1,40 @@
+<%- model_class = LowValueConsumptionInfo -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+<div>
+<%= form_tag('', name: 'form1') %>
+<div>
+  <table>
+  <tr>
+    <td><%= label_tag(:asset_no, "资产编号:") %></td>
+    <td><%= @low_value_consumption_info.try :asset_no %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:asset_name, "资产名称:") %></td>
+    <td><%= @low_value_consumption_info.try :asset_name %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:use_at, "领用日期:") %></td>
+    <td><%= @low_value_consumption_info.use_at.blank? ? "" : @low_value_consumption_info.use_at.strftime('%Y-%m-%d').to_s %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:use_unit_id, "使用部门:") %></td>
+    <td><%= @low_value_consumption_info.use_unit_id.blank? ? "" : Unit.find(@low_value_consumption_info.use_unit_id).name %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:branch, "所在网点:") %></td>
+    <td><%= @low_value_consumption_info.try :branch %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:location, "所在地点:") %></td>
+    <td><%= @low_value_consumption_info.try :location %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:user, "使用人:") %></td>
+    <td><%= @low_value_consumption_info.try :user %></td>
+  </tr>
+</table>
+</div>
+</form>
+

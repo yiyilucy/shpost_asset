@@ -68,6 +68,8 @@ class Ability
     if user.inventoryadmin?
         can :manage, FixedAssetInventory
         can :manage, FixedAssetInventoryDetail
+        can :manage, LowValueConsumptionInventory
+        can :manage, LowValueConsumptionInventoryDetail
     end
 
 

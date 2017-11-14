@@ -1,0 +1,61 @@
+<%- model_class = LowValueConsumptionInventoryDetail -%>
+<%= grid(@low_value_consumption_inventory_details_grid) do |g|
+	g.column name: model_class.human_attribute_name(:sn), attribute: 'sn'
+
+    g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no'
+
+    g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name'
+
+    g.column name: model_class.human_attribute_name(:low_value_consumption_catalog_id), attribute: 'code', assoc: :low_value_consumption_catalog do |low_value_consumption_inventory_detail|
+      low_value_consumption_inventory_detail.low_value_consumption_catalog.try :code
+    end
+
+    g.column name: model_class.human_attribute_name(:relevant_unit_id), assoc: :relevant_unit, attribute: 'name'
+
+    g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_low_value_consumption_inventory_details'
+
+    g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name', table_alias: 'use_units_low_value_consumption_inventory_details'
+
+    g.column name: model_class.human_attribute_name(:buy_at), attribute: 'buy_at' do |low_value_consumption_inventory_detail|
+      low_value_consumption_inventory_detail.buy_at.blank? ? "" : DateTime.parse(low_value_consumption_inventory_detail.buy_at.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:use_at), attribute: 'use_at' do |low_value_consumption_inventory_detail|
+      low_value_consumption_inventory_detail.use_at.blank? ? "" : DateTime.parse(low_value_consumption_inventory_detail.use_at.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:measurement_unit), attribute: 'measurement_unit'
+
+    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum'
+
+    g.column name: model_class.human_attribute_name(:branch), attribute: 'branch'
+
+    g.column name: model_class.human_attribute_name(:location), attribute: 'location'
+
+    g.column name: model_class.human_attribute_name(:user), attribute: 'user'
+
+    g.column name: model_class.human_attribute_name(:brand_model), attribute: 'brand_model'
+
+    g.column name: model_class.human_attribute_name(:batch_no), attribute: 'batch_no'
+
+    g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log'
+
+    g.column name: model_class.human_attribute_name(:inventory_status), attribute: 'inventory_status', custom_filter: LowValueConsumptionInventoryDetail::INVENTORY_STATUS.invert do |low_value_consumption_inventory_detail|
+      low_value_consumption_inventory_detail.inventory_status_name
+    end
+
+    g.column name: model_class.human_attribute_name(:print_times), attribute: 'print_times'
+
+    g.column name: model_class.human_attribute_name(:is_check), attribute: 'is_check', filter_type: :boolean do |low_value_consumption_inventory_detail| 
+      low_value_consumption_inventory_detail.is_check_name
+    end
+
+    g.column name: model_class.human_attribute_name(:desc), attribute: 'desc'
+
+    g.column in_csv: false do |low_value_consumption_inventory_detail|
+      ActiveSupport::SafeBuffer.new << 
+      (link_to t('.scan', :default => t("helpers.links.scan")), "/low_value_consumption_inventory_details/" + low_value_consumption_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, low_value_consumption_inventory_detail))
+    end
+
+  end 
+%>

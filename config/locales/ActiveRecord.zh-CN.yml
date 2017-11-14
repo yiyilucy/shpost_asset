@@ -225,6 +225,11 @@ zh-CN:
       short: ! '%b%d日 %H:%M'
     pm: 下午
 
+  url:
+    fixed_asset: "http://localhost:3000/fixed_asset_inventory_details"
+    low_value_consumption: "http://localhost:3000/low_value_consumption_inventory_details"
+    fixed_asset: "http://localhost:3000/fixed_asset_inventory_details"
+
   wice_grid:
     show_filter_tooltip: 显示过滤
     hide_filter_tooltip: 隐藏过滤
@@ -320,6 +325,15 @@ zh-CN:
       fixed_asset_inventory_unit:
         one: 固定资产盘点单位
         other: 固定资产盘点单位
+      low_value_consumption_inventory:
+        one: 低值易耗品信息盘点
+        other: 低值易耗品信息盘点
+      low_value_consumption_inventory_detail:
+        one: 低值易耗品信息盘点明细
+        other: 低值易耗品信息盘点明细
+      low_value_consumption_inventory_unit:
+        one: 低值易耗品信息盘点单位
+        other: 低值易耗品信息盘点单位
     attributes:
       user:
         email: "电子邮件"
@@ -481,6 +495,56 @@ zh-CN:
         status: "状态"
         status_unfinished: "未完成"
         status_finished: "完成"
+      low_value_consumption_inventory:
+        no: "盘点单号"
+        name: "盘点单名称"
+        desc: "备注"
+        status: "状态"
+        create_user_id: "创建人"
+        create_unit_id: "创建单位"
+        start_time: "开始时间"
+        end_time: "结束时间"
+        is_lv2_unit: "是否二级单位创建"
+        status_waiting: "待处理"
+        status_doing: "盘点中"
+        status_canceled: "取消"
+        status_done: "完成"
+      low_value_consumption_inventory_unit:
+        unit_id: "单位"
+        low_value_consumption_inventory_id: "低值易耗品盘点单"
+        status: "状态"
+        status_unfinished: "未完成"
+        status_finished: "完成"
+      low_value_consumption_inventory_detail:
+        sn: "序号"
+        asset_name: "资产名称"
+        asset_no: "资产编号"
+        low_value_consumption_catalog_id: "类别目录"
+        relevant_unit_id: "归口管理部门"
+        buy_at: "购买日期"
+        use_at: "领用日期"
+        measurement_unit: "计量单位"
+        sum: "金额"
+        use_unit_id: "使用部门"
+        branch: "所在网点"
+        location: "所在地点"
+        user: "使用人"
+        change_log: "变动记录"
+        consumption_status: "低值易耗品状态"
+        print_times: "标签打印次数"
+        brand_model: "品牌型号"
+        batch_no: "生产批次"
+        purchase_id: "采购单号"
+        manage_unit_id: "管理单位"
+        low_value_consumption_info_id: "低值易耗品"
+        low_value_consumption_inventory_id: "低值易耗品盘点单"
+        inventory_status: "盘点状态"
+        is_check: "是否复核"
+        desc: "备注"
+        fixed_asset_inventory_unit_id: "盘点单位"
+        inventory_status_waiting: "待扫描"
+        inventory_status_match: "匹配"
+        inventory_status_unmatch: "不匹配"
   menu:
     permission:
       name: "权限管理"
@@ -589,6 +653,9 @@ zh-CN:
             role: :Purchase
     fixed_asset_inventory:    
       name: "固定资产盘点单"    
+      needrole:
+        can: :read
+        role: :FixedAssetInventory
       submenu:    
         new_fixed_asset_inventory:
           name: "创建固定资产盘点单"
@@ -604,13 +671,28 @@ zh-CN:
           needrole:
             can: :read
             role: :FixedAssetInventory
-        # to_do_fixed_asset_inventory:
-        #   name: "参与固定资产盘点单"
-        #   link: "/fixed_asset_inventories/to_do_index"
-        #   need_count: false
-        #   needrole:
-        #     can: :read
-        #     role: :FixedAssetInventory
+
+    low_value_consumption_inventory:    
+      name: "低值易耗品盘点单" 
+      needrole:
+        can: :read
+        role: :LowValueConsumptionInventory   
+      submenu:    
+        new_low_value_consumption_inventory:
+          name: "创建低值易耗品盘点单"
+          link: "/low_value_consumption_inventories"
+          need_count: false
+          needrole:
+            can: :read
+            role: :LowValueConsumptionInventory
+        doing_low_value_consumption_inventory:
+          name: "待处理低值易耗品盘点单"
+          link: "/low_value_consumption_inventories/doing_index"
+          need_count: false
+          needrole:
+            can: :read
+            role: :LowValueConsumptionInventory
+        
 
         # interface_log:
         #   name: "接口信息(info)"

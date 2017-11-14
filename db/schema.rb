@@ -88,6 +88,7 @@ ActiveRecord::Schema.define(version: 20171109054333) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "fixed_asset_inventory_unit_id"
+    t.integer  "fixed_asset_info_id"
   end
 
   create_table "fixed_asset_inventory_units", force: true do |t|
@@ -174,6 +175,7 @@ ActiveRecord::Schema.define(version: 20171109054333) do
     t.boolean  "is_check",                                default: false
     t.string   "desc"
     t.integer  "low_value_consumption_inventory_unit_id"
+    t.integer  "low_value_consumption_info_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

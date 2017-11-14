@@ -1,5 +1,6 @@
 class LowValueConsumptionInfosController < ApplicationController
   load_and_authorize_resource
+  # attr_reader :records
 
   def index
     # @low_value_consumption_infos = LowValueConsumptionInfo.all
@@ -15,6 +16,17 @@ class LowValueConsumptionInfosController < ApplicationController
       :enable_export_to_csv => true,
       :csv_file_name => 'low_value_consumption_infos')
 
+
+    # @records = []
+
+    # binding.pry
+
+    # @low_value_consumption_infos_grid.with_paginated_resultset do |records|
+    #   records.each do |rec| 
+    #     # binding.pry
+    #     @records << rec
+    #   end
+    # end
     export_grid_if_requested
   end
 
@@ -81,10 +93,31 @@ class LowValueConsumptionInfosController < ApplicationController
   end
 
   def print
-    @low_value_consumption_infos = LowValueConsumptionInfo.where("id in (?)", params[:ids].split(",").map(&:to_i))
+    if params[:low_value_consumption_infos] && params[:low_value_consumption_infos][:selected]
+      @selected = params[:low_value_consumption_infos][:selected]
+    end
 
     # binding.pry
   end
+
+  def to_scan
+    @low_value_consumption_info = nil
+    
+    if !params.blank? and !params[:id].blank?
+      @low_value_consumption_info = LowValueConsumptionInfo.find(params[:id].to_i)
+      @low_value_consumption_inventory_detail =LowValueConsumptionInventoryDetail.find_by(low_value_consumption_info_id: @low_value_consumption_info.id)
+
+      if !@low_value_consumption_inventory_detail.blank?
+        @low_value_consumption_inventory = @low_value_consumption_inventory_detail.low_value_consumption_inventory
+
+        respond_to do |format|
+          format.html { redirect_to scan_low_value_consumption_inventory_detail_path(@low_value_consumption_inventory) }
+          format.json { head :no_content }
+        end
+      end
+    end
+  end
+
 
   private
     def set_low_value_consumption_info

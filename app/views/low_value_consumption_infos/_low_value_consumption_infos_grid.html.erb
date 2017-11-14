@@ -1,7 +1,6 @@
 <%- model_class = LowValueConsumptionInfo -%>
-
 <%= grid(@low_value_consumption_infos_grid) do |g|
-
+    g.action_column select_all_buttons: true
     g.column name: model_class.human_attribute_name(:sn), attribute: 'sn'
 
     g.column name: model_class.human_attribute_name(:low_value_consumption_catalog_id), attribute: 'name', assoc: :low_value_consumption_catalog do |low_value_consumption_info|
@@ -59,5 +58,5 @@
       (link_to t('.edit', :default => t("helpers.links.edit")), edit_low_value_consumption_info_path(low_value_consumption_info), :class => 'btn btn-xs btn-primary' if (can? :update, low_value_consumption_info) and (low_value_consumption_info.manage_unit_id == current_user.unit_id ))
     end
   end 
-%>
+%>  
 

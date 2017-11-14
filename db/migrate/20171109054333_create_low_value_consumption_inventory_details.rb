@@ -26,6 +26,8 @@ class CreateLowValueConsumptionInventoryDetails < ActiveRecord::Migration
       t.boolean :is_check, default: false
       t.string :desc
       t.integer :low_value_consumption_inventory_unit_id
+      t.integer :low_value_consumption_info_id
+      
 
       t.timestamps
     end

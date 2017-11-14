@@ -40,10 +40,11 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
     @usename = ''
     @low_value_consumption_catalog = ''
     @lvcids = ""
-
-    if !params[:lvcids].blank?
-      @lvcids = params[:lvcids].compact.join(",")
-      @low_value_consumption_info = LowValueConsumptionInfo.find(params[:lvcids].first.to_i)
+# binding.pry
+ 
+    if !params["purchase_low_value_consumption_infos"].blank? and !params["purchase_low_value_consumption_infos"]["selected"].blank?
+      @lvcids = params["purchase_low_value_consumption_infos"]["selected"].compact.join(",")
+      @low_value_consumption_info = LowValueConsumptionInfo.find(params["purchase_low_value_consumption_infos"]["selected"].first.to_i)
     
       if !@low_value_consumption_info.relevant_unit_id.blank?
         @relename = Unit.find_by(id: @low_value_consumption_info.relevant_unit_id).try(:name)
@@ -131,9 +132,10 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
   end
 
   def batch_destroy
+    # binding.pry
     ActiveRecord::Base.transaction do
-      if !params[:lvcids].blank?
-        params[:lvcids].each do |id|
+      if !params["purchase_low_value_consumption_infos"].blank? and !params["purchase_low_value_consumption_infos"]["selected"].blank?
+        params["purchase_low_value_consumption_infos"]["selected"].each do |id|
           LowValueConsumptionInfo.find(id.to_i).destroy
         end
         flash[:alert] = "批量删除成功"

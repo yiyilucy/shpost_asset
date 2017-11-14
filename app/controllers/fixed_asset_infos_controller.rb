@@ -215,6 +215,31 @@ class FixedAssetInfosController < ApplicationController
     end
   end
 
+  def print
+    if params[:fixed_asset_infos] && params[:fixed_asset_infos][:selected]
+      @selected = params[:fixed_asset_infos][:selected]
+    end
+    # binding.pry
+  end
+
+  def to_scan
+    @fixed_asset_info = nil
+    
+    if !params.blank? and !params[:id].blank?
+      @fixed_asset_info = FixedAssetInfo.find(params[:id].to_i)
+      @fixed_asset_inventory_detail =FixedAssetInventoryDetail.find_by(fixed_asset_info_id: @fixed_asset_info.id)
+
+      if !@fixed_asset_inventory_detail.blank?
+        @fixed_asset_inventory = @fixed_asset_inventory_detail.fixed_asset_inventory
+
+        respond_to do |format|
+          format.html { redirect_to scan_fixed_asset_inventory_detail_path(@fixed_asset_inventory) }
+          format.json { head :no_content }
+        end
+      end
+    end
+  end
+
   # def export()
   #   if current_user.unit.unit_level == 1
   #     @fixed_asset_infos = FixedAssetInfo.all.order(:relevant_department, :manage_unit_id, :asset_no)

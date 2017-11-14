@@ -1,5 +1,5 @@
-<h1>New low_value_consumption_inventory</h1>
-
-<%= render 'form' %>
-
-<%= link_to 'Back', low_value_consumption_inventories_path %>
+<%- model_class = LowValueConsumptionInventory -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => [:'helpers.titles.edit', 'New %{model}'], :model => model_class.model_name.human.titleize %></h1>
+</div>
+<%= render :partial => 'form' %>

@@ -1,0 +1,70 @@
+<%- model_class = LowValueConsumptionInventoryDetail -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+<div>
+<%= form_tag('', name: 'form1') %>
+<div>
+  <table>
+  <tr>
+    <td><%= label_tag(:asset_no, "资产编号:") %></td>
+    <td><%= @low_value_consumption_inventory_detail.try :asset_no %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:asset_name, "资产名称:") %></td>
+    <td><%= @low_value_consumption_inventory_detail.try :asset_name %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:use_at, "领用日期:") %></td>
+    <td><%= @low_value_consumption_inventory_detail.try :use_at %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:use_unit_id, "使用部门:") %></td>
+    <td><%= @low_value_consumption_inventory_detail.use_unit_id.blank? ? "" : Unit.find(@low_value_consumption_inventory_detail.use_unit_id).name %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:branch, "所在网点:") %></td>
+    <td><%= @low_value_consumption_inventory_detail.try :branch %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:location, "所在地点:") %></td>
+    <td><%= @low_value_consumption_inventory_detail.try :location %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:user, "使用人:") %></td>
+    <td><%= @low_value_consumption_inventory_detail.try :user %></td>
+  </tr>
+  
+
+<% if @low_value_consumption_inventory_detail.inventory_status.eql?"waiting" and @low_value_consumption_inventory.status.eql?"doing" %>
+<tr>
+  <td><%= button_tag "匹配", onclick: "if(!confirm('确定匹配?')){return false;} form1.action='/low_value_consumption_inventory_details/#{@low_value_consumption_inventory_detail.id}/match';form1.submit();", :class => 'btn btn-primary' %></td>
+  <td><%= button_tag "不匹配",:class => 'btn btn-primary', :id => "unmatch", :type => "button" %></td>
+</tr>
+<% end %>
+</table>
+<table>
+<tr>
+  <td>
+<div id="desc">
+   <%= label_tag 'desc_name', '备注:', class: 'control-group' %>
+   <%= text_field_tag 'desc_content', nil, class: "controls" %>
+   <%= button_tag "确定", onclick: "if(!confirm('确定不匹配?')){return false;} form1.action='/low_value_consumption_inventory_details/#{@low_value_consumption_inventory_detail.id}/unmatch';form1.submit();", :class => 'btn btn-primary' %>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</form>
+
+<script language="javascript" type="text/javascript"> 
+
+$(document).ready(function(){
+  $("#desc").hide();
+
+  $("#unmatch").click(function() { 
+    $("#desc").show();
+  })
+})
+
+</script>
