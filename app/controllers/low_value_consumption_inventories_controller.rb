@@ -3,14 +3,14 @@ class LowValueConsumptionInventoriesController < ApplicationController
 
   def index
     @low_value_consumption_inventories = LowValueConsumptionInventory.where(create_user_id: current_user.id)
-    @low_value_consumption_inventories_grid = initialize_grid(@low_value_consumption_inventories, order: 'low_value_consumption_inventories.created_at',
+    @low_value_consumption_inventories_grid = initialize_grid(@low_value_consumption_inventories, order: 'lvc_inventories.created_at',
       order_direction: 'desc')
   end
 
   def doing_index
-    @low_value_consumption_inventories = LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("low_value_consumption_inventories.status in (?) and low_value_consumption_inventory_units.unit_id = ? and low_value_consumption_inventories.create_unit_id != ?", ["doing", "canceled", "done"], current_user.unit_id, current_user.unit_id)
+    @low_value_consumption_inventories = LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("lvc_inventories.status in (?) and lvc_inventory_units.unit_id = ? and lvc_inventories.create_unit_id != ?", ["doing", "canceled", "done"], current_user.unit_id, current_user.unit_id)
     
-    @low_value_consumption_inventories_grid = initialize_grid(@low_value_consumption_inventories, order: 'low_value_consumption_inventories.created_at',
+    @low_value_consumption_inventories_grid = initialize_grid(@low_value_consumption_inventories, order: 'lvc_inventories.created_at',
       order_direction: 'desc')
   end
 
@@ -71,7 +71,7 @@ class LowValueConsumptionInventoriesController < ApplicationController
           redirect_to low_value_consumption_inventories_url and return
         end
 # binding.pry
-        if LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("low_value_consumption_inventory_units.unit_id in (?) and low_value_consumption_inventories.start_time <= ? and low_value_consumption_inventories.end_time >= ? and low_value_consumption_inventories.status in (?)", units, DateTime.parse(params[:low_value_consumption_inventory][:start_time]), DateTime.parse(params[:low_value_consumption_inventory][:end_time]), ["waiting", "doing"]).exists?
+        if LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("lvc_inventory_units.unit_id in (?) and lvc_inventories.start_time <= ? and lvc_inventories.end_time >= ? and lvc_inventories.status in (?)", units, DateTime.parse(params[:low_value_consumption_inventory][:start_time]), DateTime.parse(params[:low_value_consumption_inventory][:end_time]), ["waiting", "doing"]).exists?
         # if !lvinventories.blank?
           flash[:alert] = "同一时间同一单位不可重叠盘点"
           redirect_to low_value_consumption_inventories_url and return

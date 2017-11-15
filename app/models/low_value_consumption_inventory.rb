@@ -1,4 +1,5 @@
 class LowValueConsumptionInventory < ActiveRecord::Base
+	self.table_name = "lvc_inventories"
 	has_many :low_value_consumption_inventory_units, dependent: :destroy, inverse_of: :low_value_consumption_inventory, foreign_key: 'lvc_inventory_id'
 	has_many :low_value_consumption_inventory_details, dependent: :destroy, inverse_of: :low_value_consumption_inventory, foreign_key: 'lvc_inventory_id'
 	belongs_to :create_user, class_name: 'User'

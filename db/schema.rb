@@ -135,7 +135,7 @@ ActiveRecord::Schema.define(version: 20171109054333) do
     t.string   "log"
   end
 
-  create_table "low_value_consumption_inventories", force: true do |t|
+  create_table "lvc_inventories", force: true do |t|
     t.string   "no"
     t.string   "name"
     t.string   "desc"
@@ -149,7 +149,7 @@ ActiveRecord::Schema.define(version: 20171109054333) do
     t.datetime "updated_at"
   end
 
-  create_table "low_value_consumption_inventory_details", force: true do |t|
+  create_table "lvc_inventory_details", force: true do |t|
     t.string   "sn"
     t.string   "asset_name",                                    null: false
     t.string   "asset_no"
@@ -180,7 +180,7 @@ ActiveRecord::Schema.define(version: 20171109054333) do
     t.datetime "updated_at"
   end
 
-  create_table "low_value_consumption_inventory_units", force: true do |t|
+  create_table "lvc_inventory_units", force: true do |t|
     t.integer  "unit_id"
     t.integer  "lvc_inventory_id"
     t.string   "status"

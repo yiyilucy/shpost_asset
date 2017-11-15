@@ -1,4 +1,5 @@
 class LowValueConsumptionInventoryDetail < ActiveRecord::Base
+	self.table_name = "lvc_inventory_details"
 	belongs_to :low_value_consumption_inventory, class_name: 'LowValueConsumptionInventory', foreign_key: "lvc_inventory_id"
 	belongs_to :low_value_consumption_catalog, class_name: 'LowValueConsumptionCatalog', foreign_key: "lvc_catalog_id"
 	belongs_to :unit

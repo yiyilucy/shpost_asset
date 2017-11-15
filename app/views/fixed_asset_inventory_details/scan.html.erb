@@ -16,7 +16,7 @@
   </tr>
   <tr>
     <td><%= label_tag(:use_at, "领用日期:") %></td>
-    <td><%= @fixed_asset_inventory_detail.try :use_at %></td>
+    <td><%= @fixed_asset_inventory_detail.use_at.blank? ? "" : @fixed_asset_inventory_detail.use_at.strftime('%Y-%m-%d').to_s %></td>
   </tr>
   <tr>
     <td><%= label_tag(:unit_id, "使用部门:") %></td>

@@ -1,6 +1,6 @@
 class CreateLowValueConsumptionInventories < ActiveRecord::Migration
   def change
-    create_table :low_value_consumption_inventories do |t|
+    create_table :lvc_inventories do |t|
       t.string :no
       t.string :name
       t.string :desc
