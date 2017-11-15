@@ -176,6 +176,20 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
     end
   end
 
+  def print
+    if params[:purchase_low_value_consumption_infos] && params[:purchase_low_value_consumption_infos][:selected]
+      @selected = params[:purchase_low_value_consumption_infos][:selected]
+    else
+      flash[:alert] = "请勾选需要打印的低值易耗品"
+      respond_to do |format|
+        format.html { redirect_to purchase_low_value_consumption_infos_path(@purchase) }
+        format.json { head :no_content }
+      end
+    end
+
+    # binding.pry
+  end
+
 
   private
 

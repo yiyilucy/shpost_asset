@@ -135,7 +135,7 @@ ShpostAsset::Application.routes.draw do
         get 'batch_destroy'
         get 'batch_edit'
         post 'batch_update'
-
+        get 'print'
       end
     end
       
