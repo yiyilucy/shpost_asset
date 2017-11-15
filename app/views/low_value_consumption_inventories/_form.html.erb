@@ -60,9 +60,10 @@
   %>
   </div>
 
-  <%= f.submit nil, :class => 'btn btn-primary', onclick: "if(!confirm('确定创建?')){return false;}" %>
+  <%= f.submit nil, :class => 'btn btn-primary', onclick: "if(!confirm('确定创建?')){return false;}else{check(this);}" %>
   <% if can? :index, LowValueConsumptionInventory %>
     <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
               low_value_consumption_inventories_path, :class => 'btn btn-default' %>
   <% end %>
 <% end %>
+

@@ -8,6 +8,7 @@ class CreateUnit < ActiveRecord::Migration
     	t.string   :tcbd_khdh
     	t.integer  :level
     	t.integer  :parent_id
+        
         t.timestamps
     end
 

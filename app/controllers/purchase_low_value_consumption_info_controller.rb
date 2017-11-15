@@ -32,7 +32,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
     else
       @usename = ''
     end
-    @low_value_consumption_catalog = LowValueConsumptionCatalog.find_by(id: @low_value_consumption_info.low_value_consumption_catalog_id).try(:name)
+    @low_value_consumption_catalog = LowValueConsumptionCatalog.find_by(id: @low_value_consumption_info.lvc_catalog_id).try(:name)
   end
 
   def batch_edit
@@ -52,7 +52,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
       if !@low_value_consumption_info.use_unit_id.blank?
         @usename = Unit.find_by(id: @low_value_consumption_info.use_unit_id).try(:name)
       end
-      @low_value_consumption_catalog = LowValueConsumptionCatalog.find_by(id: @low_value_consumption_info.low_value_consumption_catalog_id).try(:name)
+      @low_value_consumption_catalog = LowValueConsumptionCatalog.find_by(id: @low_value_consumption_info.lvc_catalog_id).try(:name)
     else
       respond_to do |format|
           format.html { redirect_to purchase_low_value_consumption_infos_url, notice: "请勾选低值易耗品" }
@@ -69,7 +69,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
         while amount>0 do 
           # binding.pry
           LowValueConsumptionInfo.create!(sn: params[:low_value_consumption_info][:sn], 
-            low_value_consumption_catalog_id: params[:low_value_consumption_info][:low_value_consumption_catalog_id], 
+            lvc_catalog_id: params[:low_value_consumption_info][:lvc_catalog_id], 
             asset_name: params[:low_value_consumption_info][:asset_name], 
             batch_no: params[:low_value_consumption_info][:batch_no], 
             brand_model: params[:low_value_consumption_info][:brand_model], 
@@ -152,7 +152,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
           @low_value_consumption_info = LowValueConsumptionInfo.find_by(id:id.to_i)
           if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked"
             @low_value_consumption_info.sn = params[:sn]
-            @low_value_consumption_info.low_value_consumption_catalog_id = params[:low_value_consumption_info][:low_value_consumption_catalog_id]
+            @low_value_consumption_info.lvc_catalog_id = params[:low_value_consumption_info][:lvc_catalog_id]
             @low_value_consumption_info.asset_name = params[:asset_name]
             @low_value_consumption_info.batch_no = params[:batch_no]
             @low_value_consumption_info.brand_model = params[:brand_model]
@@ -184,7 +184,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
   end
 
   def low_value_consumption_info_params
-    params.require(:low_value_consumption_info).permit(:asset_name, :low_value_consumption_catalog_id, :relevant_unit_id, :buy_at, :measurement_unit, :sum, :use_unit_id, :branch, :location, :user, :brand_model, :batch_no, :manage_unit_id)
+    params.require(:low_value_consumption_info).permit(:asset_name, :lvc_catalog_id, :relevant_unit_id, :buy_at, :measurement_unit, :sum, :use_unit_id, :branch, :location, :user, :brand_model, :batch_no, :manage_unit_id)
   end
 
 end

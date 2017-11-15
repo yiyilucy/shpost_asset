@@ -71,8 +71,8 @@ class LowValueConsumptionInventoriesController < ApplicationController
           redirect_to low_value_consumption_inventories_url and return
         end
 # binding.pry
-        lvinventories = LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("low_value_consumption_inventory_units.unit_id in (?) and low_value_consumption_inventories.start_time <= ? and low_value_consumption_inventories.end_time >= ? and low_value_consumption_inventories.status in (?)", units, DateTime.parse(params[:low_value_consumption_inventory][:start_time]), DateTime.parse(params[:low_value_consumption_inventory][:end_time]), ["waiting", "doing"])
-        if !lvinventories.blank?
+        if LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("low_value_consumption_inventory_units.unit_id in (?) and low_value_consumption_inventories.start_time <= ? and low_value_consumption_inventories.end_time >= ? and low_value_consumption_inventories.status in (?)", units, DateTime.parse(params[:low_value_consumption_inventory][:start_time]), DateTime.parse(params[:low_value_consumption_inventory][:end_time]), ["waiting", "doing"]).exists?
+        # if !lvinventories.blank?
           flash[:alert] = "同一时间同一单位不可重叠盘点"
           redirect_to low_value_consumption_inventories_url and return
         end
@@ -106,12 +106,12 @@ class LowValueConsumptionInventoriesController < ApplicationController
           
         low_value_consumption_infos.each do |x|
           if @low_value_consumption_inventory.is_lv2_unit
-            inventory_unit_id = LowValueConsumptionInventoryUnit.find_by(low_value_consumption_inventory_id: @low_value_consumption_inventory.id, unit_id: x.use_unit_id).blank? ? nil : LowValueConsumptionInventoryUnit.find_by(low_value_consumption_inventory_id: @low_value_consumption_inventory.id, unit_id: x.use_unit_id).id
+            inventory_unit_id = LowValueConsumptionInventoryUnit.find_by(lvc_inventory_id: @low_value_consumption_inventory.id, unit_id: x.use_unit_id).blank? ? nil : LowValueConsumptionInventoryUnit.find_by(lvc_inventory_id: @low_value_consumption_inventory.id, unit_id: x.use_unit_id).id
           else
-            inventory_unit_id = LowValueConsumptionInventoryUnit.find_by(low_value_consumption_inventory_id: @low_value_consumption_inventory.id, unit_id: x.manage_unit_id).blank? ? nil : LowValueConsumptionInventoryUnit.find_by(low_value_consumption_inventory_id: @low_value_consumption_inventory.id, unit_id: x.manage_unit_id).id
+            inventory_unit_id = LowValueConsumptionInventoryUnit.find_by(lvc_inventory_id: @low_value_consumption_inventory.id, unit_id: x.manage_unit_id).blank? ? nil : LowValueConsumptionInventoryUnit.find_by(lvc_inventory_id: @low_value_consumption_inventory.id, unit_id: x.manage_unit_id).id
           end
 
-          @low_value_consumption_inventory.low_value_consumption_inventory_details.create(sn: x.sn, asset_name: x.asset_name, asset_no: x.asset_no, low_value_consumption_catalog_id: x.low_value_consumption_catalog_id, relevant_unit_id: x.relevant_unit_id, buy_at: x.buy_at, use_at: x.use_at, measurement_unit: x.measurement_unit, sum: x.sum, use_unit_id: x.use_unit_id, branch: x.branch, location: x.location, user: x.user, change_log: x.change_log, consumption_status: x.status, print_times: x.print_times, brand_model: x.brand_model, batch_no: x.batch_no, purchase_id: x.purchase_id, manage_unit_id: x.manage_unit_id, inventory_status: "waiting", low_value_consumption_inventory_unit_id: inventory_unit_id, low_value_consumption_info_id: x.id)
+          @low_value_consumption_inventory.low_value_consumption_inventory_details.create(sn: x.sn, asset_name: x.asset_name, asset_no: x.asset_no, lvc_catalog_id: x.lvc_catalog_id, relevant_unit_id: x.relevant_unit_id, buy_at: x.buy_at, use_at: x.use_at, measurement_unit: x.measurement_unit, sum: x.sum, use_unit_id: x.use_unit_id, branch: x.branch, location: x.location, user: x.user, change_log: x.change_log, consumption_status: x.status, print_times: x.print_times, brand_model: x.brand_model, batch_no: x.batch_no, purchase_id: x.purchase_id, manage_unit_id: x.manage_unit_id, inventory_status: "waiting", lvc_inventory_unit_id: inventory_unit_id, low_value_consumption_info_id: x.id)
         end
 
         

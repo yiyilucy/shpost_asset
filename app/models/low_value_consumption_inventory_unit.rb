@@ -1,6 +1,7 @@
 class LowValueConsumptionInventoryUnit < ActiveRecord::Base
-	belongs_to :low_value_consumption_inventory
-	has_many :low_value_consumption_inventory_details
+	belongs_to :low_value_consumption_inventory, class_name: 'LowValueConsumptionInventory', foreign_key: "lvc_inventory_id"
+	
+	has_many :low_value_consumption_inventory_details, inverse_of: :low_value_consumption_inventory_unit, foreign_key: 'lvc_inventory_unit_id'
 
 	STATUS = { unfinished: '未完成', finished: '完成'}
 

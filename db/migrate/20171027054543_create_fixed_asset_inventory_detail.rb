@@ -24,6 +24,8 @@ class CreateFixedAssetInventoryDetail < ActiveRecord::Migration
       t.string :inventory_status
       t.boolean :is_check, default: false
       t.string :desc
+      t.integer :fixed_asset_inventory_unit_id
+      t.integer :fixed_asset_info_id
 
       t.timestamps
     end

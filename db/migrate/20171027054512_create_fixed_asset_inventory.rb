@@ -9,6 +9,7 @@ class CreateFixedAssetInventory < ActiveRecord::Migration
       t.integer :create_unit_id
       t.datetime :start_time
       t.datetime :end_time
+      t.boolean :is_lv2_unit, default: false
 
       t.timestamps
     end

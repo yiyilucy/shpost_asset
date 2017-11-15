@@ -1,8 +1,8 @@
 class LowValueConsumptionInventoryDetail < ActiveRecord::Base
-	belongs_to :low_value_consumption_inventory
-	belongs_to :low_value_consumption_catalog
+	belongs_to :low_value_consumption_inventory, class_name: 'LowValueConsumptionInventory', foreign_key: "lvc_inventory_id"
+	belongs_to :low_value_consumption_catalog, class_name: 'LowValueConsumptionCatalog', foreign_key: "lvc_catalog_id"
 	belongs_to :unit
-	belongs_to :low_value_consumption_inventory_unit
+	belongs_to :low_value_consumption_inventory_unit, class_name: 'LowValueConsumptionInventoryUnit', foreign_key: "lvc_inventory_unit_id"
 	belongs_to :relevant_unit, class_name: 'Unit'
 	belongs_to :manage_unit, class_name: 'Unit'
 	belongs_to :use_unit, class_name: 'Unit'

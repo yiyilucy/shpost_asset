@@ -4,7 +4,7 @@ class CreateLowValueConsumptionInventoryDetails < ActiveRecord::Migration
       t.string :sn
       t.string :asset_name, :null => false
       t.string :asset_no
-      t.integer :low_value_consumption_catalog_id, :null => false
+      t.integer :lvc_catalog_id, :null => false
       t.integer :relevant_unit_id
       t.datetime :buy_at
       t.datetime :use_at
@@ -21,11 +21,11 @@ class CreateLowValueConsumptionInventoryDetails < ActiveRecord::Migration
       t.string :batch_no
       t.integer :purchase_id
       t.integer :manage_unit_id
-      t.integer :low_value_consumption_inventory_id
+      t.integer :lvc_inventory_id
       t.string :inventory_status
       t.boolean :is_check, default: false
       t.string :desc
-      t.integer :low_value_consumption_inventory_unit_id
+      t.integer :lvc_inventory_unit_id
       t.integer :low_value_consumption_info_id
       
 

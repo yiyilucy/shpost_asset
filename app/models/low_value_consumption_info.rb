@@ -1,5 +1,5 @@
 class LowValueConsumptionInfo < ActiveRecord::Base
-	belongs_to :low_value_consumption_catalog
+	belongs_to :low_value_consumption_catalog, class_name: 'LowValueConsumptionCatalog', foreign_key: "lvc_catalog_id"
 	belongs_to :purchase
 	belongs_to :relevant_unit, class_name: 'Unit'
 	belongs_to :manage_unit, class_name: 'Unit'

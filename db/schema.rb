@@ -56,9 +56,9 @@ ActiveRecord::Schema.define(version: 20171109054333) do
     t.integer  "create_unit_id"
     t.datetime "start_time"
     t.datetime "end_time"
+    t.boolean  "is_lv2_unit",    default: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "is_lv2_unit",    default: false
   end
 
   create_table "fixed_asset_inventory_details", force: true do |t|
@@ -66,7 +66,7 @@ ActiveRecord::Schema.define(version: 20171109054333) do
     t.string   "asset_name"
     t.string   "asset_no",                                      null: false
     t.integer  "fixed_asset_catalog_id",                        null: false
-    t.string   "relevant_unit_id"
+    t.string   "relevant_department"
     t.datetime "buy_at"
     t.datetime "use_at"
     t.string   "measurement_unit"
@@ -85,10 +85,10 @@ ActiveRecord::Schema.define(version: 20171109054333) do
     t.string   "inventory_status"
     t.boolean  "is_check",                      default: false
     t.string   "desc"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "fixed_asset_inventory_unit_id"
     t.integer  "fixed_asset_info_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "fixed_asset_inventory_units", force: true do |t|
@@ -111,9 +111,9 @@ ActiveRecord::Schema.define(version: 20171109054333) do
 
   create_table "low_value_consumption_infos", force: true do |t|
     t.string   "sn"
-    t.string   "asset_name",                       null: false
+    t.string   "asset_name",       null: false
     t.string   "asset_no"
-    t.integer  "low_value_consumption_catalog_id", null: false
+    t.integer  "lvc_catalog_id",   null: false
     t.integer  "relevant_unit_id"
     t.datetime "buy_at"
     t.datetime "use_at"
@@ -151,9 +151,9 @@ ActiveRecord::Schema.define(version: 20171109054333) do
 
   create_table "low_value_consumption_inventory_details", force: true do |t|
     t.string   "sn"
-    t.string   "asset_name",                                              null: false
+    t.string   "asset_name",                                    null: false
     t.string   "asset_no"
-    t.integer  "low_value_consumption_catalog_id",                        null: false
+    t.integer  "lvc_catalog_id",                                null: false
     t.integer  "relevant_unit_id"
     t.datetime "buy_at"
     t.datetime "use_at"
@@ -170,11 +170,11 @@ ActiveRecord::Schema.define(version: 20171109054333) do
     t.string   "batch_no"
     t.integer  "purchase_id"
     t.integer  "manage_unit_id"
-    t.integer  "low_value_consumption_inventory_id"
+    t.integer  "lvc_inventory_id"
     t.string   "inventory_status"
-    t.boolean  "is_check",                                default: false
+    t.boolean  "is_check",                      default: false
     t.string   "desc"
-    t.integer  "low_value_consumption_inventory_unit_id"
+    t.integer  "lvc_inventory_unit_id"
     t.integer  "low_value_consumption_info_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -182,7 +182,7 @@ ActiveRecord::Schema.define(version: 20171109054333) do
 
   create_table "low_value_consumption_inventory_units", force: true do |t|
     t.integer  "unit_id"
-    t.integer  "low_value_consumption_inventory_id"
+    t.integer  "lvc_inventory_id"
     t.string   "status"
     t.datetime "created_at"
     t.datetime "updated_at"

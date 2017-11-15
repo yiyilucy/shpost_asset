@@ -5,7 +5,7 @@ class CreateFixedAssetInfos < ActiveRecord::Migration
       t.string :asset_name
       t.string :asset_no, :null => false
       t.integer :fixed_asset_catalog_id, :null => false
-      t.integer :relevant_department
+      t.string :relevant_department
       t.datetime :buy_at
       t.datetime :use_at
       t.string :measurement_unit
@@ -19,7 +19,7 @@ class CreateFixedAssetInfos < ActiveRecord::Migration
       t.string :accounting_department
       t.string :status
       t.integer :print_times
-
+      
       t.timestamps
     end
   end

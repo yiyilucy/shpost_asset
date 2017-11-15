@@ -6,7 +6,7 @@
 
     g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name'
 
-    g.column name: model_class.human_attribute_name(:low_value_consumption_catalog_id), attribute: 'code', assoc: :low_value_consumption_catalog do |low_value_consumption_inventory_detail|
+    g.column name: model_class.human_attribute_name(:lvc_catalog_id), attribute: 'code', assoc: :low_value_consumption_catalog do |low_value_consumption_inventory_detail|
       low_value_consumption_inventory_detail.low_value_consumption_catalog.try :code
     end
 

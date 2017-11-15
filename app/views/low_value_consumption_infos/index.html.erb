@@ -6,9 +6,13 @@
   <h1>在用低值易耗品信息</h1>
   <%= form_tag('', :method => "get", name: 'form1') do %>
   <div style="float:right">
+  	<% if (can? :update, LowValueConsumptionInfo) %>
+    <%= submit_tag "批量修改",:class => 'btn btn-primary', onclick: "form1.action='low_value_consumption_infos/batch_edit';form1.submit();" %>
+    <% end %>
   	<%= submit_tag "打印",:class => 'btn btn-primary', target: '_blank', onclick: "form1.action='low_value_consumption_infos/print';form1.submit();" %>
   	
     <button class="wg-external-csv-export-button" data-grid-name="low_value_consumption_infos">导出</button>
+
   </div>
 </div>
 <%= render :partial => 'low_value_consumption_infos_grid' %>

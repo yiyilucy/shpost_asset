@@ -144,7 +144,9 @@ ShpostAsset::Application.routes.draw do
   resources :low_value_consumption_infos do
     collection do
       get 'discard_index'
-      get 'print'      
+      get 'print'  
+      get 'batch_edit'
+      post 'batch_update'    
     end
     member do 
       get 'to_scan'

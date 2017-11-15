@@ -76,7 +76,7 @@ class PurchasesController < ApplicationController
             if @purchase.save
               # amount = @purchase.amount
               # while amount>0 do 
-                # LowValueConsumptionInfo.create!(low_value_consumption_catalog_id: params[:purchase][:low_value_consumption_catalog_id], 
+                # LowValueConsumptionInfo.create!(lvc_catalog_id: params[:purchase][:lvc_catalog_id], 
                 #   asset_name: params[:purchase][:asset_name], 
                 #   brand_model: params[:purchase][:brand_model], 
                 #   measurement_unit: params[:purchase][:measurement_unit], 
@@ -117,7 +117,7 @@ class PurchasesController < ApplicationController
           #   if @purchase.is_send
           #     info.update!(relevant_unit_id: params[:purchase][:relevant_unit_id], use_unit_id: params[:purchase][:use_unit_id])
           #   else
-          #     info.update(low_value_consumption_catalog_id: params[:purchase][:low_value_consumption_catalog_id], asset_name: params[:purchase][:asset_name], brand_model: params[:purchase][:brand_model], measurement_unit: params[:purchase][:measurement_unit], sum: params[:purchase][:sum], relevant_unit_id: params[:purchase][:relevant_unit_id], buy_at: params[:purchase][:buy_at], use_unit_id: params[:purchase][:use_unit_id], branch: params[:purchase][:branch], batch_no: params[:purchase][:batch_no])
+          #     info.update(lvc_catalog_id: params[:purchase][:lvc_catalog_id], asset_name: params[:purchase][:asset_name], brand_model: params[:purchase][:brand_model], measurement_unit: params[:purchase][:measurement_unit], sum: params[:purchase][:sum], relevant_unit_id: params[:purchase][:relevant_unit_id], buy_at: params[:purchase][:buy_at], use_unit_id: params[:purchase][:use_unit_id], branch: params[:purchase][:branch], batch_no: params[:purchase][:batch_no])
           #   end
 
           # end

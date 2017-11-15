@@ -95,6 +95,12 @@ class LowValueConsumptionInfosController < ApplicationController
   def print
     if params[:low_value_consumption_infos] && params[:low_value_consumption_infos][:selected]
       @selected = params[:low_value_consumption_infos][:selected]
+    else
+      flash[:alert] = "请勾选需要打印的低值易耗品"
+      respond_to do |format|
+        format.html { redirect_to low_value_consumption_infos_url }
+        format.json { head :no_content }
+      end
     end
 
     # binding.pry
@@ -114,6 +120,53 @@ class LowValueConsumptionInfosController < ApplicationController
           format.html { redirect_to scan_low_value_consumption_inventory_detail_path(@low_value_consumption_inventory) }
           format.json { head :no_content }
         end
+      end
+    end
+  end
+
+  def batch_edit
+    @relename = ''
+    @usename = ''
+    @low_value_consumption_catalog = ''
+    @lvcids = ""
+# binding.pry
+ 
+    if !params["low_value_consumption_infos"].blank? and !params["low_value_consumption_infos"]["selected"].blank?
+      @lvcids = params["low_value_consumption_infos"]["selected"].compact.join(",")
+      @low_value_consumption_info = LowValueConsumptionInfo.find(params["low_value_consumption_infos"]["selected"].first.to_i)
+    
+      if !@low_value_consumption_info.relevant_unit_id.blank?
+        @relename = Unit.find_by(id: @low_value_consumption_info.relevant_unit_id).try(:name)
+      end
+      if !@low_value_consumption_info.use_unit_id.blank?
+        @usename = Unit.find_by(id: @low_value_consumption_info.use_unit_id).try(:name)
+      end
+      @low_value_consumption_catalog = LowValueConsumptionCatalog.find_by(id: @low_value_consumption_info.lvc_catalog_id).try(:name)
+    else
+      respond_to do |format|
+          format.html { redirect_to low_value_consumption_infos_url, notice: "请勾选低值易耗品" }
+          format.json { head :no_content }
+      end
+    end
+  end
+
+  def batch_update
+    ActiveRecord::Base.transaction do
+      # binding.pry
+      if !params[:lvcids].blank?
+        params[:lvcids].split(",").map(&:to_i).each do |id|
+          @low_value_consumption_info = LowValueConsumptionInfo.find_by(id:id.to_i)
+          @low_value_consumption_info.location = params[:location]
+          @low_value_consumption_info.user = params[:user]
+          @low_value_consumption_info.relevant_unit_id = params[:low_value_consumption_info][:relevant_unit_id]
+          @low_value_consumption_info.use_unit_id = params[:low_value_consumption_info][:use_unit_id]
+          @low_value_consumption_info.save
+        end
+        flash[:notice] = "批量修改成功"
+        redirect_to low_value_consumption_infos_path
+      else
+        flash[:alert] = "请勾选低值易耗品"
+        redirect_to low_value_consumption_infos_path
       end
     end
   end

@@ -8,7 +8,7 @@
 
     g.column name: model_class.human_attribute_name(:sn), attribute: 'sn'
 
-    g.column name: model_class.human_attribute_name(:low_value_consumption_catalog_id), attribute: 'name', assoc: :low_value_consumption_catalog do |low_value_consumption_info|
+    g.column name: model_class.human_attribute_name(:lvc_catalog_id), attribute: 'name', assoc: :low_value_consumption_catalog do |low_value_consumption_info|
         low_value_consumption_info.low_value_consumption_catalog.try :name
     end
   

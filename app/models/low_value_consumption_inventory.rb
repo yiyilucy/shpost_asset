@@ -1,6 +1,6 @@
 class LowValueConsumptionInventory < ActiveRecord::Base
-	has_many :low_value_consumption_inventory_units, dependent: :destroy
-	has_many :low_value_consumption_inventory_details, dependent: :destroy
+	has_many :low_value_consumption_inventory_units, dependent: :destroy, inverse_of: :low_value_consumption_inventory, foreign_key: 'lvc_inventory_id'
+	has_many :low_value_consumption_inventory_details, dependent: :destroy, inverse_of: :low_value_consumption_inventory, foreign_key: 'lvc_inventory_id'
 	belongs_to :create_user, class_name: 'User'
 	belongs_to :create_unit, class_name: 'Unit'
 

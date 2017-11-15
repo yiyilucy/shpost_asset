@@ -19,6 +19,6 @@ module ApplicationHelper
 
     def low_value_consumption_catalog_select_autocom(obj_id,obj)
       concat text_field_tag('low_value_consumption_catalog_name',@low_value_consumption_catalog, 'data-autocomplete' => "/unit_autocom/p_autocomplete_low_value_consumption_catalog?objid=#{obj_id}&obj=#{obj}")
-       hidden_field(obj_id.to_sym,"low_value_consumption_catalog_id");
+       hidden_field(obj_id.to_sym,"lvc_catalog_id");
     end
 end

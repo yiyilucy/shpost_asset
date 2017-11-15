@@ -43,7 +43,7 @@ function ajaxunits() {
 
   $('#low_value_consumption_catalog_name').bind('railsAutocomplete.select', function(event, data){
     /* Do something here */
-    var catalogid = "#"+data.item.obj+"_low_value_consumption_catalog_id";
+    var catalogid = "#"+data.item.obj+"_lvc_catalog_id";
     $(catalogid).val(data.item.id);
   });
 }
