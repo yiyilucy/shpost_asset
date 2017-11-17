@@ -6,7 +6,7 @@ class CreateUnit < ActiveRecord::Migration
         t.string   :no
     	t.string   :short_name
     	t.string   :tcbd_khdh
-    	t.integer  :level
+    	t.integer  :unit_level
     	t.integer  :parent_id
         
         t.timestamps

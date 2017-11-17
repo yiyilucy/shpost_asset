@@ -3,14 +3,18 @@ class LowValueConsumptionInfosController < ApplicationController
   # attr_reader :records
 
   def index
-    # @low_value_consumption_infos = LowValueConsumptionInfo.all
-    if current_user.unit.unit_level == 1
+    if current_user.unit.blank?
       @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use").order(:relevant_unit_id, :manage_unit_id, :asset_no)
-    elsif current_user.unit.unit_level == 2 and current_user.unit.is_facility_management_unit
-      @low_value_consumption_infos = LowValueConsumptionInfo.where(relevant_unit_id: current_user.unit_id, status: "in_use").order(:manage_unit_id, :asset_no)
-    elsif current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
-      @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").order(:asset_no)
+    else
+      if current_user.unit.unit_level == 1
+        @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use").order(:relevant_unit_id, :manage_unit_id, :asset_no)
+      elsif current_user.unit.unit_level == 2 and current_user.unit.is_facility_management_unit
+        @low_value_consumption_infos = LowValueConsumptionInfo.where(relevant_unit_id: current_user.unit_id, status: "in_use").order(:manage_unit_id, :asset_no)
+      elsif current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+        @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").order(:asset_no)
+      end
     end
+
     @low_value_consumption_infos_grid = initialize_grid(@low_value_consumption_infos,
       :name => 'low_value_consumption_infos',
       :enable_export_to_csv => true,
@@ -31,14 +35,18 @@ class LowValueConsumptionInfosController < ApplicationController
   end
 
   def discard_index
-    # @low_value_consumption_infos = LowValueConsumptionInfo.all
-    if current_user.unit.unit_level == 1
+    if current_user.unit.blank?
       @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "discard").order(:relevant_unit_id, :manage_unit_id, :asset_no)
-    elsif current_user.unit.unit_level == 2 and current_user.unit.is_facility_management_unit
-      @low_value_consumption_infos = LowValueConsumptionInfo.where(relevant_unit_id: current_user.unit_id, status: "discard").order(:manage_unit_id, :asset_no)
-    elsif current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
-      @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "discard").order(:asset_no)
+    else
+      if current_user.unit.unit_level == 1
+        @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "discard").order(:relevant_unit_id, :manage_unit_id, :asset_no)
+      elsif current_user.unit.unit_level == 2 and current_user.unit.is_facility_management_unit
+        @low_value_consumption_infos = LowValueConsumptionInfo.where(relevant_unit_id: current_user.unit_id, status: "discard").order(:manage_unit_id, :asset_no)
+      elsif current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+        @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "discard").order(:asset_no)
+      end
     end
+    
     @low_value_consumption_infos_grid = initialize_grid(@low_value_consumption_infos,
       :name => 'discard_low_value_consumption_infos',
       :enable_export_to_csv => true,

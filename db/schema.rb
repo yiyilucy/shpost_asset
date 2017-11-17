@@ -66,7 +66,7 @@ ActiveRecord::Schema.define(version: 20171109054333) do
     t.string   "asset_name"
     t.string   "asset_no",                                      null: false
     t.integer  "fixed_asset_catalog_id",                        null: false
-    t.string   "relevant_department"
+    t.integer  "relevant_unit_id"
     t.datetime "buy_at"
     t.datetime "use_at"
     t.string   "measurement_unit"

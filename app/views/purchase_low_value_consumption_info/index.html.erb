@@ -13,7 +13,9 @@
     <% if (can? :update, LowValueConsumptionInfo) and ((@purchase.create_user_id == current_user.id and @purchase.status.eql?"waiting" and !@purchase.is_send)  or (@purchase.manage_unit_id == current_user.unit_id and @purchase.status.eql?"waiting" and @purchase.is_send) or (@purchase.status.eql?"revoked" and @purchase.create_user_id == current_user.id) or (@purchase.status.eql?"declined" and @purchase.is_send and @purchase.manage_unit_id == current_user.unit_id) or (@purchase.status.eql?"declined" and !@purchase.is_send and @purchase.create_user_id == current_user.id) ) %>
     <%= submit_tag "批量修改",:class => 'btn btn-primary', onclick: "form1.action='low_value_consumption_infos/batch_edit';form1.submit();" %>
     <% end %>
+    <% if @purchase.status.eql?"done" %>
     <%= submit_tag "打印",:class => 'btn btn-primary', target: '_blank', onclick: "form1.action='low_value_consumption_infos/print';form1.submit();" %>
+    <% end %>
     <button class="wg-external-csv-export-button" data-grid-name="purchase_low_value_consumption_infos">导出</button>
   </div>
 </div>

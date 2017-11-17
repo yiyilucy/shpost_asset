@@ -2,15 +2,18 @@ class FixedAssetInfosController < ApplicationController
   load_and_authorize_resource
 
   def index
-    # @fixed_asset_infos = FixedAssetInfo.all
-    if current_user.unit.unit_level == 1
-      @fixed_asset_infos = FixedAssetInfo.all.order(:relevant_unit_id, :manage_unit_id, :asset_no)
-    elsif current_user.unit.unit_level == 2 and current_user.unit.is_facility_management_unit
-      @fixed_asset_infos = FixedAssetInfo.where(relevant_unit_id: current_user.unit_id).order(:manage_unit_id, :asset_no)
-    elsif current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
-      @fixed_asset_infos = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).order(:asset_no)
-    end       
-        
+    if current_user.unit.blank?
+      @fixed_asset_infos = FixedAssetInfo.all
+    else
+      if current_user.unit.unit_level == 1
+        @fixed_asset_infos = FixedAssetInfo.all.order(:relevant_unit_id, :manage_unit_id, :asset_no)
+      elsif current_user.unit.unit_level == 2 and current_user.unit.is_facility_management_unit
+        @fixed_asset_infos = FixedAssetInfo.where(relevant_unit_id: current_user.unit_id).order(:manage_unit_id, :asset_no)
+      elsif current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+        @fixed_asset_infos = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).order(:asset_no)
+      end  
+    end     
+# binding.pry        
     @fixed_asset_infos_grid = initialize_grid(@fixed_asset_infos,
       :name => 'fixed_asset_infos',
       :enable_export_to_csv => true,
@@ -218,6 +221,12 @@ class FixedAssetInfosController < ApplicationController
   def print
     if params[:fixed_asset_infos] && params[:fixed_asset_infos][:selected]
       @selected = params[:fixed_asset_infos][:selected]
+    else
+      flash[:alert] = "请勾选需要打印的固定资产"
+      respond_to do |format|
+        format.html { redirect_to fixed_asset_infos_url }
+        format.json { head :no_content }
+      end
     end
     # binding.pry
   end
