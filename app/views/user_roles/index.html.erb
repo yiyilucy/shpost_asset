@@ -22,13 +22,13 @@
     <% @role_groups.each do |x, y| %>
       <tr>
         <td><%= y.first.unit.name %></td>
-        <td><%= y.collect{|z| Role::ROLE[z.role.to_sym]}.to_sentence %></td>
+        <td><%= y.collect{|z| Role::ROLE1[z.role.to_sym]}.to_sentence %></td>
         <td></td>
       </tr>
       <% y.each do |z| %>
       <tr>
         <td></td>
-        <td><%= Role::ROLE[z.role.to_sym] %></td>
+        <td><%= Role::ROLE1[z.role.to_sym] %></td>
         <% if can? :role, @user%>
         <td><%= link_to t('.destroy', :default => t("helpers.links.destroy")),
               user_role_path(@user, z),

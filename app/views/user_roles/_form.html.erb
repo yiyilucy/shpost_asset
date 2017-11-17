@@ -10,7 +10,11 @@
   <div class="control-group">
     <%= f.label :role, :class => 'control-label' %>
     <div class="controls">
-      <%= f.select(:role, Role::ROLE.invert) %>
+      <% if current_user.unit.blank? or current_user.unit.unit_level == 1 %>
+      <%= f.select(:role, Role::ROLE1.invert) %>
+      <% else %>
+      <%= f.select(:role, Role::ROLE2.invert) %>
+      <% end %>
     </div>
   </div>
 

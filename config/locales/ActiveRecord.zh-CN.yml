@@ -620,7 +620,10 @@ zh-CN:
             can: :read
             role: :LowValueConsumptionInfo
     purchases:
-      name: "采购单"    
+      name: "采购单"  
+      needrole:
+        can: :read
+        role: :Purchase  
       submenu:
         new_purchase:
           name: "创建采购单"

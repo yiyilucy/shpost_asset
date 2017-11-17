@@ -12,6 +12,31 @@ class Ability
         can :role, :deviceadmin
         can :role, :accountant
         can :role, :inventoryadmin
+        can :role, :sgsadmin
+
+        # cannot :role, :superadmin
+        cannot [:role, :create, :destroy, :update], User, role: 'superadmin'
+        can :update, User, id: user.id
+
+        # can :manage, FixedAssetCatalog
+        # can :manage, LowValueConsumptionCatalog
+        # can :read, FixedAssetInfo
+        # can :read, LowValueConsumptionInfo
+        # can [:new, :read], Purchase
+        can :manage, Sequence
+        # can :manage, FixedAssetInventory
+        # can :manage, FixedAssetInventoryDetail
+    end
+
+    if user.sgsadmin?
+        can :manage, User
+        can :manage, Unit
+        can :manage, UserLog
+        can :manage, Role
+        can :role, :unitadmin
+        can :role, :deviceadmin
+        can :role, :accountant
+        can :role, :inventoryadmin
 
         # cannot :role, :superadmin
         cannot [:role, :create, :destroy, :update], User, role: 'superadmin'
@@ -20,11 +45,13 @@ class Ability
         can :manage, FixedAssetCatalog
         can :manage, LowValueConsumptionCatalog
         can :read, FixedAssetInfo
-        can :read, LowValueConsumptionInfo
-        can [:new, :read], Purchase
+        can [:read, :discard_index], LowValueConsumptionInfo
+        # can [:new, :read], Purchase
         can :manage, Sequence
-        # can :manage, FixedAssetInventory
-        # can :manage, FixedAssetInventoryDetail
+        can :manage, FixedAssetInventory
+        can :manage, FixedAssetInventoryDetail
+        can :manage, LowValueConsumptionInventory
+        can :manage, LowValueConsumptionInventoryDetail
     end
         
     if user.unitadmin?
@@ -36,6 +63,7 @@ class Ability
 
         can :manage, Role
         cannot :role, User, role: 'superadmin'
+        cannot :role, User, role: 'sgsadmin'
         can :role, :unitadmin
         can :role, :deviceadmin
         can :role, :accountant

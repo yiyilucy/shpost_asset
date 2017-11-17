@@ -44,7 +44,7 @@ class UnitsController < ApplicationController
   # POST /units
   # POST /units.json
   def create
-    # binding.pry
+    binding.pry
     if !params["parentid"].blank?
       parent = Unit.find_by(id:params["parentid"].to_i)
       @unit.parent_id = parent.id
