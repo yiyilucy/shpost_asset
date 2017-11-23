@@ -9,7 +9,12 @@ class UnitsController < ApplicationController
     @current_id = nil
     @current_level = nil
     if params[:id].blank?
-      @units_grid = initialize_grid(Unit.where(unit_level:[1,2]).order(:no))
+      if current_user.unit.blank? or [0, 1].include?current_user.unit.unit_level
+        @units_grid = initialize_grid(Unit.where(unit_level:[1,2]).order(:no))
+      else
+        lv3units = Unit.where(parent_id: current_user.unit_id).select(:id)
+        @units_grid = initialize_grid(Unit.where("parent_id = ? or id = ? or parent_id in (?)", current_user.unit_id, current_user.unit_id, lv3units).order(:unit_level, :no))
+      end
     else
       @current_id = params[:id].to_i
       @current_level = Unit.find(@current_id).unit_level
@@ -44,11 +49,17 @@ class UnitsController < ApplicationController
   # POST /units
   # POST /units.json
   def create
-    binding.pry
+    @unit = Unit.new
+    # binding.pry
     if !params["parentid"].blank?
       parent = Unit.find_by(id:params["parentid"].to_i)
       @unit.parent_id = parent.id
       @unit.unit_level = parent.unit_level+1
+      @unit.no = params[:unit][:no]
+      @unit.name = params[:unit][:name]
+      @unit.short_name = params[:unit][:short_name]
+      @unit.desc = params[:unit][:desc]
+      @unit.tcbd_khdh = params[:unit][:tcbd_khdh]
 
       if !params["checkbox"].blank? and !params["checkbox"]["is_facility_management_unit"].blank?
         is_facility_management_unit = params["checkbox"]["is_facility_management_unit"]

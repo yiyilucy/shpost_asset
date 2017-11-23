@@ -1,6 +1,7 @@
 <%- model_class = FixedAssetInfo -%>
 <div class="page-header">
   <h1><%=t '.title', :default => model_class.model_name.human %></h1>
+</div> 
   <%= form_tag('', :method => "get", name: 'form1') do %>
   <div style="float:right">
     <% if can? :fixed_asset_info_import, FixedAssetInfo %>
@@ -9,7 +10,7 @@
     <%= submit_tag "打印",:class => 'btn btn-primary', target: '_blank', onclick: "form1.action='fixed_asset_infos/print';form1.submit();" %>
     <button class="wg-external-csv-export-button" data-grid-name="fixed_asset_infos">导出</button>
   </div>
-</div>  
+ 
 
 <%= render partial: 'fixed_asset_infos_grid' %>
 

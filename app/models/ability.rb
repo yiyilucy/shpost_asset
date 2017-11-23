@@ -44,8 +44,8 @@ class Ability
 
         can :manage, FixedAssetCatalog
         can :manage, LowValueConsumptionCatalog
-        can :read, FixedAssetInfo
-        can [:read, :discard_index], LowValueConsumptionInfo
+        can [:read, :print], FixedAssetInfo
+        can [:read, :discard_index, :print], LowValueConsumptionInfo
         # can [:new, :read], Purchase
         can :manage, Sequence
         can :manage, FixedAssetInventory
@@ -57,9 +57,9 @@ class Ability
     if user.unitadmin?
     #can :manage, :all
 
-        can :manage, Unit, id: user.unit_id
+        can :manage, Unit
 
-        can :manage, User, unit_id: user.unit_id
+        can :manage, User
 
         can :manage, Role
         cannot :role, User, role: 'superadmin'
