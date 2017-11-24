@@ -46,6 +46,10 @@
 
     g.column name: model_class.human_attribute_name(:user), attribute: 'user' 
 
+    g.column name: model_class.human_attribute_name(:discard_at), attribute: 'discard_at' do |low_value_consumption_info|
+      low_value_consumption_info.discard_at.blank? ? "" : DateTime.parse(low_value_consumption_info.discard_at.to_s).strftime('%Y-%m-%d').to_s
+    end
+
     g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log'
 
     g.column name: model_class.human_attribute_name(:log), attribute: 'log' do |low_value_consumption_info|

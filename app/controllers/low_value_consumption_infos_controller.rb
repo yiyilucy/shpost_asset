@@ -152,7 +152,7 @@ class LowValueConsumptionInfosController < ApplicationController
       @low_value_consumption_catalog = LowValueConsumptionCatalog.find_by(id: @low_value_consumption_info.lvc_catalog_id).try(:name)
     else
       respond_to do |format|
-          format.html { redirect_to low_value_consumption_infos_url, notice: "请勾选低值易耗品" }
+          format.html { redirect_to low_value_consumption_infos_url, alert: "请勾选低值易耗品" }
           format.json { head :no_content }
       end
     end
@@ -168,6 +168,7 @@ class LowValueConsumptionInfosController < ApplicationController
           @low_value_consumption_info.user = params[:user]
           @low_value_consumption_info.relevant_unit_id = params[:low_value_consumption_info][:relevant_unit_id]
           @low_value_consumption_info.use_unit_id = params[:low_value_consumption_info][:use_unit_id]
+          @low_value_consumption_info.update log: (@low_value_consumption_info.log.blank? ? "" : @low_value_consumption_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"低值易耗品信息批量修改" + ","
           @low_value_consumption_info.save
         end
         flash[:notice] = "批量修改成功"
@@ -176,6 +177,15 @@ class LowValueConsumptionInfosController < ApplicationController
         flash[:alert] = "请勾选低值易耗品"
         redirect_to low_value_consumption_infos_path
       end
+    end
+  end
+
+  def discard
+    @low_value_consumption_info.update status: "discard", discard_at: Time.now, log: (@low_value_consumption_info.log.blank? ? "" : @low_value_consumption_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"低值易耗品信息报废" + ","
+
+    respond_to do |format|
+      format.html { redirect_to low_value_consumption_infos_url }
+      format.json { head :no_content }
     end
   end
 

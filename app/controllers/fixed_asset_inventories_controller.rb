@@ -62,9 +62,9 @@ class FixedAssetInventoriesController < ApplicationController
       # end
 # binding.pry
       if current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
-        fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id in (?)", relevant_departments, units)
+        fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id in (?) and fixed_asset_infos.status = ?", relevant_departments, units, "in_use")
       else
-        fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id in (?) or fixed_asset_infos.manage_unit_id in (?))", relevant_departments, units, units)
+        fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id in (?) or fixed_asset_infos.manage_unit_id in (?)) and fixed_asset_infos.status = ?", relevant_departments, units, units, "in_use")
       end
 
       if fixed_asset_infos.blank?
@@ -101,11 +101,11 @@ class FixedAssetInventoriesController < ApplicationController
 
         Unit.where(id: units).each do |x|
           if @fixed_asset_inventory.is_lv2_unit
-            if !FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id = ?", relevant_departments, x.id).blank?
+            if !FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id = ? and fixed_asset_infos.status = ?", relevant_departments, x.id, "in_use").blank?
               @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: x.id, status: "unfinished")
             end
           else
-            if !FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id = ? or fixed_asset_infos.manage_unit_id = ?)", relevant_departments, x.id, x.id).blank?
+            if !FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id = ? or fixed_asset_infos.manage_unit_id = ?) and fixed_asset_infos.status = ?", relevant_departments, x.id, x.id, "in_use").blank?
               @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: x.id, status: "unfinished")
             end
           end
@@ -219,6 +219,8 @@ class FixedAssetInventoriesController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  
 
   private
     def set_fixed_asset_inventory

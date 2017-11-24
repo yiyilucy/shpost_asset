@@ -55,9 +55,9 @@ class LowValueConsumptionInventoriesController < ApplicationController
       
 # binding.pry
       if current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
-        low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id in (?)", relevant_departments, units)
+        low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id in (?) and low_value_consumption_infos.status = ?", relevant_departments, units, "in_use")
       else
-        low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id in (?) or low_value_consumption_infos.manage_unit_id in (?))", relevant_departments, units, units)
+        low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id in (?) or low_value_consumption_infos.manage_unit_id in (?)) and low_value_consumption_infos.status = ?", relevant_departments, units, units, "in_use")
       end
 
       if low_value_consumption_infos.blank?
@@ -94,11 +94,11 @@ class LowValueConsumptionInventoriesController < ApplicationController
 
         Unit.where(id: units).each do |x|
           if @low_value_consumption_inventory.is_lv2_unit
-            if !LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id = ?", relevant_departments, x.id).blank?
+            if !LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id = ? and low_value_consumption_infos.status = ?", relevant_departments, x.id, "in_use").blank?
               @low_value_consumption_inventory.low_value_consumption_inventory_units.create(unit_id: x.id, status: "unfinished")
             end
           else
-            if !LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id = ? or low_value_consumption_infos.manage_unit_id = ?)", relevant_departments, x.id, x.id).blank?
+            if !LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id = ? or low_value_consumption_infos.manage_unit_id = ?) and low_value_consumption_infos.status = ?", relevant_departments, x.id, x.id, "in_use").blank?
               @low_value_consumption_inventory.low_value_consumption_inventory_units.create(unit_id: x.id, status: "unfinished")
             end
           end
@@ -197,6 +197,8 @@ class LowValueConsumptionInventoriesController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  
 
   private
     def set_low_value_consumption_inventory

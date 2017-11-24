@@ -55,7 +55,8 @@
 
     g.column in_csv: false do |low_value_consumption_info|
       ActiveSupport::SafeBuffer.new << 
-      (link_to t('.edit', :default => t("helpers.links.edit")), edit_low_value_consumption_info_path(low_value_consumption_info), :class => 'btn btn-xs btn-primary' if (can? :update, low_value_consumption_info) and (low_value_consumption_info.manage_unit_id == current_user.unit_id ))
+      (link_to t('.edit', :default => t("helpers.links.edit")), edit_low_value_consumption_info_path(low_value_consumption_info), :class => 'btn btn-xs btn-primary' if (can? :update, low_value_consumption_info) and (low_value_consumption_info.manage_unit_id == current_user.unit_id ))<< ' ' <<
+      (link_to '报废', "/low_value_consumption_infos/" + low_value_consumption_info.id.to_s + "/discard", :data => { :confirm => "确定报废?" }, :class => 'btn btn-xs btn-primary' if (can? :discard, low_value_consumption_info) and (low_value_consumption_info.status.eql?"in_use") )
     end
   end 
 %>  

@@ -41,7 +41,7 @@
   <% end %>
 
   <div class="form-actions">
-    <%= f.submit nil, :class => 'btn btn-primary' %>
+    <%= f.submit nil, :class => 'btn btn-primary', onclick: "if($('#user_email').val() == ''){ alert('请输入电子邮件'); return false;}; " %>
     <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
                 unit_users_path(@unit), :class => 'btn' %>
   </div>

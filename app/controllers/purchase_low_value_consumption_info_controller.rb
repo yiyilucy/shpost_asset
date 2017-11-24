@@ -55,7 +55,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
       @low_value_consumption_catalog = LowValueConsumptionCatalog.find_by(id: @low_value_consumption_info.lvc_catalog_id).try(:name)
     else
       respond_to do |format|
-          format.html { redirect_to purchase_low_value_consumption_infos_url, notice: "请勾选低值易耗品" }
+          format.html { redirect_to purchase_low_value_consumption_infos_url, alert: "请勾选低值易耗品" }
           format.json { head :no_content }
       end
     end
@@ -138,7 +138,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
         params["purchase_low_value_consumption_infos"]["selected"].each do |id|
           LowValueConsumptionInfo.find(id.to_i).destroy
         end
-        flash[:alert] = "批量删除成功"
+        flash[:notice] = "批量删除成功"
       end
     end
     redirect_to purchase_low_value_consumption_infos_path(@purchase)
@@ -167,7 +167,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
           @low_value_consumption_info.use_unit_id = params[:low_value_consumption_info][:use_unit_id]
           @low_value_consumption_info.save
         end
-        flash[:alert] = "批量修改成功"
+        flash[:notice] = "批量修改成功"
         redirect_to purchase_low_value_consumption_infos_path(@purchase)
       else
         flash[:alert] = "请勾选低值易耗品"

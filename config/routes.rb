@@ -150,6 +150,7 @@ ShpostAsset::Application.routes.draw do
     end
     member do 
       get 'to_scan'
+      get 'discard'
     end
   end
 

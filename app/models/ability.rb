@@ -88,7 +88,7 @@ class Ability
         can :read, FixedAssetCatalog
         can :read, LowValueConsumptionCatalog
         can :read, FixedAssetInfo, unit_id: user.unit_id
-        can :read, LowValueConsumptionInfo
+        can [:read, :discard_index], LowValueConsumptionInfo
         can [:to_do_index, :doing_index, :done_index, :read, :approve, :decline], Purchase
         
     end

@@ -427,6 +427,7 @@ zh-CN:
         status_revoked: "撤回"
         status_discard: "报废"
         log: "日志"
+        discard_at: "报废日期"
       purchase:
         no: "采购单号"
         name: "采购单名称"
