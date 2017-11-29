@@ -290,6 +290,17 @@ background-color: #0099CC;
     float: left;
     margin-bottom: 12px;
 }
+/*@media (max-width: 767px) {
+    .header-container {
+        display: none;
+    }
+    .main-container .container {
+        margin: 0 auto;
+    }
+    .main-container .left-slider {
+        display: none;
+    }
+}*/
 /*! normalize.css v3.0.0 | MIT License | git.io/normalize */
 html {
   font-family: sans-serif;
