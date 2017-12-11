@@ -92,7 +92,9 @@ class LowValueConsumptionCatalogsController < ApplicationController
 
             if !ori_catalogs.blank?
               ori_catalogs.each do |key,value|
-                LowValueConsumptionCatalog.find_by(code:key).delete
+                if !LowValueConsumptionCatalog.where(code:key).blank? and LowValueConsumptionCatalog.find_by(code:key).low_value_consumption_infos.blank?
+                  LowValueConsumptionCatalog.find_by(code:key).delete
+                end
               end
             end
 

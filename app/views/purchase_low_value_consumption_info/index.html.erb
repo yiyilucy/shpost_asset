@@ -1,7 +1,7 @@
 <%- model_class = LowValueConsumptionInfo -%>
 <div class="page-header">
   <h1><%=t '.title', :default => model_class.model_name.human%></h1>
-</div>
+
   <%= form_tag('', :method => "get", name: 'form1') do %>
   <div style="float:right">
     <% if (can? :new, LowValueConsumptionInfo) and ((@purchase.status.eql?"waiting" and !@purchase.is_send and @purchase.create_user_id == current_user.id) or (@purchase.status.eql?"revoked" and @purchase.create_user_id == current_user.id) ) %>
@@ -24,3 +24,4 @@
 <%= render :partial => 'purchase_low_value_consumption_infos_grid' %>
 
 <%end %>
+</div>

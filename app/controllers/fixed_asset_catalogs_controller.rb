@@ -96,7 +96,9 @@ class FixedAssetCatalogsController < ApplicationController
 
             if !ori_catalogs.blank?
               ori_catalogs.each do |key,value|
-                FixedAssetCatalog.find_by(code:key).delete
+                if !FixedAssetCatalog.where(code:key).blank? and FixedAssetCatalog.find_by(code:key).fixed_asset_infos.blank?
+                  FixedAssetCatalog.find_by(code:key).delete
+                end
               end
             end
 

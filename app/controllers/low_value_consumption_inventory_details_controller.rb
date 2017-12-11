@@ -55,8 +55,6 @@ class LowValueConsumptionInventoryDetailsController < ApplicationController
         end
       end
     end
-    
-    
   end
 
   def scan
@@ -98,6 +96,52 @@ class LowValueConsumptionInventoryDetailsController < ApplicationController
       format.html { redirect_to doing_index_low_value_consumption_inventory_low_value_consumption_inventory_details_path(@low_value_consumption_inventory) }
       format.json { head :no_content }
     end
+  end
+
+  def import
+    @low_value_consumption_inventory_detail = nil
+    @low_value_consumption_inventory = nil
+    @fname = nil
+
+    unless request.get?
+      if !params.blank? and !params[:id].blank?
+        @low_value_consumption_inventory_detail = LowValueConsumptionInventoryDetail.find(params[:id].to_i)
+        if !@low_value_consumption_inventory_detail.blank?
+          @low_value_consumption_inventory = @low_value_consumption_inventory_detail.low_value_consumption_inventory 
+                    
+          if img_file = low_value_consumpriton_info_img_upload_path(params[:file], @low_value_consumption_inventory_detail)
+            flash[:notice] = "上传成功!!"
+            if img_file.blank?
+              flash[:error] = "上传失败！!"
+            else
+              if LvcImg.find_by(lvc_inventory_detail_id: params[:id]).blank?
+                LvcImg.create(lvc_inventory_detail_id: params[:id], low_value_consumption_info_id: @low_value_consumption_inventory_detail.low_value_consumption_info_id, img_url: ("/" + img_file.split(/\/public\//).last))
+              else
+                LvcImg.find_by(lvc_inventory_detail_id: params[:id]).update img_url: ("/" + img_file.split(/\/public\//).last)
+              end
+            end
+          end
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.html { redirect_to scan_low_value_consumption_inventory_detail_path(@low_value_consumption_inventory_detail) }
+      format.json { head :no_content }
+    end           
+  end
+
+  def low_value_consumpriton_info_img_upload_path(file, inventory_detail)
+    fname = Digest::MD5.hexdigest(inventory_detail.asset_name + "_" + inventory_detail.asset_no) + ".jpg"
+    direct = "#{Rails.root}/public/shpost_asset/low_value_consumption_info/"
+    @filename = "#{Time.now.to_f}_#{fname}"
+    file_path = direct + @filename
+    # binding.pry 
+    File.open(file_path, "wb") do |f|
+      f.write(file.read)
+    end
+    file_path
+    
   end
 
   

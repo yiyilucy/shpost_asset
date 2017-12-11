@@ -4,21 +4,23 @@
   <h1><%=title%></h1>
   <table>
     <tr>
-      <%  if !@current_id.blank? and !@current_level.blank? %>
+      <% current_unit_level = current_user.unit.blank? ? 0 : current_user.unit.unit_level %>
+      <%  if !@current_id.blank? and !@current_level.blank? and (current_unit_level == 0 or current_unit_level == 1) %>
       <td>
       <%=  link_to(Unit.where(unit_level:1).first.try(:name),unit_path(Unit.find_by(unit_level:1).id),:style=>"text-decoration:underline")  %>
+      <%= " -> " %>
       </td>    
       <% end %>
       <% if @current_level == 2 %>
       <td>
-        <%= " -> " %>
+        
         <%= link_to(Unit.find_by(id:@current_id).try(:name),unit_path(@current_id),:style=>"text-decoration:underline") %>
       </td>
       <% end %>
       <% if @current_level == 3 %>
       <% if !Unit.find_by(id:@current_id).parent.blank? %>
       <td>
-        <%= " -> " %>
+        
         <%= link_to(Unit.find_by(id:@current_id).parent.try(:name),unit_path(Unit.find_by(id:@current_id).parent.id),:style=>"text-decoration:underline") %>
       </td>
       <td>

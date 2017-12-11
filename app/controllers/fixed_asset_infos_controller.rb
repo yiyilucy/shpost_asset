@@ -55,7 +55,7 @@ class FixedAssetInfosController < ApplicationController
       if file = upload_fixed_asset_info(params[:file]['file'])       
         ActiveRecord::Base.transaction do
           begin
-            ori_infos = FixedAssetInfo.group(:asset_no).order(:asset_no).size
+            ori_infos = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).group(:asset_no).order(:asset_no).size
             sheet_error = []
             rowarr = [] 
             instance=nil
@@ -69,29 +69,45 @@ class FixedAssetInfosController < ApplicationController
               instance= Roo::CSV.new(file)
             end
             instance.default_sheet = instance.sheets.first
+            title_row = instance.row(7)
+            sn_index = title_row.index("资产序列号")
+            asset_name_index = title_row.index("资产名称")
+            asset_no_index = title_row.index("资产编号")
+            catalog_name_index = title_row.index("资产类别名称")
+            catalog_code_index = title_row.index("资产类别编号")
+            relevant_department_index = title_row.index("归属管理")
+            use_at_index = title_row.index("启用日期")
+            amount_index = title_row.index("数量")
+            sum_index = title_row.index("原值")
+            unit_name_index = title_row.index("使用部门")
+            location_index = title_row.index("[存放地点]")
+            user_index = title_row.index("资产使用人")
+            accounting_department_index = title_row.index("核算部门")
             
-            4.upto(instance.last_row) do |line|
+            
+            8.upto(instance.last_row) do |line|
               # binding.pry
               rowarr = instance.row(line)
               if (rowarr[0].blank? and rowarr[1].blank?) or rowarr[0].eql?"合计"
                 break
               end
-              sn = rowarr[0].blank? ? "" : rowarr[0].to_s.split('.0')[0]
-              asset_name = to_string(rowarr[1])
-              asset_no = rowarr[2].blank? ? "" : rowarr[2].to_s.split('.0')[0]
-              catalog_name = to_string(rowarr[3])
-              catalog_code = rowarr[4].blank? ? "" : rowarr[4].to_s.split('.0')[0]
-              relevant_department =to_string(rowarr[5])
-              buy_at = rowarr[6].blank? ? nil : DateTime.parse(rowarr[6].to_s).strftime('%Y-%m-%d')
-              use_at = rowarr[7].blank? ? nil : DateTime.parse(rowarr[7].to_s).strftime('%Y-%m-%d')
-              measurement_unit = to_string(rowarr[8])
-              amount = rowarr[9].to_i
-              sum = rowarr[10].to_f
-              unit_name = to_string(rowarr[11])
-              branch = to_string(rowarr[12])
-              location = to_string(rowarr[13])
-              user = to_string(rowarr[14])
-              change_log = to_string(rowarr[15])
+              sn = rowarr[sn_index].blank? ? "" : rowarr[sn_index].to_s.split('.0')[0][0,rowarr[sn_index].to_s.split('.0')[0].length-1]
+              asset_name = rowarr[asset_name_index].blank? ? "" : rowarr[asset_name_index].to_s
+              asset_no = rowarr[asset_no_index].blank? ? "" : rowarr[asset_no_index].to_s.split('.0')[0]
+              catalog_name = rowarr[catalog_name_index].blank? ? "" : rowarr[catalog_name_index].to_s
+              catalog_code = rowarr[catalog_code_index].blank? ? "" : rowarr[catalog_code_index].to_s.split('.0')[0]
+              relevant_department =rowarr[relevant_department_index].blank? ? "" : to_string(rowarr[relevant_department_index])
+              # buy_at = rowarr[6].blank? ? nil : DateTime.parse(rowarr[6].to_s).strftime('%Y-%m-%d')
+              use_at = rowarr[use_at_index].blank? ? nil : DateTime.parse(rowarr[use_at_index].to_s).strftime('%Y-%m-%d')
+              # measurement_unit = to_string(rowarr[8])
+              amount = rowarr[amount_index].blank? ? 0 : rowarr[amount_index].to_i
+              sum = rowarr[sum_index].blank? ? 0.0 : rowarr[sum_index].to_f
+              unit_name = rowarr[unit_name_index].blank? ? "" : to_string(rowarr[unit_name_index])
+              # branch = to_string(rowarr[12])
+              location = rowarr[location_index].blank? ? "" : to_string(rowarr[location_index])
+              user = rowarr[user_index].blank? ? "" : to_string(rowarr[user_index])
+              # change_log = to_string(rowarr[15])
+              accounting_department = rowarr[accounting_department_index].blank? ? "" : to_string(rowarr[accounting_department_index])
 
               if asset_name.blank?
                 txt = "缺少资产名称"
@@ -120,7 +136,7 @@ class FixedAssetInfosController < ApplicationController
                 sheet_error << (rowarr << txt)
                 next
               end
-              unit = Unit.find_by(name:unit_name)
+              unit = Unit.where("name like ?", "%#{unit_name}%").first
               if unit.blank?
                 txt = "使用部门不存在"
                 sheet_error << (rowarr << txt)
@@ -128,7 +144,7 @@ class FixedAssetInfosController < ApplicationController
               end
 
               if !relevant_department.blank?
-                relevant_department = Unit.find_by(name:relevant_department)
+                relevant_department = Unit.where("name like ? and unit_level = ? and is_facility_management_unit = ?", "%#{relevant_department}%", 2, true).first
                 if relevant_department.blank?
                   txt = "归口管理部门不存在"
                   sheet_error << (rowarr << txt)
@@ -139,10 +155,10 @@ class FixedAssetInfosController < ApplicationController
               ori_info = FixedAssetInfo.find_by(asset_no:asset_no)
 
               if !ori_info.blank?
-                ori_info.update!(relevant_unit_id: relevant_department)
+                ori_info.update!(relevant_unit_id: relevant_department.id)
                 ori_infos.delete(asset_no)
               else
-                FixedAssetInfo.create!(sn: sn, asset_name: asset_name, asset_no: asset_no, fixed_asset_catalog_id: catalog.id, relevant_unit_id: relevant_department.id, buy_at:buy_at ,use_at:use_at, measurement_unit:measurement_unit, amount:amount, sum:sum, unit_id: unit.id, branch:branch, location:location, user:user, change_log:change_log, status:"in_use", print_times:0, manage_unit_id: current_user.unit_id)
+                FixedAssetInfo.create!(sn: sn, asset_name: asset_name, asset_no: asset_no, fixed_asset_catalog_id: catalog.id, relevant_unit_id: relevant_department.id, use_at:use_at, amount:amount, sum:sum, unit_id: unit.id, location:location, user:user, status:"in_use", print_times:0, manage_unit_id: current_user.unit_id, accounting_department: accounting_department)
               end
             end
 
@@ -158,7 +174,7 @@ class FixedAssetInfosController < ApplicationController
             flash[:notice] = flash_message
 
             if !sheet_error.blank?
-              send_data(exporterrorfixed_asset_infos_xls_content_for(sheet_error),  
+              send_data(exporterrorfixed_asset_infos_xls_content_for(sheet_error,title_row),  
               :type => "text/excel;charset=utf-8; header=present",  
               :filename => "Error_Fixed_Asset_Infos_#{Time.now.strftime("%Y%m%d")}.xls")  
             else
@@ -174,7 +190,7 @@ class FixedAssetInfosController < ApplicationController
     end
   end
 
-  def exporterrorfixed_asset_infos_xls_content_for(obj)
+  def exporterrorfixed_asset_infos_xls_content_for(obj,title_row)
     xls_report = StringIO.new  
     book = Spreadsheet::Workbook.new  
     sheet1 = book.create_worksheet :name => "Fixed_Asset_Infos"  
@@ -182,27 +198,16 @@ class FixedAssetInfosController < ApplicationController
     blue = Spreadsheet::Format.new :color => :blue, :weight => :bold, :size => 10  
     red = Spreadsheet::Format.new :color => :red
     sheet1.row(0).default_format = blue 
-    sheet1.row(0).concat %w{序号 资产名称 资产编号 类别名称 类别目录 归口管理部门 购买日期 领用日期 计量单位 数量 金额 使用部门 所在网点 所在地点 使用人 变动记录}  
+    # sheet1.row(0).concat %w{序号 资产名称 资产编号 类别名称 类别目录 归口管理部门 购买日期 领用日期 计量单位 数量 金额 使用部门 所在网点 所在地点 使用人 变动记录} 
+    sheet1.row(0).concat title_row
+    size = obj.first.size 
     count_row = 1
     obj.each do |obj|
-      sheet1[count_row,0]=obj[0]
-      sheet1[count_row,1]=obj[1]
-      sheet1[count_row,2]=obj[2]
-      sheet1[count_row,3]=obj[3]
-      sheet1[count_row,4]=obj[4]
-      sheet1[count_row,5]=obj[5]
-      sheet1[count_row,6]=obj[6]
-      sheet1[count_row,7]=obj[7]
-      sheet1[count_row,8]=obj[8]
-      sheet1[count_row,9]=obj[9]
-      sheet1[count_row,10]=obj[10]
-      sheet1[count_row,11]=obj[11]
-      sheet1[count_row,12]=obj[12]
-      sheet1[count_row,13]=obj[13]
-      sheet1[count_row,14]=obj[14]
-      sheet1[count_row,15]=obj[15]
-      sheet1[count_row,16]=obj[16]
-      sheet1[count_row,17]=obj[17]
+      count = 0
+      while count<=size
+        sheet1[count_row,count]=obj[count]
+        count += 1
+      end
       
       count_row += 1
     end 
@@ -236,13 +241,15 @@ class FixedAssetInfosController < ApplicationController
     
     if !params.blank? and !params[:id].blank?
       @fixed_asset_info = FixedAssetInfo.find(params[:id].to_i)
-      @fixed_asset_inventory_detail =FixedAssetInventoryDetail.find_by(fixed_asset_info_id: @fixed_asset_info.id)
+      
+      fixed_asset_inventory_details = FixedAssetInventoryDetail.joins(:fixed_asset_inventory).where("fixed_asset_inventory_details.fixed_asset_info_id = ? and fixed_asset_inventories.status = ?", @fixed_asset_info.id, "doing").order("fixed_asset_inventories.start_time desc")
 
-      if !@fixed_asset_inventory_detail.blank?
+      if !fixed_asset_inventory_details.blank?
+        @fixed_asset_inventory_detail = fixed_asset_inventory_details.first
         @fixed_asset_inventory = @fixed_asset_inventory_detail.fixed_asset_inventory
 
         respond_to do |format|
-          format.html { redirect_to scan_fixed_asset_inventory_detail_path(@fixed_asset_inventory) }
+          format.html { redirect_to scan_fixed_asset_inventory_detail_path(@fixed_asset_inventory_detail) }
           format.json { head :no_content }
         end
       end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171123082458) do
+ActiveRecord::Schema.define(version: 20171208020000) do
 
   create_table "fixed_asset_catalogs", force: true do |t|
     t.string   "code",             limit: 8, null: false
@@ -19,6 +19,14 @@ ActiveRecord::Schema.define(version: 20171123082458) do
     t.string   "measurement_unit"
     t.integer  "years"
     t.string   "desc"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "fixed_asset_imgs", force: true do |t|
+    t.integer  "fa_inventory_detail_id"
+    t.integer  "fixed_asset_info_id"
+    t.string   "img_url"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -111,9 +119,9 @@ ActiveRecord::Schema.define(version: 20171123082458) do
 
   create_table "low_value_consumption_infos", force: true do |t|
     t.string   "sn"
-    t.string   "asset_name",       null: false
+    t.string   "asset_name",                    null: false
     t.string   "asset_no"
-    t.integer  "lvc_catalog_id",   null: false
+    t.integer  "lvc_catalog_id",                null: false
     t.integer  "relevant_unit_id"
     t.datetime "buy_at"
     t.datetime "use_at"
@@ -132,8 +140,16 @@ ActiveRecord::Schema.define(version: 20171123082458) do
     t.integer  "manage_unit_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "log"
+    t.string   "log",              limit: 4000
     t.datetime "discard_at"
+  end
+
+  create_table "lvc_imgs", force: true do |t|
+    t.integer  "lvc_inventory_detail_id"
+    t.integer  "low_value_consumption_info_id"
+    t.string   "img_url"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "lvc_inventories", force: true do |t|
@@ -190,16 +206,16 @@ ActiveRecord::Schema.define(version: 20171123082458) do
   end
 
   create_table "purchases", force: true do |t|
-    t.string   "no",                               null: false
+    t.string   "no",                                            null: false
     t.string   "name"
     t.string   "status"
     t.integer  "create_user_id"
     t.integer  "create_unit_id"
     t.integer  "manage_unit_id"
-    t.boolean  "is_send",          default: false
+    t.boolean  "is_send",                       default: false
     t.integer  "to_check_user_id"
     t.integer  "checked_user_id"
-    t.string   "change_log"
+    t.string   "change_log",       limit: 4000
     t.string   "desc"
     t.integer  "use_unit_id"
     t.datetime "created_at"

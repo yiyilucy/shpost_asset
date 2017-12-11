@@ -4,7 +4,7 @@
 <%- model_class = LowValueConsumptionInfo -%>
 <div class="page-header">
   <h1>在用低值易耗品信息</h1>
-</div>
+
   <%= form_tag('', :method => "get", name: 'form1') do %>
   <div style="float:right">
   	<% if (can? :update, LowValueConsumptionInfo) %>
@@ -19,3 +19,4 @@
 <%= render :partial => 'low_value_consumption_infos_grid' %>
 
 <%end %>
+</div>

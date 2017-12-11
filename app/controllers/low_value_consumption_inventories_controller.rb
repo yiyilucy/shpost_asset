@@ -20,15 +20,15 @@ class LowValueConsumptionInventoriesController < ApplicationController
   def new
     @inventory = LowValueConsumptionInventory.new
     if current_user.unit.unit_level == 1
-      @units_grid = initialize_grid(Unit.where(unit_level: 2, is_facility_management_unit: false).order(:no),:name => 'g1')
-      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true, unit_level: 2).order(:no),:name => 'g2')
+      @units_grid = initialize_grid(Unit.where(unit_level: 2, is_facility_management_unit: false).order(:no), per_page: 1000,:name => 'g1')
+      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true, unit_level: 2).order(:no), per_page: 1000,:name => 'g2')
     elsif current_user.unit.unit_level == 2 and current_user.unit.is_facility_management_unit
-      @units_grid = initialize_grid(Unit.where(unit_level: 2, is_facility_management_unit: false).order(:no),:name => 'g1')
-      @relevant_departments_grid = initialize_grid(Unit.where(id: current_user.unit_id),:name => 'g2')
+      @units_grid = initialize_grid(Unit.where(unit_level: 2, is_facility_management_unit: false).order(:no), per_page: 1000,:name => 'g1')
+      @relevant_departments_grid = initialize_grid(Unit.where(id: current_user.unit_id), per_page: 1000,:name => 'g2')
     elsif current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
       lv3units = Unit.where(parent_id: current_user.unit_id).select(:id)
-      @units_grid = initialize_grid(Unit.where("parent_id = ? or id = ? or parent_id in (?)", current_user.unit_id, current_user.unit_id, lv3units).order(:unit_level, :no),:name => 'g1')
-      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true, unit_level: 2).order(:no),:name => 'g2')
+      @units_grid = initialize_grid(Unit.where("parent_id = ? or id = ? or parent_id in (?)", current_user.unit_id, current_user.unit_id, lv3units).order(:unit_level, :no), per_page: 1000,:name => 'g1')
+      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true, unit_level: 2).order(:no), per_page: 1000,:name => 'g2')
     end
   end
 

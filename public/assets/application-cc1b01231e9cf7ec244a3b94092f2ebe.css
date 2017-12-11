@@ -290,17 +290,41 @@ background-color: #0099CC;
     float: left;
     margin-bottom: 12px;
 }
-/*@media (max-width: 767px) {
-    .header-container {
-        display: none;
-    }
-    .main-container .container {
-        margin: 0 auto;
-    }
-    .main-container .left-slider {
-        display: none;
-    }
-}*/
+
+@media (max-width: 425px){
+#login-wrapper {
+	width: 280px;
+    background-size: 100% auto;
+    height: 193px;
+}
+#login-wrapper .uname-div {
+	top: 81px;
+    left: 88px;
+}
+.uname-div input, .pwd-div input {
+	width: 146px;
+    height: 22px;
+    padding: 4px 12px;
+}
+#login-wrapper .pwd-div {
+	left: 88px;
+    top: 110px;
+}
+#login-wrapper .remember-div {
+	left: 88px;
+    top: 140px;
+}
+#login-wrapper .button-div {
+	top: 138px;
+    left: 151px;
+}
+#login-wrapper .button-div .login-btn {
+	width: 84px;
+    background-size: contain;
+    height: 30px;
+}
+}
+
 /*! normalize.css v3.0.0 | MIT License | git.io/normalize */
 html {
   font-family: sans-serif;

@@ -8,6 +8,7 @@ class LowValueConsumptionInventoryDetail < ActiveRecord::Base
 	belongs_to :manage_unit, class_name: 'Unit'
 	belongs_to :use_unit, class_name: 'Unit'
 	belongs_to :low_value_consumption_info
+	has_one :lvc_img, dependent: :destroy
 
 	INVENTORY_STATUS = { waiting: '待扫描', match: '匹配', unmatch: '不匹配'}
 

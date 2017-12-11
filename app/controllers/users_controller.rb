@@ -6,7 +6,13 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    #@users = User.all
+    if current_user.unit.blank? or [0, 1].include?current_user.unit.unit_level
+      @users = User.all.order("users.unit_id, users.name")
+    else
+      lv3units = Unit.where(parent_id: current_user.unit_id).select(:id)
+      units = Unit.where("parent_id = ? or id = ? or parent_id in (?)", current_user.unit_id, current_user.unit_id, lv3units).select(:id)
+      @users = User.where(unit_id: units).order("users.unit_id, users.name")
+    end
     @users_grid = initialize_grid(@users)
   end
 

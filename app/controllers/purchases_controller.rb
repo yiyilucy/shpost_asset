@@ -110,7 +110,7 @@ class PurchasesController < ApplicationController
     ActiveRecord::Base.transaction do
       respond_to do |format|
         if @purchase.update(purchase_params)
-          @purchase.update change_log:  @purchase.change_log + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单修改" + ","
+          @purchase.update change_log:  (@purchase.change_log.blank? ? "" : @purchase.change_log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单修改" + ","
         
           # amount = @purchase.amount
           # @purchase.low_value_consumption_infos.each do |info| 
@@ -155,7 +155,7 @@ class PurchasesController < ApplicationController
       @purchase.manage_unit_id = params[:purchase][:use_unit_id]
       @purchase.is_send = true
       @purchase.status = "waiting"
-      @purchase.change_log += Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单下发" + ","
+      @purchase.change_log = (@purchase.change_log.blank? ? "" : @purchase.change_log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单下发" + ","
       @purchase.save
 
       @purchase.low_value_consumption_infos.update_all manage_unit_id: @purchase.manage_unit_id, status: "waiting"
@@ -176,7 +176,7 @@ class PurchasesController < ApplicationController
     ActiveRecord::Base.transaction do 
       @purchase.status = "checking"
       @purchase.to_check_user_id = current_user.id
-      @purchase.change_log += Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单送审" + ","
+      @purchase.change_log = (@purchase.change_log.blank? ? "" : @purchase.change_log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单送审" + ","
 
       respond_to do |format|
         if @purchase.save
@@ -194,7 +194,7 @@ class PurchasesController < ApplicationController
 
   def approve
     ActiveRecord::Base.transaction do 
-      @purchase.update status: "done", checked_user_id: current_user.id, change_log: (@purchase.change_log+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单审核通过" + ",")
+      @purchase.update status: "done", checked_user_id: current_user.id, change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log)+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单审核通过" + ",")
       @purchase.low_value_consumption_infos.each do |l|
         asset_no = Sequence.generate_asset_no(l)
         l.update status: "in_use", use_at: Time.now, asset_no: asset_no
@@ -210,7 +210,7 @@ class PurchasesController < ApplicationController
 
   def decline
     ActiveRecord::Base.transaction do 
-      @purchase.update status: "declined", change_log: (@purchase.change_log+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单审核否决" + ",")
+      @purchase.update status: "declined", change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log) +Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单审核否决" + ",")
       @purchase.low_value_consumption_infos.update_all status: "declined"
     end
 
@@ -222,7 +222,7 @@ class PurchasesController < ApplicationController
 
   def revoke
     if (["waiting", "declined"].include?@purchase.status and @purchase.is_send and @purchase.create_user_id == current_user.id )
-      @purchase.update status: "revoked", manage_unit_id: current_user.unit_id, is_send: false, change_log: (@purchase.change_log+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单撤回" + ",")
+      @purchase.update status: "revoked", manage_unit_id: current_user.unit_id, is_send: false, change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log)+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单撤回" + ",")
       @purchase.low_value_consumption_infos.update_all manage_unit_id: @purchase.manage_unit_id, status: "revoked"
     end
 
@@ -235,7 +235,7 @@ class PurchasesController < ApplicationController
   def cancel
     ActiveRecord::Base.transaction do
       if ["revoked", "declined"].include?@purchase.status 
-        @purchase.update status: "canceled", change_log: (@purchase.change_log+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单取消" + ",")
+        @purchase.update status: "canceled", change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log)+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单取消" + ",")
         @purchase.low_value_consumption_infos.update_all status: "canceled"
       end
     end

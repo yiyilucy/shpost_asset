@@ -5,6 +5,7 @@ class LowValueConsumptionInfo < ActiveRecord::Base
 	belongs_to :manage_unit, class_name: 'Unit'
 	belongs_to :use_unit, class_name: 'Unit'
 	has_many :low_value_consumption_inventory_details
+	has_many :lvc_imgs
 	
 	STATUS = { waiting: '待处理', checking: '待复核', declined: '否决', canceled: '取消', in_use: '在用', revoked: '撤回', discard: '报废' }
 

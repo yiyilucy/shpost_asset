@@ -19,23 +19,26 @@ function fixed_asset_infos_preview() {
     // LODOP.PRINT_INIT("打印");
     // LODOP.SET_PRINT_STYLE("HOrient",2,);
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(3,1,227,15,'<%= info.try(:asset_name) %>');
+    // LODOP.ADD_PRINT_TEXT(3,1,227,15,'<%= info.try(:asset_name) %>');
+    LODOP.ADD_PRINT_TEXT(3,1,210,15,'<%= info.try(:asset_name) %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(18,1,227,15,'<%= info.try(:asset_no) %>');
+    LODOP.ADD_PRINT_TEXT(18,1,210,15,'<%= info.try(:asset_no) %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
     
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    <% url = I18n.t("url.low_value_consumption")+'/'+info.id.to_s+'/to_scan' %>
-    LODOP.ADD_PRINT_BARCODE(32,76,78,130,'QRCode','<%= url %>');
+    <% url = I18n.t("url.fixed_asset_info")+'/'+info.id.to_s+'/to_scan' %>
+
+    // LODOP.ADD_PRINT_BARCODE(32,76,78,130,'QRCode','<%= url %>');
+    LODOP.ADD_PRINT_BARCODE(32,68,78,130,'QRCode','<%= url %>');
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(110,1,227,15,'<%= (info.use_unit_id.blank? ? "" : Unit.find(info.use_unit_id).name) %>');
+    LODOP.ADD_PRINT_TEXT(110,1,210,15,'<%= (info.unit_id.blank? ? "" : Unit.find(info.unit_id).name) %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(125,1,227,15,'<%= info.use_at.blank? ? "" : info.use_at.strftime('%Y-%m-%d').to_s %>');
+    LODOP.ADD_PRINT_TEXT(125,1,210,15,'<%= info.use_at.blank? ? "" : info.use_at.strftime('%Y-%m-%d').to_s %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
 
     <% print_times = info.print_times+1 %>

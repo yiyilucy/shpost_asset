@@ -101,6 +101,51 @@ class FixedAssetInventoryDetailsController < ApplicationController
     end
   end
 
+  def import
+    @fixed_asset_inventory_detail = nil
+    @fixed_asset_inventory = nil
+    
+    unless request.get?
+      if !params.blank? and !params[:id].blank?
+        @fixed_asset_inventory_detail = FixedAssetInventoryDetail.find(params[:id].to_i)
+        if !@fixed_asset_inventory_detail.blank?
+          @fixed_asset_inventory = @fixed_asset_inventory_detail.fixed_asset_inventory 
+                    
+          if img_file = fixed_asset_info_img_upload_path(params[:file], @fixed_asset_inventory_detail)
+            flash[:notice] = "上传成功!!"
+            if img_file.blank?
+              flash[:error] = "上传失败！!"
+            else
+              if FixedAssetImg.find_by(fa_inventory_detail_id: params[:id]).blank?
+                FixedAssetImg.create(fa_inventory_detail_id: params[:id], fixed_asset_info_id: @fixed_asset_inventory_detail.fixed_asset_info_id, img_url: ("/" + img_file.split(/\/public\//).last))
+              else
+                FixedAssetImg.find_by(fa_inventory_detail_id: params[:id]).update img_url: ("/" + img_file.split(/\/public\//).last)
+              end
+            end
+          end
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.html { redirect_to scan_fixed_asset_inventory_detail_path(@fixed_asset_inventory_detail) }
+      format.json { head :no_content }
+    end           
+  end
+
+  def fixed_asset_info_img_upload_path(file, inventory_detail)
+    fname = Digest::MD5.hexdigest(inventory_detail.asset_name + "_" + inventory_detail.asset_no) + ".jpg"
+    direct = "#{Rails.root}/public/shpost_asset/fixed_asset_info/"
+    @filename = "#{Time.now.to_f}_#{fname}"
+    file_path = direct + @filename
+    # binding.pry 
+    File.open(file_path, "wb") do |f|
+      f.write(file.read)
+    end
+    file_path
+    
+  end
+
   private
     def set_fixed_asset_inventory_detail
       @fixed_asset_inventory_detail = FixedAssetInventoryDetail.find(params[:id])

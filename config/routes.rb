@@ -171,6 +171,7 @@ ShpostAsset::Application.routes.draw do
       get 'scan'
       post 'match'
       post 'unmatch'
+      post 'import'
     end
   end
 
@@ -200,6 +201,7 @@ ShpostAsset::Application.routes.draw do
       get 'scan'
       post 'match'
       post 'unmatch'
+      post 'import'
     end
   end
 
