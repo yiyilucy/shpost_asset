@@ -165,6 +165,7 @@ class LowValueConsumptionInfosController < ApplicationController
       if !params[:lvcids].blank?
         params[:lvcids].split(",").map(&:to_i).each do |id|
           @low_value_consumption_info = LowValueConsumptionInfo.find_by(id:id.to_i)
+          @low_value_consumption_info.branch = params[:branch]
           @low_value_consumption_info.location = params[:location]
           @low_value_consumption_info.user = params[:user]
           @low_value_consumption_info.relevant_unit_id = params[:low_value_consumption_info][:relevant_unit_id]

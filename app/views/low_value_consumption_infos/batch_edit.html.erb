@@ -5,7 +5,11 @@
 <div>
    <%= form_tag(batch_update_low_value_consumption_infos_path, method: "post")%>
    <%= hidden_field_tag('lvcids',@lvcids)%>
-   
+      <div class="control-group">
+        <%= label_tag(:branch, "所在网点") %>
+        <div class="controls">
+        <%= text_field_tag(:branch,@low_value_consumption_info.branch) %>
+      </div>
       <div class="control-group">
 	      <%= label_tag(:location, "所在地点") %>
 	      <div class="controls">

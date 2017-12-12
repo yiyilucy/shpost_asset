@@ -75,7 +75,7 @@ class FixedAssetInfosController < ApplicationController
             asset_no_index = title_row.index("资产编号")
             catalog_name_index = title_row.index("资产类别名称")
             catalog_code_index = title_row.index("资产类别编号")
-            relevant_department_index = title_row.index("归属管理")
+            relevant_department_index = title_row.index("归口管理部门")
             use_at_index = title_row.index("启用日期")
             amount_index = title_row.index("数量")
             sum_index = title_row.index("原值")

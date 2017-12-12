@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171208020000) do
+ActiveRecord::Schema.define(version: 20171212054901) do
 
   create_table "fixed_asset_catalogs", force: true do |t|
     t.string   "code",             limit: 8, null: false
@@ -53,6 +53,9 @@ ActiveRecord::Schema.define(version: 20171208020000) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "manage_unit_id"
+    t.string   "brand_model"
+    t.string   "use_years"
+    t.string   "desc1"
   end
 
   create_table "fixed_asset_inventories", force: true do |t|
@@ -142,6 +145,8 @@ ActiveRecord::Schema.define(version: 20171208020000) do
     t.datetime "updated_at"
     t.string   "log",              limit: 4000
     t.datetime "discard_at"
+    t.string   "use_years"
+    t.string   "desc1"
   end
 
   create_table "lvc_imgs", force: true do |t|

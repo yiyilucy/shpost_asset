@@ -21,4 +21,13 @@ class Purchase < ActiveRecord::Base
 	    name = "否"
 	  end
 	end
+
+	def can_to_check?
+	  self.low_value_consumption_infos.each do |x|
+	  	if x.branch.blank? or x.location.blank? or x.use_unit_id.blank?
+	  		return false
+	  	end
+	  end
+	  return true
+	end
 end

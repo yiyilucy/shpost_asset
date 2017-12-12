@@ -64,7 +64,25 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
   def create
     ActiveRecord::Base.transaction do 
       success = false
-      if !params[:amount].blank? and !params[:amount][:amount].blank? and params[:amount][:amount].to_i > 0
+      notice = ""
+      # binding.pry
+      if params["low_value_consumption_info"].blank? or params["low_value_consumption_info"]["lvc_catalog_id"].blank?
+        notice = "类别目录不能为空" 
+      elsif params["low_value_consumption_info"].blank? or params["low_value_consumption_info"]["asset_name"].blank?
+        notice = "资产名称不能为空" 
+      elsif params["low_value_consumption_info"].blank? or params["low_value_consumption_info"]["brand_model"].blank?
+        notice = "品牌型号不能为空" 
+      elsif params["low_value_consumption_info"].blank? or params["low_value_consumption_info"]["sum"].blank?
+        notice = "金额不能为空" 
+      elsif params["low_value_consumption_info"].blank? or params["low_value_consumption_info"]["buy_at"].blank?
+        notice = "购买日期不能为空"
+      elsif params["low_value_consumption_info"].blank? or params["low_value_consumption_info"]["relevant_unit_id"].blank?
+        notice = "归口管理部门不能为空"          
+      elsif params[:amount].blank? or params[:amount][:amount].blank? or params[:amount][:amount].to_i <= 0
+        notice = I18n.t('controller.purchase_low_value_consumption_info_no_amount_notice', model: '低值易耗品信息')
+      end
+
+      if notice.blank?
         amount = params[:amount][:amount].to_i
         while amount>0 do 
           # binding.pry
@@ -102,12 +120,10 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
         end
       else
         respond_to do |format|
-          format.html { redirect_to new_purchase_low_value_consumption_info_url, notice: I18n.t('controller.purchase_low_value_consumption_info_no_amount_notice', model: '低值易耗品信息') }
+          format.html { redirect_to new_purchase_low_value_consumption_info_url, notice: notice }
           format.json { head :no_content }
         end
       end
-    
-      
     end
   end
 
@@ -157,10 +173,10 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
             @low_value_consumption_info.batch_no = params[:batch_no]
             @low_value_consumption_info.brand_model = params[:brand_model]
             @low_value_consumption_info.measurement_unit = params[:measurement_unit]
-            @low_value_consumption_info.sum = params[:sum]
-            @low_value_consumption_info.branch = params[:branch]
+            @low_value_consumption_info.sum = params[:sum]           
             @low_value_consumption_info.change_log = params[:change_log]
           end
+          @low_value_consumption_info.branch = params[:branch]
           @low_value_consumption_info.location = params[:location]
           @low_value_consumption_info.user = params[:user]
           @low_value_consumption_info.relevant_unit_id = params[:low_value_consumption_info][:relevant_unit_id]

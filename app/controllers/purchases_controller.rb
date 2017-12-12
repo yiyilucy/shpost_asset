@@ -174,19 +174,43 @@ class PurchasesController < ApplicationController
 
   def to_check
     ActiveRecord::Base.transaction do 
-      @purchase.status = "checking"
-      @purchase.to_check_user_id = current_user.id
-      @purchase.change_log = (@purchase.change_log.blank? ? "" : @purchase.change_log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单送审" + ","
+      if @purchase.can_to_check?
+        @purchase.status = "checking"
+        @purchase.to_check_user_id = current_user.id
+        @purchase.change_log = (@purchase.change_log.blank? ? "" : @purchase.change_log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单送审" + ","
 
-      respond_to do |format|
-        if @purchase.save
-          @purchase.low_value_consumption_infos.update_all(status: "checking")
-
-          format.html { redirect_to purchases_url, notice: I18n.t('controller.to_check_success_notice', model: '采购单') }
-          format.json { head :no_content }
-        else
-          format.html { redirect_to purchases_url }
-          format.json { render json: @purchase.errors, status: :unprocessable_entity }
+        respond_to do |format|
+          if @purchase.save
+            @purchase.low_value_consumption_infos.update_all(status: "checking")
+            if @purchase.create_user_id == current_user.id
+              format.html { redirect_to purchases_url, notice: I18n.t('controller.to_check_success_notice', model: '采购单') }
+              format.json { head :no_content }
+            else
+              format.html { redirect_to to_do_index_purchases_url, notice: I18n.t('controller.to_check_success_notice', model: '采购单') }
+              format.json { head :no_content }
+            end
+          else
+            if @purchase.create_user_id == current_user.id
+              format.html { redirect_to purchases_url }
+              format.json { render json: @purchase.errors, status: :unprocessable_entity }
+            else
+              format.html { redirect_to to_do_index_purchases_url }
+              format.json { render json: @purchase.errors, status: :unprocessable_entity }
+            end
+          end
+        end
+      else
+        flash[:alert] = "低值易耗品的所在网点，所在地点，使用单位不能为空"
+        if @purchase.create_user_id == current_user.id
+          respond_to do |format|
+            format.html { redirect_to purchases_url }
+            format.json { head :no_content }
+          end
+        else 
+          respond_to do |format|
+            format.html { redirect_to to_do_index_purchases_url }
+            format.json { head :no_content }
+          end
         end
       end
     end
