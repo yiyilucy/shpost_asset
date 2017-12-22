@@ -15,23 +15,64 @@ class LowValueConsumptionCatalogsController < ApplicationController
 
   def edit
   end
-
-  def create
-    @low_value_consumption_catalog = LowValueConsumptionCatalog.new(low_value_consumption_catalog_params)
-    @low_value_consumption_catalog.save
-    respond_with(@low_value_consumption_catalog)
+  def cancel
   end
 
+  # def create
+  #   @low_value_consumption_catalog = LowValueConsumptionCatalog.new(low_value_consumption_catalog_params)
+  #   @low_value_consumption_catalog.save
+  #   respond_with(@low_value_consumption_catalog)
+
+  # end
+
+  # def update
+  #   @low_value_consumption_catalog.update(low_value_consumption_catalog_params)
+  #   respond_with(@low_value_consumption_catalog)
+  # end
+
+  # # def destroy
+  # #   @low_value_consumption_catalog.destroy
+  # #   respond_with(@low_value_consumption_catalog)
+  #   def destroy
+  #   @low_value_consumption_catalog.destroy
+  #   @low_value_consumption_catalog.low_value_consumption_infos.delete_all
+  #   respond_to do |format|
+  #     format.html { redirect_to low_value_consumption_catalogs_url }
+  #     format.json { head :no_content }
+  #   end
+  # end
+  # end
+def create
+    respond_to do |format|
+      if @low_value_consumption_catalog.save
+        format.html { redirect_to @low_value_consumption_catalog, notice: I18n.t('controller.create_success_notice', model: '低值易耗品信息') }
+        format.json { render action: 'show', status: :created, location: @low_value_consumption_catalog }
+      else
+        format.html { render action: 'new' }
+        format.json { render json: @low_value_consumption_catalog.errors, status: :unprocessable_entity }
+      end
+    end
+  end
   def update
-    @low_value_consumption_catalog.update(low_value_consumption_catalog_params)
-    respond_with(@low_value_consumption_catalog)
+    respond_to do |format|
+      if @low_value_consumption_catalog.update(low_value_consumption_catalog_params)
+        
+        format.html { redirect_to @low_value_consumption_catalog, notice: I18n.t('controller.update_success_notice', model: '低值易耗品信息')}
+        format.json { head :no_content }
+      else
+        format.html { render action: 'edit' }
+        format.json { render json: @low_value_consumption_catalog.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
   def destroy
     @low_value_consumption_catalog.destroy
-    respond_with(@low_value_consumption_catalog)
+    respond_to do |format|
+      format.html { redirect_to low_value_consumption_catalogs_url }
+      format.json { head :no_content }
+    end
   end
-
   def low_value_consumption_catalog_import
     unless request.get?
       if file = upload_low_value_consumption_catalog(params[:file]['file'])       
@@ -162,8 +203,9 @@ class LowValueConsumptionCatalogsController < ApplicationController
     end
 
     def low_value_consumption_catalog_params
-      params[:low_value_consumption_catalog]
+      params[:low_value_consumption_catalog].permit(:code,:name,:measurement_unit,:years,:desc)
     end
+   
 
     def upload_low_value_consumption_catalog(file)
       if !file.original_filename.empty?

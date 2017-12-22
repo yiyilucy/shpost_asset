@@ -1,4 +1,31 @@
-<p id="notice"><%= notice %></p>
+<!-- <p id="notice"><%= notice %></p>
 
 <%= link_to 'Edit', edit_low_value_consumption_catalog_path(@low_value_consumption_catalog) %> |
 <%= link_to 'Back', low_value_consumption_catalogs_path %>
+ -->
+ <%- model_class = LowValueConsumptionCatalog -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => [:'helpers.titles.new', 'New %{model}'], :model => model_class.model_name.human.titleize %></h1>
+</div>
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:code) %>:</strong></dt>
+  <dd><%= @low_value_consumption_catalog.code %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:name) %>:</strong></dt>
+  <dd><%= @low_value_consumption_catalog.name %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:measurement_unit) %>:</strong></dt>
+  <dd><%= @low_value_consumption_catalog.measurement_unit %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:years) %>:</strong></dt>
+  <dd><%= @low_value_consumption_catalog.years %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:desc) %>:</strong></dt>
+  <dd><%= @low_value_consumption_catalog.desc %></dd>
+</dl>
+
+<%= link_to t('.back', :default => t("helpers.links.back")),
+              low_value_consumption_catalog_path, :class => 'btn btn-default'  %>
+<%= link_to t('.edit', :default => t("helpers.links.edit")),
+              edit_low_value_consumption_catalog_path(@low_value_consumption_catalog), :class => 'btn btn-default' %>
+<%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+              low_value_consumption_catalog_path(@low_value_consumption_catalog),
+              :method => 'delete',
+              :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => '确定删除?')) },
+              :class => 'btn btn-danger' if can? :destroy, @low_value_consumption_catalog%>
