@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0> 
+  <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 pluginspage="install_lodop.exe"></embed>
+</object>
+
+<script language="javascript" type="text/javascript">
+function low_value_consumption_infos_preview() {
+	LODOP=getLodop(document.getElementById('LODOP_OB'),document.getElementById('LODOP_EM'));  
+	LODOP.SET_LICENSES("上海市邮政公司信息技术局","452677782688188907989821905623","","");
+
+	<% @purchase.low_value_consumption_infos.each do |info| %>
+    LODOP.PRINT_INITA("0.1mm","0.1mm","8cm","6cm","low_value_consumption");
+    LODOP.SET_PRINT_PAGESIZE(1,800,600,"low_value_consumption");
+    // LODOP.PRINT_INIT("打印");
+    // LODOP.SET_PRINT_STYLE("HOrient",2,);
+    LODOP.SET_PRINT_STYLE("Alignment",2);
+    LODOP.ADD_PRINT_TEXT(8,1,300,15,'<%= info.try(:asset_name) %>');
+    LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
+
+    LODOP.SET_PRINT_STYLE("Alignment",2);
+    LODOP.ADD_PRINT_TEXT(23,1,300,15,'<%= info.try(:asset_no) %>');
+    LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
+    
+    LODOP.SET_PRINT_STYLE("Alignment",2);
+    <% url = I18n.t("url.low_value_consumption")+'/'+info.id.to_s+'/to_scan' %>
+    LODOP.ADD_PRINT_BARCODE(32,73,150,150,'QRCode','<%= url %>');
+
+    LODOP.SET_PRINT_STYLE("Alignment",2);
+    LODOP.ADD_PRINT_TEXT(189,1,300,15,'<%= (info.use_unit_id.blank? ? "" : Unit.find(info.use_unit_id).name) %>');
+    LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
+
+    LODOP.SET_PRINT_STYLE("Alignment",2);
+    LODOP.ADD_PRINT_TEXT(206,1,300,15,'<%= info.use_at.blank? ? "" : info.use_at.strftime('%Y-%m-%d').to_s %>');
+    LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
+
+    <% print_times = info.print_times+1 %>
+    <% info.update print_times: print_times %>
+
+    // LODOP.PREVIEW(); 
+    LODOP.PRINT();
+    <% end %>
+    };
+
+  </script>
+
+</head>
+  
+  <body onLoad="low_value_consumption_infos_preview();window.opener=null;window.open('','_top'); window.top.close();">
+  
+    </body>
+</html>

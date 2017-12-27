@@ -4,7 +4,8 @@ class LowValueConsumptionInventoryLowValueConsumptionInventoryDetailController <
 
   def index
     # binding.pry
-    @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.order("lvc_inventory_details.manage_unit_id, lvc_inventory_details.use_unit_id, lvc_inventory_details.asset_no")
+    @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.joins("left join units as uunits on lvc_inventory_details.use_unit_id = uunits.id").order("uunits.unit_level, lvc_inventory_details.manage_unit_id, lvc_inventory_details.use_unit_id, lvc_inventory_details.asset_no")
+
     @low_value_consumption_inventory_details_grid = initialize_grid(@low_value_consumption_inventory_details,
       :name => 'low_value_consumption_inventory_low_value_consumption_inventory_details',
       :enable_export_to_csv => true,
@@ -16,7 +17,13 @@ class LowValueConsumptionInventoryLowValueConsumptionInventoryDetailController <
 
   def doing_index
     # binding.pry
-    @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id).order("lvc_inventory_details.use_unit_id, lvc_inventory_details.asset_no")
+    if current_user.unit.unit_level == 2
+      @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id).joins("left join units as uunits on lvc_inventory_details.use_unit_id = uunits.id").order("uunits.unit_level, lvc_inventory_details.use_unit_id, lvc_inventory_details.asset_no")
+    elsif current_user.unit.unit_level == 3 and !current_user.unit.is_facility_management_unit
+      # binding.pry
+      child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
+      @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.where("lvc_inventory_details.use_unit_id = ? or lvc_inventory_details.use_unit_id in (?)", current_user.unit_id, child_ids).joins("left join units as uunits on lvc_inventory_details.use_unit_id = uunits.id").order("uunits.unit_level, lvc_inventory_details.use_unit_id, lvc_inventory_details.asset_no")
+    end
     
     @low_value_consumption_inventory_details_grid = initialize_grid(@low_value_consumption_inventory_details,
       :name => 'low_value_consumption_inventory_low_value_consumption_inventory_details_doing',

@@ -3,13 +3,13 @@ class FixedAssetInfosController < ApplicationController
 
   def index
     if current_user.unit.blank?
-      @fixed_asset_infos = FixedAssetInfo.all
+      @fixed_asset_infos = FixedAssetInfo.all.order(:relevant_unit_id, :manage_unit_id, :asset_no)
     else
       if current_user.unit.unit_level == 1
         @fixed_asset_infos = FixedAssetInfo.all.order(:relevant_unit_id, :manage_unit_id, :asset_no)
-      elsif current_user.unit.unit_level == 2 and current_user.unit.is_facility_management_unit
+      elsif current_user.unit.is_facility_management_unit
         @fixed_asset_infos = FixedAssetInfo.where(relevant_unit_id: current_user.unit_id).order(:manage_unit_id, :asset_no)
-      elsif current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+      elsif current_user.unit.unit_level == 2
         @fixed_asset_infos = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).order(:asset_no)
       end  
     end     
@@ -17,7 +17,9 @@ class FixedAssetInfosController < ApplicationController
     @fixed_asset_infos_grid = initialize_grid(@fixed_asset_infos,
       :name => 'fixed_asset_infos',
       :enable_export_to_csv => true,
-      :csv_file_name => 'fixed_asset_infos')
+      :csv_file_name => 'fixed_asset_infos'
+      # :csv_encoding => Encoding::GBK
+      )
 
     export_grid_if_requested
   end
@@ -56,10 +58,32 @@ class FixedAssetInfosController < ApplicationController
         ActiveRecord::Base.transaction do
           begin
             ori_infos = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).group(:asset_no).order(:asset_no).size
+
+            catalogs = FixedAssetCatalog.all.group(:name).size
+            catalogs.each do |key, value|
+              catalogs[key] = FixedAssetCatalog.find_by(name: key).id
+            end
+
+            use_departments = Unit.all.group(:name).size
+            use_departments.each do |key, value|
+              use_departments[key] = Unit.find_by(name: key).id
+            end
+
+            relevant_departments = Unit.where(is_facility_management_unit: true).group(:name).size
+            relevant_departments.each do |key, value|
+              relevant_departments[key] = Unit.find_by(name: key).id
+            end
+
+            short_relevant_departments = Unit.where(is_facility_management_unit: true).group(:desc).size
+            short_relevant_departments.each do |key, value|
+              short_relevant_departments[key] = Unit.find_by(desc: key).id
+            end
+           
             sheet_error = []
             rowarr = [] 
             instance=nil
             flash_message = "导入成功!"
+            catalog_code = ""
 
             if file.include?('.xlsx')
               instance= Roo::Excelx.new(file)
@@ -74,7 +98,6 @@ class FixedAssetInfosController < ApplicationController
             asset_name_index = title_row.index("资产名称")
             asset_no_index = title_row.index("资产编号")
             catalog_name_index = title_row.index("资产类别名称")
-            catalog_code_index = title_row.index("资产类别编号")
             relevant_department_index = title_row.index("归口管理部门")
             use_at_index = title_row.index("启用日期")
             amount_index = title_row.index("数量")
@@ -83,6 +106,10 @@ class FixedAssetInfosController < ApplicationController
             location_index = title_row.index("[存放地点]")
             user_index = title_row.index("资产使用人")
             accounting_department_index = title_row.index("核算部门")
+            belong_unit_index = title_row.index("归属管理")
+            desc1_index = title_row.index("使用单位")
+            use_years_index = title_row.index("使用年限")
+            brand_model_index = title_row.index("结构/型号")
             
             
             8.upto(instance.last_row) do |line|
@@ -94,8 +121,7 @@ class FixedAssetInfosController < ApplicationController
               sn = rowarr[sn_index].blank? ? "" : rowarr[sn_index].to_s.split('.0')[0][0,rowarr[sn_index].to_s.split('.0')[0].length-1]
               asset_name = rowarr[asset_name_index].blank? ? "" : rowarr[asset_name_index].to_s
               asset_no = rowarr[asset_no_index].blank? ? "" : rowarr[asset_no_index].to_s.split('.0')[0]
-              catalog_name = rowarr[catalog_name_index].blank? ? "" : rowarr[catalog_name_index].to_s
-              catalog_code = rowarr[catalog_code_index].blank? ? "" : rowarr[catalog_code_index].to_s.split('.0')[0]
+              catalog_name = rowarr[catalog_name_index].blank? ? "" : rowarr[catalog_name_index].to_s.split(".").last.strip
               relevant_department =rowarr[relevant_department_index].blank? ? "" : to_string(rowarr[relevant_department_index])
               # buy_at = rowarr[6].blank? ? nil : DateTime.parse(rowarr[6].to_s).strftime('%Y-%m-%d')
               use_at = rowarr[use_at_index].blank? ? nil : DateTime.parse(rowarr[use_at_index].to_s).strftime('%Y-%m-%d')
@@ -108,7 +134,11 @@ class FixedAssetInfosController < ApplicationController
               user = rowarr[user_index].blank? ? "" : to_string(rowarr[user_index])
               # change_log = to_string(rowarr[15])
               accounting_department = rowarr[accounting_department_index].blank? ? "" : to_string(rowarr[accounting_department_index])
-
+              belong_unit = rowarr[belong_unit_index].blank? ? "" : to_string(rowarr[belong_unit_index])
+              desc1 = rowarr[desc1_index].blank? ? "" : to_string(rowarr[desc1_index])
+              use_years = rowarr[use_years_index].blank? ? "" : to_string(rowarr[use_years_index])
+              brand_model = rowarr[brand_model_index].blank? ? "" : to_string(rowarr[brand_model_index])
+              
               if asset_name.blank?
                 txt = "缺少资产名称"
                 sheet_error << (rowarr << txt)
@@ -119,14 +149,13 @@ class FixedAssetInfosController < ApplicationController
                 sheet_error << (rowarr << txt)
                 next
               end
-              if catalog_code.blank?
+              if catalog_name.blank?
                 txt = "缺少类别目录"
                 sheet_error << (rowarr << txt)
                 next
               end
-              catalog = FixedAssetCatalog.find_by(code:catalog_code,name:catalog_name)
-              catalog ||= FixedAssetCatalog.find_by(code:catalog_code)
-              if catalog.blank?
+              
+              if !catalogs.has_key?catalog_name
                 txt = "类别目录不存在"
                 sheet_error << (rowarr << txt)
                 next
@@ -136,16 +165,14 @@ class FixedAssetInfosController < ApplicationController
                 sheet_error << (rowarr << txt)
                 next
               end
-              unit = Unit.where("name like ?", "%#{unit_name}%").first
-              if unit.blank?
+              if !use_departments.has_key?unit_name
                 txt = "使用部门不存在"
                 sheet_error << (rowarr << txt)
                 next
               end
 
               if !relevant_department.blank?
-                relevant_department = Unit.where("name like ? and unit_level = ? and is_facility_management_unit = ?", "%#{relevant_department}%", 2, true).first
-                if relevant_department.blank?
+                if !relevant_departments.has_key?relevant_department and !short_relevant_departments.has_key?relevant_department
                   txt = "归口管理部门不存在"
                   sheet_error << (rowarr << txt)
                   next
@@ -155,10 +182,12 @@ class FixedAssetInfosController < ApplicationController
               ori_info = FixedAssetInfo.find_by(asset_no:asset_no)
 
               if !ori_info.blank?
-                ori_info.update!(relevant_unit_id: relevant_department.id)
+                if !relevant_department.blank?
+                  ori_info.update!(relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department])
+                end
                 ori_infos.delete(asset_no)
               else
-                FixedAssetInfo.create!(sn: sn, asset_name: asset_name, asset_no: asset_no, fixed_asset_catalog_id: catalog.id, relevant_unit_id: relevant_department.id, use_at:use_at, amount:amount, sum:sum, unit_id: unit.id, location:location, user:user, status:"in_use", print_times:0, manage_unit_id: current_user.unit_id, accounting_department: accounting_department)
+                FixedAssetInfo.create!(sn: sn, asset_name: asset_name, asset_no: asset_no, fixed_asset_catalog_id: catalogs[catalog_name], relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department], use_at:use_at, amount:amount, sum:sum, unit_id: use_departments[unit_name], location:location, user:user, status:"in_use", print_times:0, manage_unit_id: current_user.unit_id, accounting_department: accounting_department, belong_unit: belong_unit, desc1: desc1, use_years: use_years, brand_model: brand_model)
               end
             end
 

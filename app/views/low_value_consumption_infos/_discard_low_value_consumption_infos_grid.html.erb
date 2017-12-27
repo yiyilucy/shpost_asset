@@ -1,8 +1,6 @@
 <%- model_class = LowValueConsumptionInfo -%>
 <%= grid(@low_value_consumption_infos_grid) do |g|
     
-    g.column name: model_class.human_attribute_name(:sn), attribute: 'sn'
-
     g.column name: model_class.human_attribute_name(:lvc_catalog_id), attribute: 'name', assoc: :low_value_consumption_catalog do |low_value_consumption_info|
         low_value_consumption_info.low_value_consumption_catalog.try :name
     end
@@ -12,6 +10,8 @@
     g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no'
 
     g.column name: model_class.human_attribute_name(:brand_model), attribute: 'brand_model'
+
+    g.column name: model_class.human_attribute_name(:use_years), attribute: 'use_years'
 
     g.column name: model_class.human_attribute_name(:batch_no), attribute: 'batch_no'
     
@@ -26,6 +26,8 @@
     g.column name: model_class.human_attribute_name(:use_at), attribute: 'use_at' do |low_value_consumption_info|
       low_value_consumption_info.use_at.blank? ? "" : DateTime.parse(low_value_consumption_info.use_at.to_s).strftime('%Y-%m-%d').to_s
     end
+
+    g.column name: model_class.human_attribute_name(:desc1), attribute: 'desc1'
 
     g.column name: model_class.human_attribute_name(:status), attribute: 'status',custom_filter: LowValueConsumptionInfo::STATUS.map {|k, v| [model_class.human_attribute_name("status_#{k}"), v]} do |low_value_consumption_info| 
       low_value_consumption_info.status_name

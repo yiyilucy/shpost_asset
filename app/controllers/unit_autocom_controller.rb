@@ -9,7 +9,7 @@ class UnitAutocomController < ApplicationController
 	    obj = params[:obj]
 	    # binding.pry
 	    
-	    relevant_units = Unit.where(unit_level: 2, is_facility_management_unit: true).where("units.name like ?","%#{term}%").order(:no).all
+	    relevant_units = Unit.where(is_facility_management_unit: true).where("units.name like ?","%#{term}%").order(:no).all
 	      
 	    # binding.pry
 	    render :json => relevant_units.map { |relevant_unit| {:id => relevant_unit.id, :label => relevant_unit.name, :value => relevant_unit.name, :obj => obj_id} }
@@ -21,8 +21,8 @@ class UnitAutocomController < ApplicationController
 	    obj_id = params[:objid]
 	    obj = params[:obj]
 	    # binding.pry
-	    
-	    use_units = Unit.where("units.name like ? and (units.id = ? or units.parent_id = ?)","%#{term}%", current_user.unit.id, current_user.unit.id).order(:no).all
+	    lv3children = current_user.unit.children.select(:id)
+	    use_units = Unit.where("units.name like ? and (units.id = ? or units.parent_id = ? or units.parent_id in (?))","%#{term}%", current_user.unit.id, current_user.unit.id, lv3children).order(:no).all
 	      
 	    # binding.pry
 	    render :json => use_units.map { |use_unit| {:id => use_unit.id, :label => use_unit.name, :value => use_unit.name, :obj => obj_id} }

@@ -31,11 +31,11 @@ class User < ActiveRecord::Base
   end
 
   def deviceadmin?
-    (role.eql? 'deviceadmin') ? true : false
+    !roles.where(role: 'deviceadmin').empty? or ((role.eql? 'deviceadmin') ? true : false)
   end
 
   def accountant?
-    (role.eql? 'accountant') ? true : false
+    !roles.where(role: 'accountant').empty? or ((role.eql? 'accountant') ? true : false)
   end
 
   def inventoryadmin?

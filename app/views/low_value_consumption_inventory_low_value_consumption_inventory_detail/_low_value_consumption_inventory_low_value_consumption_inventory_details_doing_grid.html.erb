@@ -1,8 +1,6 @@
 <%- model_class = LowValueConsumptionInventoryDetail -%>
 <%= grid(@low_value_consumption_inventory_details_grid) do |g|
-	g.column name: model_class.human_attribute_name(:sn), attribute: 'sn'
-
-    g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no'
+	  g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no'
 
     g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name'
 

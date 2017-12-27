@@ -13,29 +13,29 @@ function low_value_consumption_infos_preview() {
 	LODOP.SET_LICENSES("上海市邮政公司信息技术局","452677782688188907989821905623","","");
 
 	<% @selected.each do |x| %>
-    LODOP.PRINT_INITA("0.1mm","0.1mm","6cm","4cm","low_value_consumption");
-    LODOP.SET_PRINT_PAGESIZE(1,600,400,"low_value_consumption");
+    LODOP.PRINT_INITA("0.1mm","0.1mm","8cm","6cm","low_value_consumption");
+    LODOP.SET_PRINT_PAGESIZE(1,800,600,"low_value_consumption");
     <% info = LowValueConsumptionInfo.find(x.to_i) %>
     // LODOP.PRINT_INIT("打印");
     // LODOP.SET_PRINT_STYLE("HOrient",2,);
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(3,1,210,15,'<%= info.try(:asset_name) %>');
+    LODOP.ADD_PRINT_TEXT(8,1,300,15,'<%= info.try(:asset_name) %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(18,1,210,15,'<%= info.try(:asset_no) %>');
+    LODOP.ADD_PRINT_TEXT(23,1,300,15,'<%= info.try(:asset_no) %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
     
     LODOP.SET_PRINT_STYLE("Alignment",2);
     <% url = I18n.t("url.low_value_consumption")+'/'+info.id.to_s+'/to_scan' %>
-    LODOP.ADD_PRINT_BARCODE(32,68,78,130,'QRCode','<%= url %>');
+    LODOP.ADD_PRINT_BARCODE(32,73,150,150,'QRCode','<%= url %>');
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(110,1,210,15,'<%= (info.use_unit_id.blank? ? "" : Unit.find(info.use_unit_id).name) %>');
+    LODOP.ADD_PRINT_TEXT(189,1,300,15,'<%= (info.use_unit_id.blank? ? "" : Unit.find(info.use_unit_id).name) %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(125,1,210,15,'<%= info.use_at.blank? ? "" : info.use_at.strftime('%Y-%m-%d').to_s %>');
+    LODOP.ADD_PRINT_TEXT(206,1,300,15,'<%= info.use_at.blank? ? "" : info.use_at.strftime('%Y-%m-%d').to_s %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
 
     <% print_times = info.print_times+1 %>

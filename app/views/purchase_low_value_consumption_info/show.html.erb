@@ -4,8 +4,6 @@
 </div>
 
 <dl class="dl-horizontal">
-  <dt><strong><%= model_class.human_attribute_name(:sn) %>:</strong></dt>
-  <dd><%= @low_value_consumption_info.sn %></dd>
   <dt><strong><%= model_class.human_attribute_name(:lvc_catalog_id) %>:</strong></dt>
   <dd><%= LowValueConsumptionCatalog.find_by(id:@low_value_consumption_info.lvc_catalog_id).try(:name) %></dd>
   <dt><strong><%= model_class.human_attribute_name(:asset_name) %>:</strong></dt>

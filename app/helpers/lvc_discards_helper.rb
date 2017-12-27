@@ -1,0 +1,2 @@
+module LvcDiscardsHelper
+end

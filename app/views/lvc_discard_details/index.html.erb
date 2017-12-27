@@ -1,0 +1,25 @@
+<h1>Listing lvc_discard_details</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @lvc_discard_details.each do |lvc_discard_detail| %>
+      <tr>
+        <td><%= link_to 'Show', lvc_discard_detail %></td>
+        <td><%= link_to 'Edit', edit_lvc_discard_detail_path(lvc_discard_detail) %></td>
+        <td><%= link_to 'Destroy', lvc_discard_detail, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Lvc discard detail', new_lvc_discard_detail_path %>

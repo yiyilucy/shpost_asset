@@ -11,6 +11,8 @@
       fixed_asset_info.fixed_asset_catalog.try :code
     end
 
+    g.column name: model_class.human_attribute_name(:belong_unit), attribute: 'belong_unit'
+
     g.column name: model_class.human_attribute_name(:relevant_unit_id), attribute: 'relevant_unit_id' do |fixed_asset_info|
       fixed_asset_info.relevant_unit_id.blank? ? "" : Unit.find(fixed_asset_info.relevant_unit_id).name
     end
@@ -22,6 +24,10 @@
     g.column name: model_class.human_attribute_name(:use_at), attribute: 'use_at' do |fixed_asset_info|
       fixed_asset_info.use_at.blank? ? "" : DateTime.parse(fixed_asset_info.use_at.to_s).strftime('%Y-%m-%d').to_s
     end
+
+    g.column name: model_class.human_attribute_name(:brand_model), attribute: 'brand_model'
+
+    g.column name: model_class.human_attribute_name(:use_years), attribute: 'use_years'
 
     g.column name: model_class.human_attribute_name(:measurement_unit), attribute: 'measurement_unit'
 
@@ -42,6 +48,8 @@
     g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log'
 
     g.column name: model_class.human_attribute_name(:accounting_department), attribute: 'accounting_department'
+
+    g.column name: model_class.human_attribute_name(:desc1), attribute: 'desc1'
 
     g.column name: model_class.human_attribute_name(:status), attribute: 'status' , custom_filter: FixedAssetInfo::STATUS.invert do |fixed_asset_info|
       fixed_asset_info.status_name

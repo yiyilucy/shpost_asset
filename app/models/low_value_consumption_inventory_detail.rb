@@ -10,7 +10,7 @@ class LowValueConsumptionInventoryDetail < ActiveRecord::Base
 	belongs_to :low_value_consumption_info
 	has_one :lvc_img, dependent: :destroy
 
-	INVENTORY_STATUS = { waiting: '待扫描', match: '匹配', unmatch: '不匹配'}
+	INVENTORY_STATUS = { waiting: '待扫描', match: '匹配', unmatch: '不匹配', no_scan: '未扫描'}
 
 	def inventory_status_name
 		inventory_status.blank? ? "" : LowValueConsumptionInventoryDetail::INVENTORY_STATUS["#{inventory_status}".to_sym]

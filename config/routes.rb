@@ -2,6 +2,7 @@ ShpostAsset::Application.routes.draw do
   
   
 
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -99,7 +100,7 @@ ShpostAsset::Application.routes.draw do
     collection do
       get 'fixed_asset_info_import'
       post 'fixed_asset_info_import' => 'fixed_asset_infos#fixed_asset_info_import'
-      get 'print'
+      post 'print'
       # post 'export'
     end
     member do 
@@ -128,14 +129,15 @@ ShpostAsset::Application.routes.draw do
       get 'decline'
       get 'revoke'
       get 'cancel'
+      get 'print'
     end
 
     resources :low_value_consumption_infos, :controller => 'purchase_low_value_consumption_info' do
       collection do
-        get 'batch_destroy'
-        get 'batch_edit'
+        post 'batch_destroy'
+        post 'batch_edit'
         post 'batch_update'
-        get 'print'
+        post 'print'
       end
     end
       
@@ -144,13 +146,17 @@ ShpostAsset::Application.routes.draw do
   resources :low_value_consumption_infos do
     collection do
       get 'discard_index'
-      get 'print'  
-      get 'batch_edit'
-      post 'batch_update'    
+      post 'print'  
+      post 'batch_edit'
+      post 'batch_update'   
+      get 'low_value_consumption_info_import'
+      post 'low_value_consumption_info_import' => 'low_value_consumption_infos#low_value_consumption_info_import' 
+      post 'batch_destroy'
+      post 'discard'
     end
     member do 
       get 'to_scan'
-      get 'discard'
+      # get 'discard'
     end
   end
 
@@ -226,6 +232,18 @@ ShpostAsset::Application.routes.draw do
       
     end
   end 
+
+  resources :lvc_discard_details
+
+  resources :lvc_discards do
+    member do 
+      get 'approve'
+      get 'decline'
+    end
+
+    resources :lvc_discard_details, :controller => 'lvc_discard_lvc_discard_detail'
+  end
+
 
 
 end

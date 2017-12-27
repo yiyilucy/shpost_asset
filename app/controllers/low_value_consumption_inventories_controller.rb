@@ -8,7 +8,12 @@ class LowValueConsumptionInventoriesController < ApplicationController
   end
 
   def doing_index
-    @low_value_consumption_inventories = LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("lvc_inventories.status in (?) and lvc_inventory_units.unit_id = ? and lvc_inventories.create_unit_id != ?", ["doing", "canceled", "done"], current_user.unit_id, current_user.unit_id)
+    if current_user.unit.unit_level == 2
+      @low_value_consumption_inventories = LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("lvc_inventories.status in (?) and lvc_inventory_units.unit_id = ? and lvc_inventories.create_unit_id != ?", ["doing", "canceled", "done"], current_user.unit_id, current_user.unit_id)
+    elsif current_user.unit.unit_level == 3
+      @low_value_consumption_inventories = LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("lvc_inventories.status in (?) and lvc_inventory_units.unit_id = ?", ["doing", "canceled", "done"], current_user.unit.parent_id)
+    end
+        
     
     @low_value_consumption_inventories_grid = initialize_grid(@low_value_consumption_inventories, order: 'lvc_inventories.created_at',
       order_direction: 'desc')
@@ -20,15 +25,15 @@ class LowValueConsumptionInventoriesController < ApplicationController
   def new
     @inventory = LowValueConsumptionInventory.new
     if current_user.unit.unit_level == 1
-      @units_grid = initialize_grid(Unit.where(unit_level: 2, is_facility_management_unit: false).order(:no), per_page: 1000,:name => 'g1')
-      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true, unit_level: 2).order(:no), per_page: 1000,:name => 'g2')
-    elsif current_user.unit.unit_level == 2 and current_user.unit.is_facility_management_unit
-      @units_grid = initialize_grid(Unit.where(unit_level: 2, is_facility_management_unit: false).order(:no), per_page: 1000,:name => 'g1')
+      @units_grid = initialize_grid(Unit.where(unit_level: 2).order(:no), per_page: 1000,:name => 'g1')
+      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true).order(:no), per_page: 1000,:name => 'g2')
+    elsif current_user.unit.is_facility_management_unit
+      @units_grid = initialize_grid(Unit.where(unit_level: 2).order(:no), per_page: 1000,:name => 'g1')
       @relevant_departments_grid = initialize_grid(Unit.where(id: current_user.unit_id), per_page: 1000,:name => 'g2')
-    elsif current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+    elsif current_user.unit.unit_level == 2
       lv3units = Unit.where(parent_id: current_user.unit_id).select(:id)
       @units_grid = initialize_grid(Unit.where("parent_id = ? or id = ? or parent_id in (?)", current_user.unit_id, current_user.unit_id, lv3units).order(:unit_level, :no), per_page: 1000,:name => 'g1')
-      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true, unit_level: 2).order(:no), per_page: 1000,:name => 'g2')
+      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true).order(:no), per_page: 1000,:name => 'g2')
     end
   end
 
@@ -54,7 +59,7 @@ class LowValueConsumptionInventoriesController < ApplicationController
 
       
 # binding.pry
-      if current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+      if current_user.unit.unit_level == 2
         low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id in (?) and low_value_consumption_infos.status = ?", relevant_departments, units, "in_use")
       else
         low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id in (?) or low_value_consumption_infos.manage_unit_id in (?)) and low_value_consumption_infos.status = ?", relevant_departments, units, units, "in_use")
@@ -71,7 +76,7 @@ class LowValueConsumptionInventoriesController < ApplicationController
           redirect_to low_value_consumption_inventories_url and return
         end
 # binding.pry
-        if LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("lvc_inventory_units.unit_id in (?) and lvc_inventories.start_time <= ? and lvc_inventories.end_time >= ? and lvc_inventories.status in (?)", units, DateTime.parse(params[:low_value_consumption_inventory][:start_time]), DateTime.parse(params[:low_value_consumption_inventory][:end_time]), ["waiting", "doing"]).exists?
+        if LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("lvc_inventory_units.unit_id in (?) and lvc_inventories.start_time <= ? and lvc_inventories.status in (?)", units, DateTime.parse(params[:low_value_consumption_inventory][:start_time]), ["waiting", "doing"]).exists?
         # if !lvinventories.blank?
           flash[:alert] = "同一时间同一单位不可重叠盘点"
           redirect_to low_value_consumption_inventories_url and return
@@ -86,7 +91,7 @@ class LowValueConsumptionInventoriesController < ApplicationController
         @low_value_consumption_inventory.create_user_id = current_user.id
         @low_value_consumption_inventory.create_unit_id = current_user.unit_id
 
-        if current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+        if current_user.unit.unit_level == 2
           @low_value_consumption_inventory.is_lv2_unit = true
         end
 
@@ -111,7 +116,7 @@ class LowValueConsumptionInventoriesController < ApplicationController
             inventory_unit_id = LowValueConsumptionInventoryUnit.find_by(lvc_inventory_id: @low_value_consumption_inventory.id, unit_id: x.manage_unit_id).blank? ? nil : LowValueConsumptionInventoryUnit.find_by(lvc_inventory_id: @low_value_consumption_inventory.id, unit_id: x.manage_unit_id).id
           end
 
-          @low_value_consumption_inventory.low_value_consumption_inventory_details.create(sn: x.sn, asset_name: x.asset_name, asset_no: x.asset_no, lvc_catalog_id: x.lvc_catalog_id, relevant_unit_id: x.relevant_unit_id, buy_at: x.buy_at, use_at: x.use_at, measurement_unit: x.measurement_unit, sum: x.sum, use_unit_id: x.use_unit_id, branch: x.branch, location: x.location, user: x.user, change_log: x.change_log, consumption_status: x.status, print_times: x.print_times, brand_model: x.brand_model, batch_no: x.batch_no, purchase_id: x.purchase_id, manage_unit_id: x.manage_unit_id, inventory_status: "waiting", lvc_inventory_unit_id: inventory_unit_id, low_value_consumption_info_id: x.id)
+          @low_value_consumption_inventory.low_value_consumption_inventory_details.create(sn: x.sn, asset_name: x.asset_name, asset_no: x.asset_no, lvc_catalog_id: x.lvc_catalog_id, relevant_unit_id: x.relevant_unit_id, buy_at: x.buy_at, use_at: x.use_at, measurement_unit: x.measurement_unit, sum: x.sum, use_unit_id: x.use_unit_id, branch: x.branch, location: x.location, user: x.user, change_log: x.change_log, consumption_status: x.status, print_times: x.print_times, brand_model: x.brand_model, batch_no: x.batch_no, purchase_id: x.purchase_id, manage_unit_id: x.manage_unit_id, inventory_status: "waiting", lvc_inventory_unit_id: inventory_unit_id, low_value_consumption_info_id: x.id, brand_model: x.brand_model, use_years: x.use_years, desc1: x.desc1)
         end
 
         
@@ -146,13 +151,14 @@ class LowValueConsumptionInventoriesController < ApplicationController
   def done
     all_finished = true
 
-    if current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+    if current_user.unit.unit_level == 2 
       @low_value_consumption_inventory.low_value_consumption_inventory_details.each do |x|
         if x.inventory_status.eql?"waiting"
-          all_finished = false
+          # all_finished = false
+          x.update inventory_status: "no_scan"
         end
       end
-    else
+    elsif current_user.unit.is_facility_management_unit or current_user.unit.unit_level == 1
       @low_value_consumption_inventory.low_value_consumption_inventory_units.each do |x|
         if x.status.eql?"unfinished"
           all_finished = false
@@ -176,20 +182,21 @@ class LowValueConsumptionInventoriesController < ApplicationController
     sub_unit = @low_value_consumption_inventory.low_value_consumption_inventory_units.find_by(unit_id: current_user.unit_id)
 
     if !sub_unit.blank?
-      all_scanned = true
+      # all_scanned = true
       low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id)
 
       low_value_consumption_inventory_details.each do |x|
         if x.inventory_status.eql?"waiting"
-          all_scanned = false
+          # all_scanned = false
+          x.update inventory_status: "no_scan"
         end
       end
 
-      if all_scanned
+      # if all_scanned
         sub_unit.update status: "finished"
-      else
-        flash[:alert] = "低值易耗品盘点未全部完成"
-      end
+      # else
+      #   flash[:alert] = "低值易耗品盘点未全部完成"
+      # end
     end
 
     respond_to do |format|

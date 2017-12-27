@@ -1,0 +1,2 @@
+module LvcDiscardDetailsHelper
+end

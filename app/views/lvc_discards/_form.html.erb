@@ -1,0 +1,17 @@
+<%= form_for(@lvc_discard) do |f| %>
+  <% if @lvc_discard.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@lvc_discard.errors.count, "error") %> prohibited this lvc_discard from being saved:</h2>
+
+      <ul>
+      <% @lvc_discard.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

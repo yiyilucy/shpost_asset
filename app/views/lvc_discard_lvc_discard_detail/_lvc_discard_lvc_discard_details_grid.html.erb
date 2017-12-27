@@ -1,0 +1,76 @@
+<%- model_class = LowValueConsumptionInfo -%>
+<%= grid(@lvc_discard_details_grid) do |g|
+	g.column name: model_class.human_attribute_name(:lvc_catalog_id), attribute: 'lvc_catalog_id', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.low_value_consumption_catalog.blank? ? "" : lvc_discard_detail.low_value_consumption_info.low_value_consumption_catalog.name
+    end
+
+	g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :asset_name
+    end
+
+    g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :asset_no
+    end
+
+    g.column name: model_class.human_attribute_name(:brand_model), attribute: 'brand_model', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :brand_model
+    end
+
+    g.column name: model_class.human_attribute_name(:use_years), attribute: 'use_years', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :use_years
+    end
+
+    g.column name: model_class.human_attribute_name(:batch_no), attribute: 'batch_no', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :batch_no
+    end
+
+    g.column name: model_class.human_attribute_name(:measurement_unit), attribute: 'measurement_unit', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :measurement_unit
+    end
+
+    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :sum
+    end
+
+    g.column name: model_class.human_attribute_name(:buy_at), attribute: 'buy_at', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.buy_at.blank? ? "" : DateTime.parse(lvc_discard_detail.low_value_consumption_info.buy_at.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:use_at), attribute: 'use_at', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.use_at.blank? ? "" : DateTime.parse(lvc_discard_detail.low_value_consumption_info.use_at.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:desc1), attribute: 'desc1', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :desc1
+    end
+
+    g.column name: model_class.human_attribute_name(:status), attribute: 'status', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.status_name
+    end
+
+    g.column name: model_class.human_attribute_name(:relevant_unit_id), attribute: 'relevant_unit_id', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.relevant_unit_id.blank? ? "" : Unit.find(lvc_discard_detail.low_value_consumption_info.relevant_unit_id).name
+    end
+
+    g.column name: model_class.human_attribute_name(:manage_unit_id), attribute: 'manage_unit_id', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.manage_unit_id.blank? ? "" : Unit.find(lvc_discard_detail.low_value_consumption_info.manage_unit_id).name
+    end
+
+    g.column name: model_class.human_attribute_name(:use_unit_id), attribute: 'use_unit_id', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.use_unit_id.blank? ? "" : Unit.find(lvc_discard_detail.low_value_consumption_info.use_unit_id).name
+    end
+
+    g.column name: model_class.human_attribute_name(:branch), attribute: 'branch', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :branch
+    end
+
+    g.column name: model_class.human_attribute_name(:location), attribute: 'location', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :location
+    end
+
+    g.column name: model_class.human_attribute_name(:user), attribute: 'user', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :user
+    end
+
+  end 
+%> 

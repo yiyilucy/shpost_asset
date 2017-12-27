@@ -77,11 +77,17 @@ class Ability
     if user.deviceadmin?
         can :read, FixedAssetCatalog
         can :read, LowValueConsumptionCatalog
-        can :manage, FixedAssetInfo, unit_id: user.unit_id
+        can :manage, FixedAssetInfo
         can :manage, LowValueConsumptionInfo
         can :manage, Purchase
         cannot [:approve, :decline], Purchase
         can :manage, Unit
+        can :read, LvcDiscard
+        can :read, LvcDiscardDetail
+        can :manage, FixedAssetInventory
+        can :manage, FixedAssetInventoryDetail
+        can :manage, LowValueConsumptionInventory
+        can :manage, LowValueConsumptionInventoryDetail
     end
 
     if user.accountant?
@@ -90,14 +96,18 @@ class Ability
         can :read, FixedAssetInfo, unit_id: user.unit_id
         can [:read, :discard_index], LowValueConsumptionInfo
         can [:to_do_index, :doing_index, :done_index, :read, :approve, :decline], Purchase
+        can :manage, LvcDiscard
+        can :manage, LvcDiscardDetail
         
     end
     
     if user.inventoryadmin?
-        can :manage, FixedAssetInventory
+        can [:read, :doing_index], FixedAssetInventory
         can :manage, FixedAssetInventoryDetail
-        can :manage, LowValueConsumptionInventory
+        can :to_scan, FixedAssetInfo
+        can [:read, :doing_index], LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
+        can :to_scan, LowValueConsumptionInfo
     end
 
 

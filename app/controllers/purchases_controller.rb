@@ -220,7 +220,7 @@ class PurchasesController < ApplicationController
     ActiveRecord::Base.transaction do 
       @purchase.update status: "done", checked_user_id: current_user.id, change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log)+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单审核通过" + ",")
       @purchase.low_value_consumption_infos.each do |l|
-        asset_no = Sequence.generate_asset_no(l)
+        asset_no = Sequence.generate_asset_no(l,l.created_at)
         l.update status: "in_use", use_at: Time.now, asset_no: asset_no
       end
     end
@@ -268,6 +268,11 @@ class PurchasesController < ApplicationController
       format.html { redirect_to to_do_index_purchases_url, notice: I18n.t('controller.cancel_success_notice', model: '采购单') }
       format.json { head :no_content }
     end
+  end
+
+  def print
+    @purchase
+    
   end
 
   private

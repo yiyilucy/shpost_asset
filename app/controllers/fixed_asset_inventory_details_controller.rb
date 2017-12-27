@@ -79,7 +79,7 @@ class FixedAssetInventoryDetailsController < ApplicationController
 
     end
     respond_to do |format|
-      format.html { redirect_to doing_index_fixed_asset_inventory_fixed_asset_inventory_details_path(@fixed_asset_inventory) }
+      format.html { redirect_to to_scan_fixed_asset_info_path(@fixed_asset_inventory_detail.fixed_asset_info) }
       format.json { head :no_content }
     end
   end
@@ -96,7 +96,7 @@ class FixedAssetInventoryDetailsController < ApplicationController
       end
     end
     respond_to do |format|
-      format.html { redirect_to doing_index_fixed_asset_inventory_fixed_asset_inventory_details_path(@fixed_asset_inventory) }
+      format.html { redirect_to to_scan_fixed_asset_info_path(@fixed_asset_inventory_detail.fixed_asset_info) }
       format.json { head :no_content }
     end
   end

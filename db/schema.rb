@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171212054901) do
+ActiveRecord::Schema.define(version: 20171221062520) do
 
   create_table "fixed_asset_catalogs", force: true do |t|
     t.string   "code",             limit: 8, null: false
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(version: 20171212054901) do
     t.string   "brand_model"
     t.string   "use_years"
     t.string   "desc1"
+    t.string   "belong_unit"
   end
 
   create_table "fixed_asset_inventories", force: true do |t|
@@ -100,6 +101,10 @@ ActiveRecord::Schema.define(version: 20171212054901) do
     t.integer  "fixed_asset_info_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "brand_model"
+    t.string   "use_years"
+    t.string   "desc1"
+    t.string   "belong_unit"
   end
 
   create_table "fixed_asset_inventory_units", force: true do |t|
@@ -147,6 +152,24 @@ ActiveRecord::Schema.define(version: 20171212054901) do
     t.datetime "discard_at"
     t.string   "use_years"
     t.string   "desc1"
+  end
+
+  create_table "lvc_discard_details", force: true do |t|
+    t.string   "lvc_discard_id"
+    t.string   "low_value_consumption_info_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "lvc_discards", force: true do |t|
+    t.string   "name"
+    t.string   "status"
+    t.integer  "create_user_id"
+    t.integer  "create_unit_id"
+    t.integer  "checked_user_id"
+    t.string   "desc"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "lvc_imgs", force: true do |t|
@@ -200,6 +223,8 @@ ActiveRecord::Schema.define(version: 20171212054901) do
     t.integer  "low_value_consumption_info_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "use_years"
+    t.string   "desc1"
   end
 
   create_table "lvc_inventory_units", force: true do |t|

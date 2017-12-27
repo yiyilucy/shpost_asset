@@ -76,7 +76,7 @@ class LowValueConsumptionInventoryDetailsController < ApplicationController
 
     end
     respond_to do |format|
-      format.html { redirect_to doing_index_low_value_consumption_inventory_low_value_consumption_inventory_details_path(@low_value_consumption_inventory) }
+      format.html { redirect_to to_scan_low_value_consumption_info_path(@low_value_consumption_inventory_detail.low_value_consumption_info) }
       format.json { head :no_content }
     end
   end
@@ -93,7 +93,7 @@ class LowValueConsumptionInventoryDetailsController < ApplicationController
       end
     end
     respond_to do |format|
-      format.html { redirect_to doing_index_low_value_consumption_inventory_low_value_consumption_inventory_details_path(@low_value_consumption_inventory) }
+      format.html { redirect_to to_scan_low_value_consumption_info_path(@low_value_consumption_inventory_detail.low_value_consumption_info) }
       format.json { head :no_content }
     end
   end

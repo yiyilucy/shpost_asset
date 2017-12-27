@@ -35,7 +35,7 @@
       <%= text_field_tag(:tcbd_khdh,@unit.tcbd_khdh) %>
 	    </div>
   </div>
-   <% if @unit.unit_level == 2 %>
+   <% if !@unit.parent.blank? and @unit.parent.name.eql?I18n.t("relevant_unit.parent") %>
     <div class="control-group">
     <%= check_box_tag 'is_facility_management_unit' %>是否为设备管理单位
     </div>

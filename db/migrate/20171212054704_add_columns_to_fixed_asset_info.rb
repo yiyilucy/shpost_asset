@@ -3,5 +3,6 @@ class AddColumnsToFixedAssetInfo < ActiveRecord::Migration
   	add_column :fixed_asset_infos, :brand_model, :string
   	add_column :fixed_asset_infos, :use_years, :string
   	add_column :fixed_asset_infos, :desc1, :string
+  	add_column :fixed_asset_infos, :belong_unit, :string
   end
 end

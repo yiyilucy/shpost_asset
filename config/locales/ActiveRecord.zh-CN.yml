@@ -1,5 +1,5 @@
 zh-CN:
-  title: "上海邮政固定资产管理系统"
+  title: "上海邮政实物资产管理系统"
   welcome: "欢迎登陆"
   date:
     abbr_day_names:
@@ -162,6 +162,9 @@ zh-CN:
       scan: 查看
       match: 匹配
       unmatch: 不匹配
+      print: 打印
+      discard: 报废
+      lvc_discard_details: 报废明细
     titles:
       edit: 编辑%{model}
       new: 新增%{model}
@@ -333,6 +336,12 @@ zh-CN:
       low_value_consumption_inventory_unit:
         one: 低值易耗品信息盘点单位
         other: 低值易耗品信息盘点单位
+      lvc_discard:
+        one: 低值易耗品报废单
+        other: 低值易耗品报废单
+      lvc_discard_detail:
+        one: 低值易耗品报废明细
+        other: 低值易耗品报废明细
     attributes:
       user:
         email: "电子邮件"
@@ -400,7 +409,8 @@ zh-CN:
         manage_unit_id: "管理单位"
         use_years: "使用年限"
         brand_model: "结构/型号"
-        desc1: "备注1"
+        desc1: "使用单位"
+        belong_unit: "归属管理"
       low_value_consumption_info:
         sn: "序号"
         asset_name: "资产名称"
@@ -432,7 +442,7 @@ zh-CN:
         log: "日志"
         discard_at: "报废日期"
         use_years: "使用年限"
-        desc1: "备注1"
+        desc1: "使用单位"
       purchase:
         no: "采购单号"
         name: "采购单名称"
@@ -466,6 +476,7 @@ zh-CN:
         status_doing: "盘点中"
         status_canceled: "取消"
         status_done: "完成"
+        unit: "单位"
       fixed_asset_inventory_detail:
         sn: "序号"
         asset_name: "资产名称"
@@ -476,7 +487,7 @@ zh-CN:
         use_at: "领用日期"
         measurement_unit: "计量单位"
         amount: "数量"
-        sum: "金额"
+        sum: "原值"
         unit_id: "使用部门"
         branch: "所在网点"
         location: "所在地点"
@@ -494,6 +505,11 @@ zh-CN:
         inventory_status_waiting: "待扫描"
         inventory_status_match: "匹配"
         inventory_status_unmatch: "不匹配"
+        inventory_status_no_scan: "未扫描"
+        use_years: "使用年限"
+        brand_model: "结构/型号"
+        desc1: "使用单位"
+        belong_unit: "归属管理"
       fixed_asset_inventory_unit:
         unit_id: "单位"
         fixed_asset_inventory_id: "固定资产盘点单"
@@ -514,6 +530,7 @@ zh-CN:
         status_doing: "盘点中"
         status_canceled: "取消"
         status_done: "完成"
+        unit: "单位"
       low_value_consumption_inventory_unit:
         unit_id: "单位"
         lvc_inventory_id: "低值易耗品盘点单"
@@ -529,7 +546,7 @@ zh-CN:
         buy_at: "购买日期"
         use_at: "领用日期"
         measurement_unit: "计量单位"
-        sum: "金额"
+        sum: "原值"
         use_unit_id: "使用部门"
         branch: "所在网点"
         location: "所在地点"
@@ -537,7 +554,7 @@ zh-CN:
         change_log: "变动记录"
         consumption_status: "低值易耗品状态"
         print_times: "标签打印次数"
-        brand_model: "品牌型号"
+        brand_model: "结构/型号"
         batch_no: "生产批次"
         purchase_id: "采购单号"
         manage_unit_id: "管理单位"
@@ -550,6 +567,22 @@ zh-CN:
         inventory_status_waiting: "待扫描"
         inventory_status_match: "匹配"
         inventory_status_unmatch: "不匹配"
+        inventory_status_no_scan: "未扫描"
+        use_years: "使用年限"
+        desc1: "使用单位"
+      lvc_discard:
+        name: "报废单名称"
+        status: "状态"
+        create_user_id: "创建人"
+        create_unit_id: "创建单位"
+        checked_user_id: "审核人"
+        desc: "备注"
+        status_checking: "待复核"
+        status_declined: "否决"
+        status_done: "完成"
+      lvc_discard_detail:
+        lvc_discard_id: "低值易耗品报废单"
+        low_value_consumption_info_id: "低值易耗品"
   menu:
     permission:
       name: "权限管理"
@@ -586,6 +619,9 @@ zh-CN:
     #       need_count: false
     fixed_assets:
       name: "固定资产"
+      needrole:
+        can: :read
+        role: :FixedAssetCatalog
       submenu:
         fixed_asset_catalog:
           name: "固定资产目录"
@@ -603,6 +639,9 @@ zh-CN:
             role: :FixedAssetInfo
     low_value_consumptions:
       name: "低值易耗品"
+      needrole:
+        can: :read
+        role: :LowValueConsumptionCatalog
       submenu:
         low_value_consumption_catalog:
           name: "低值易耗品目录"
@@ -659,6 +698,19 @@ zh-CN:
           needrole:
             can: :read
             role: :Purchase
+    lvc_discards:
+      name: "低值易耗品报废单"    
+      needrole:
+        can: :read
+        role: :LvcDiscard
+      submenu:
+        lvc_discard:
+          name: "低值易耗品报废单"
+          link: "/lvc_discards"
+          need_count: false
+          needrole:
+            can: :read
+            role: :LvcDiscard
     fixed_asset_inventory:    
       name: "固定资产盘点单"    
       needrole:
@@ -670,14 +722,14 @@ zh-CN:
           link: "/fixed_asset_inventories"
           need_count: false
           needrole:
-            can: :read
+            can: :create
             role: :FixedAssetInventory
         doing_fixed_asset_inventory:
           name: "待处理固定资产盘点单"
           link: "/fixed_asset_inventories/doing_index"
           need_count: false
           needrole:
-            can: :read
+            can: :doing_index
             role: :FixedAssetInventory
 
     low_value_consumption_inventory:    
@@ -691,14 +743,14 @@ zh-CN:
           link: "/low_value_consumption_inventories"
           need_count: false
           needrole:
-            can: :read
+            can: :create
             role: :LowValueConsumptionInventory
         doing_low_value_consumption_inventory:
           name: "待处理低值易耗品盘点单"
           link: "/low_value_consumption_inventories/doing_index"
           need_count: false
           needrole:
-            can: :read
+            can: :doing_index
             role: :LowValueConsumptionInventory
         
 

@@ -1,19 +1,19 @@
 class Sequence < ActiveRecord::Base
   belongs_to :unit
 
-  def self.generate_asset_no(obj)
+  def self.generate_asset_no(obj,date)
     asset_no = nil
   	if obj.asset_no.blank?
-      asset_no = Sequence.generate_barcode(Unit.find_by(id:(obj.use_unit_id.blank? ? obj.manage_unit_id : obj.use_unit_id)), obj.class, Sequence.generate_sequence(Unit.find_by(id:(obj.use_unit_id.blank? ? obj.manage_unit_id : obj.use_unit_id)), obj.class))
+      asset_no = Sequence.generate_barcode(Unit.find_by(id:(obj.use_unit_id.blank? ? obj.manage_unit_id : obj.use_unit_id)), obj.class, Sequence.generate_sequence(Unit.find_by(id:(obj.use_unit_id.blank? ? obj.manage_unit_id : obj.use_unit_id)), obj.class), date)
     end
   end
 
   def self.generate_sequence(unit, _class)
-    get_count(unit, _class).to_s.rjust(10, '0')
+    get_count(unit, _class).to_s.rjust(5, '0')
   end
 
-  def self.generate_barcode(unit, _class, count)
-    self.generate_initial(unit, _class).upcase + count
+  def self.generate_barcode(unit, _class, count, date)
+    self.generate_initial(unit, _class).upcase + date.strftime("%Y%m").to_s + count
   end
 
   def self.get_count(unit, _class)
@@ -31,7 +31,7 @@ class Sequence < ActiveRecord::Base
   end
 
   def self.generate_initial(unit, _class)
-    (unit.try(:short_name).blank?) ? "": unit.try(:short_name)
+    unit.short_name.blank? ? "000": unit.short_name.rjust(3, '0')
   end
 
   

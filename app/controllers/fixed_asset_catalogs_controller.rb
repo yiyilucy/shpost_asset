@@ -62,7 +62,7 @@ class FixedAssetCatalogsController < ApplicationController
               code2 = rowarr[1].blank? ? "" : rowarr[1].to_s.split('.0')[0]
               code3 = rowarr[2].blank? ? "" : rowarr[2].to_s.split('.0')[0]
               code4 = rowarr[3].blank? ? "" : rowarr[3].to_s.split('.0')[0]
-              name = to_string(rowarr[4])
+              name = to_string(rowarr[4]).strip
               measurement_unit = to_string(rowarr[5])
               years = rowarr[6].blank? ? nil : rowarr[6].to_s.split('.0')[0].to_i
               desc = to_string(rowarr[7])

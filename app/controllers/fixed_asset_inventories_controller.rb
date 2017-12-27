@@ -8,7 +8,11 @@ class FixedAssetInventoriesController < ApplicationController
   end
 
   def doing_index
-    @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id = ? and fixed_asset_inventories.create_unit_id != ?", ["doing", "canceled", "done"], current_user.unit_id, current_user.unit_id)
+    if current_user.unit.unit_level == 2
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id = ? and fixed_asset_inventories.create_unit_id != ?", ["doing", "canceled", "done"], current_user.unit_id, current_user.unit_id)
+    elsif current_user.unit.unit_level == 3
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id = ?", ["doing", "canceled", "done"], current_user.unit.parent_id)
+    end
     
     @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
       order_direction: 'desc')
@@ -20,15 +24,15 @@ class FixedAssetInventoriesController < ApplicationController
   def new
     @inventory = FixedAssetInventory.new
     if current_user.unit.unit_level == 1
-      @units_grid = initialize_grid(Unit.where(unit_level: 2, is_facility_management_unit: false).order(:no), per_page: 1000,:name => 'g1')
-      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true, unit_level: 2).order(:no), per_page: 1000,:name => 'g2')
-    elsif current_user.unit.unit_level == 2 and current_user.unit.is_facility_management_unit
-      @units_grid = initialize_grid(Unit.where(unit_level: 2, is_facility_management_unit: false).order(:no), per_page: 1000,:name => 'g1')
+      @units_grid = initialize_grid(Unit.where(unit_level: 2).order(:no), per_page: 1000,:name => 'g1')
+      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true).order(:no), per_page: 1000,:name => 'g2')
+    elsif current_user.unit.is_facility_management_unit
+      @units_grid = initialize_grid(Unit.where(unit_level: 2).order(:no), per_page: 1000,:name => 'g1')
       @relevant_departments_grid = initialize_grid(Unit.where(id: current_user.unit_id), per_page: 1000,:name => 'g2')
-    elsif current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+    elsif current_user.unit.unit_level == 2 
       lv3units = Unit.where(parent_id: current_user.unit_id).select(:id)
       @units_grid = initialize_grid(Unit.where("parent_id = ? or id = ? or parent_id in (?)", current_user.unit_id, current_user.unit_id, lv3units).order(:unit_level, :no), per_page: 1000,:name => 'g1')
-      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true, unit_level: 2).order(:no), per_page: 1000,:name => 'g2')
+      @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true).order(:no), per_page: 1000,:name => 'g2')
     end
 
 
@@ -61,7 +65,7 @@ class FixedAssetInventoriesController < ApplicationController
       #   fixed_asset_infos = FixedAssetInfo.where(relevant_department: relevant_departments, unit_id: units)
       # end
 # binding.pry
-      if current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+      if current_user.unit.unit_level == 2
         fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id in (?) and fixed_asset_infos.status = ?", relevant_departments, units, "in_use")
       else
         fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id in (?) or fixed_asset_infos.manage_unit_id in (?)) and fixed_asset_infos.status = ?", relevant_departments, units, units, "in_use")
@@ -78,7 +82,7 @@ class FixedAssetInventoriesController < ApplicationController
           redirect_to fixed_asset_inventories_url and return
         end
 # binding.pry
-        fainventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventory_units.unit_id in (?) and fixed_asset_inventories.start_time <= ? and fixed_asset_inventories.end_time >= ? and fixed_asset_inventories.status in (?)", units, DateTime.parse(params[:fixed_asset_inventory][:start_time]), DateTime.parse(params[:fixed_asset_inventory][:end_time]), ["waiting", "doing"])
+        fainventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventory_units.unit_id in (?) and fixed_asset_inventories.start_time <= ? and fixed_asset_inventories.status in (?)", units, DateTime.parse(params[:fixed_asset_inventory][:start_time]), ["waiting", "doing"])
         if !fainventories.blank?
           flash[:alert] = "同一时间同一单位不可重叠盘点"
           redirect_to fixed_asset_inventories_url and return
@@ -93,7 +97,7 @@ class FixedAssetInventoriesController < ApplicationController
         @fixed_asset_inventory.create_user_id = current_user.id
         @fixed_asset_inventory.create_unit_id = current_user.unit_id
 
-        if current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+        if current_user.unit.unit_level == 2
           @fixed_asset_inventory.is_lv2_unit = true
         end
 
@@ -118,7 +122,7 @@ class FixedAssetInventoriesController < ApplicationController
             inventory_unit_id = FixedAssetInventoryUnit.find_by(fixed_asset_inventory_id: @fixed_asset_inventory.id, unit_id: x.manage_unit_id).blank? ? nil : FixedAssetInventoryUnit.find_by(fixed_asset_inventory_id: @fixed_asset_inventory.id, unit_id: x.manage_unit_id).id
           end
 
-          @fixed_asset_inventory.fixed_asset_inventory_details.create(sn: x.sn, asset_name: x.asset_name, asset_no: x.asset_no, fixed_asset_catalog_id: x.fixed_asset_catalog_id, relevant_unit_id: x.relevant_unit_id, buy_at: x.buy_at, use_at: x.use_at, measurement_unit: x.measurement_unit, amount: x.amount, sum: x.sum, unit_id: x.unit_id, branch: x.branch, location: x.location, user: x.user, change_log: x.change_log, accounting_department: x.accounting_department, asset_status: x.status, print_times: x.print_times, manage_unit_id: x.manage_unit_id, inventory_status: "waiting", fixed_asset_inventory_unit_id: inventory_unit_id, fixed_asset_info_id: x.id)
+          @fixed_asset_inventory.fixed_asset_inventory_details.create(sn: x.sn, asset_name: x.asset_name, asset_no: x.asset_no, fixed_asset_catalog_id: x.fixed_asset_catalog_id, relevant_unit_id: x.relevant_unit_id, buy_at: x.buy_at, use_at: x.use_at, measurement_unit: x.measurement_unit, amount: x.amount, sum: x.sum, unit_id: x.unit_id, branch: x.branch, location: x.location, user: x.user, change_log: x.change_log, accounting_department: x.accounting_department, asset_status: x.status, print_times: x.print_times, manage_unit_id: x.manage_unit_id, inventory_status: "waiting", fixed_asset_inventory_unit_id: inventory_unit_id, fixed_asset_info_id: x.id, brand_model: x.brand_model, use_years: x.use_years, desc1: x.desc1, belong_unit: x.belong_unit)
         end
 
         
@@ -163,13 +167,14 @@ class FixedAssetInventoriesController < ApplicationController
   def done
     all_finished = true
 
-    if current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
+    if current_user.unit.unit_level == 2
       @fixed_asset_inventory.fixed_asset_inventory_details.each do |x|
         if x.inventory_status.eql?"waiting"
-          all_finished = false
+          # all_finished = false
+          x.update inventory_status: "no_scan"
         end
       end
-    else
+    elsif current_user.unit.is_facility_management_unit or current_user.unit.unit_level == 1
       @fixed_asset_inventory.fixed_asset_inventory_units.each do |x|
         if x.status.eql?"unfinished"
           all_finished = false
@@ -193,25 +198,21 @@ class FixedAssetInventoriesController < ApplicationController
     sub_unit = @fixed_asset_inventory.fixed_asset_inventory_units.find_by(unit_id: current_user.unit_id)
 
     if !sub_unit.blank?
-      all_scanned = true
-      # if current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit
-      #   fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where(manage_unit_id: current_user.unit_id)
-      # elsif [3,4].include?current_user.unit.unit_level
-      #   fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where(unit_id: current_user.unit_id)
-      # end
+    #   all_scanned = true
       fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where(manage_unit_id: current_user.unit_id)
 
       fixed_asset_inventory_details.each do |x|
         if x.inventory_status.eql?"waiting"
-          all_scanned = false
+          # all_scanned = false
+          x.update inventory_status: "no_scan"
         end
       end
 
-      if all_scanned
+    #   if all_scanned
         sub_unit.update status: "finished"
-      else
-        flash[:alert] = "固定资产盘点未全部完成"
-      end
+    #   else
+    #     flash[:alert] = "固定资产盘点未全部完成"
+    #   end
     end
 
     respond_to do |format|

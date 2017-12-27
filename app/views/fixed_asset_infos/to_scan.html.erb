@@ -15,8 +15,24 @@
     <td><%= @fixed_asset_info.try :asset_name %></td>
   </tr>
   <tr>
+    <td><%= label_tag(:brand_model, "结构/型号:") %></td>
+    <td><%= @fixed_asset_info.try :brand_model %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:use_years, "使用年限:") %></td>
+    <td><%= @fixed_asset_info.try :use_years %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:sum, "原值:") %></td>
+    <td><%= @fixed_asset_info.try :sum %></td>
+  </tr>
+  <tr>
     <td><%= label_tag(:use_at, "领用日期:") %></td>
     <td><%= @fixed_asset_info.use_at.blank? ? "" : @fixed_asset_info.use_at.strftime('%Y-%m-%d').to_s %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:belong_unit, "归属管理:") %></td>
+    <td><%= @fixed_asset_info.try :belong_unit %></td>
   </tr>
   <tr>
     <td><%= label_tag(:unit_id, "使用部门:") %></td>

@@ -26,7 +26,7 @@
 
     g.column do |low_value_consumption_inventory|
       ActiveSupport::SafeBuffer.new << 
-      (link_to t('.sub_done', :default => t("helpers.links.sub_done")), "/low_value_consumption_inventories/" + low_value_consumption_inventory.id.to_s + "/sub_done", :data => { :confirm => "确定完成?" }, :class => 'btn btn-xs btn-primary' if (can? :sub_done, low_value_consumption_inventory) and (low_value_consumption_inventory.status.eql?"doing") and (low_value_consumption_inventory.low_value_consumption_inventory_units.find_by(unit_id: current_user.unit_id).status.eql?"unfinished") )<< ' ' <<
+      (link_to t('.sub_done', :default => t("helpers.links.sub_done")), "/low_value_consumption_inventories/" + low_value_consumption_inventory.id.to_s + "/sub_done", :data => { :confirm => "确定完成?完成后未扫描资产的状态会变为未扫描." }, :class => 'btn btn-xs btn-primary' if (can? :sub_done, low_value_consumption_inventory) and (low_value_consumption_inventory.status.eql?"doing") and (low_value_consumption_inventory.low_value_consumption_inventory_units.find_by(unit_id: current_user.unit_id).status.eql?"unfinished") )<< ' ' <<
       (link_to '盘点单明细',
                 doing_index_low_value_consumption_inventory_low_value_consumption_inventory_details_path(low_value_consumption_inventory), :class => 'btn btn-xs btn-primary' )
     end
