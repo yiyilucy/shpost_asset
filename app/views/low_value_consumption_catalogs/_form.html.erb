@@ -1,17 +1,38 @@
-<%= form_for(@low_value_consumption_catalog) do |f| %>
-  <% if @low_value_consumption_catalog.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@low_value_consumption_catalog.errors.count, "error") %> prohibited this low_value_consumption_catalog from being saved:</h2>
-
-      <ul>
-      <% @low_value_consumption_catalog.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+<%= form_for @low_value_consumption_catalog, :html => { :class => 'form-horizontal' } do |f| %>
+  <%= f.error_messages %>
+  <div class="control-group">
+    <%= f.label :code, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :code, :class => 'text_field' %>
     </div>
-  <% end %>
-
-  <div class="actions">
-    <%= f.submit %>
+    </div>
+  <div class="control-group">
+    <%= f.label :name, :class => 'control-label' %>
+    <div class="controls">
+    <%= f.text_field :name, :class => 'text_field' %>
+       </div>
+      </div>
+  <div class="control-group">
+    <%= f.label :measurement_unit, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :measurement_unit, :class => 'text_field' %>
+    </div>
+   </div>
+  <div class="control-group">
+    <%= f.label :years, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :years, :class => 'text_field' %>
+    </div>
   </div>
+  <div class="control-group">
+    <%= f.label :desc, :class => 'control-label' %>
+     <div class="controls">
+      <%= f.text_field :desc, :class => 'text_field' %>
+    </div>
+    </div>
+
+  <%= f.submit nil, :class => 'btn btn-primary' , onclick: "if($('#low_value_consumption_catalog_code').val() == ''){ alert('请输入编码'); return false;}; "%>
+  <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+            low_value_consumption_catalogs_path(@low_value_consumption_catalogs), :class => 'btn btn-default' %>
 <% end %>
+

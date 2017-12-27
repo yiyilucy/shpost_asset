@@ -7,9 +7,16 @@
                   "/low_value_consumption_catalogs/low_value_consumption_catalog_import",
                   :class => 'btn btn-primary' %>
     <% end %>
+     <% if can? :new, LowValueConsumptionCatalog  %>
+      <%= link_to t('.new', :default => t("helpers.links.new")),
+                   new_low_value_consumption_catalog_path(@low_value_consumption_catalog),
+                  :class => 'btn btn-primary' %>
+    <% end %>
   </div>
 </div>
-<%= grid(@low_value_consumption_catalogs, :show_filters => :always) do |g|
+
+<%= grid(@low_value_consumption_catalogs,:show_filters => :always) do |g|
+   
     g.column name: model_class.human_attribute_name(:code), attribute: 'code'
 
     g.column name: model_class.human_attribute_name(:name), attribute: 'name'
@@ -19,9 +26,26 @@
     g.column name: model_class.human_attribute_name(:years), attribute: 'years'
 
     g.column name: model_class.human_attribute_name(:desc), attribute: 'desc'
-
     
-  end 
+  
+  g.column do |low_value_consumption_catalog|
+      ActiveSupport::SafeBuffer.new << 
+      (link_to t('.edit', :default => t("helpers.links.edit")), edit_low_value_consumption_catalog_path(low_value_consumption_catalog), :class => 'btn btn-xs btn-primary')<< ' ' <<
+      (link_to t('.destroy', :default => t("helpers.links.destroy")), low_value_consumption_catalog_path(low_value_consumption_catalog), :method => :delete, :data => { :confirm => t('wice_grid.saved_query_deletion_confirmation', :default => t("helpers.links.confirm", :default =>"确定删除?" )) }, :class => 'btn btn-xs btn-danger')
+         
+  end
+ end
+
 %>
 
+<script language="javascript" type="text/javascript"> 
 
+
+$(document).on("page:load ready", function(){
+    $("button").click(function(){
+        $(this).parents('tr').next('.extra-row').slideToggle("fast");
+        return false;
+    });
+});
+
+</script>

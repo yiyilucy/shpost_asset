@@ -19,20 +19,51 @@ class FixedAssetCatalogsController < ApplicationController
   def edit
   end
 
-  def create
-    @fixed_asset_catalog = FixedAssetCatalog.new(fixed_asset_catalog_params)
-    @fixed_asset_catalog.save
-    respond_with(@fixed_asset_catalog)
-  end
+  # def create
+  #   @fixed_asset_catalog = FixedAssetCatalog.new(fixed_asset_catalog_params)
+  #   @fixed_asset_catalog.save
+  #   respond_with(@fixed_asset_catalog)
+  # end
 
+  # def update
+  #   @fixed_asset_catalog.update(fixed_asset_catalog_params)
+  #   respond_with(@fixed_asset_catalog)
+  # end
+
+  # def destroy
+  #   @fixed_asset_catalog.destroy
+  #   respond_with(@fixed_asset_catalog)
+  # end
+  def create
+    respond_to do |format|
+      if @fixed_asset_catalog.save
+        format.html { redirect_to @fixed_asset_catalog, notice: I18n.t('controller.create_success_notice', model: '固定资产信息') }
+        format.json { render action: 'show', status: :created, location: @fixed_asset_catalog }
+      else
+        format.html { render action: 'new' }
+        format.json { render json: @fixed_asset_catalog.errors, status: :unprocessable_entity }
+      end
+    end
+  end
   def update
-    @fixed_asset_catalog.update(fixed_asset_catalog_params)
-    respond_with(@fixed_asset_catalog)
+    respond_to do |format|
+      if @fixed_asset_catalog.update(fixed_asset_catalog_params)
+        
+        format.html { redirect_to @fixed_asset_catalog, notice: I18n.t('controller.update_success_notice', model: '固定资产信息')}
+        format.json { head :no_content }
+      else
+        format.html { render action: 'edit' }
+        format.json { render json: @fixed_asset_catalog.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
   def destroy
     @fixed_asset_catalog.destroy
-    respond_with(@fixed_asset_catalog)
+    respond_to do |format|
+      format.html { redirect_to fixed_asset_catalogs_url }
+      format.json { head :no_content }
+    end
   end
 
 
@@ -165,7 +196,7 @@ class FixedAssetCatalogsController < ApplicationController
     end
 
     def fixed_asset_catalog_params
-      params[:fixed_asset_catalog]
+      params[:fixed_asset_catalog].permit(:code,:name,:measurement_unit,:years,:desc)
     end
 
     def upload_fixed_asset_catalog(file)
