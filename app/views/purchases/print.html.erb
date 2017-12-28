@@ -27,7 +27,7 @@ function low_value_consumption_infos_preview() {
     
     LODOP.SET_PRINT_STYLE("Alignment",2);
     <% url = I18n.t("url.low_value_consumption")+'/'+info.id.to_s+'/to_scan' %>
-    LODOP.ADD_PRINT_BARCODE(32,73,150,150,'QRCode','<%= url %>');
+    LODOP.ADD_PRINT_BARCODE(38,73,150,150,'QRCode','<%= url %>');
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
     LODOP.ADD_PRINT_TEXT(189,1,300,15,'<%= (info.use_unit_id.blank? ? "" : Unit.find(info.use_unit_id).name) %>');

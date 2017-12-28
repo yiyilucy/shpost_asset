@@ -74,9 +74,9 @@ class FixedAssetInfosController < ApplicationController
               relevant_departments[key] = Unit.find_by(name: key).id
             end
 
-            short_relevant_departments = Unit.where(is_facility_management_unit: true).group(:desc).size
+            short_relevant_departments = Unit.where(is_facility_management_unit: true).group(:unit_desc).size
             short_relevant_departments.each do |key, value|
-              short_relevant_departments[key] = Unit.find_by(desc: key).id
+              short_relevant_departments[key] = Unit.find_by(unit_desc: key).id
             end
            
             sheet_error = []

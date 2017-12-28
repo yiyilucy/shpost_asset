@@ -58,7 +58,7 @@ class UnitsController < ApplicationController
       @unit.no = params[:unit][:no]
       @unit.name = params[:unit][:name]
       @unit.short_name = params[:unit][:short_name]
-      @unit.desc = params[:unit][:desc]
+      @unit.unit_desc = params[:unit][:unit_desc]
       @unit.tcbd_khdh = params[:unit][:tcbd_khdh]
 
       if !params["checkbox"].blank? and !params["checkbox"]["is_facility_management_unit"].blank?
@@ -105,7 +105,7 @@ class UnitsController < ApplicationController
     @unit.no = params[:no]
     @unit.name = params[:name]
     @unit.short_name = params[:short_name]
-    @unit.desc = params[:desc]
+    @unit.unit_desc = params[:unit_desc]
     @unit.tcbd_khdh = params[:tcbd_khdh]
     is_facility_management_unit = params[:is_facility_management_unit]
     @unit.is_facility_management_unit = (is_facility_management_unit.eql?"1") ? true : false
@@ -170,6 +170,6 @@ class UnitsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def unit_params
-      params.require(:unit).permit(:no, :name, :desc, :short_name, :tcbd_khdh, :unit_level, :parent_id, :is_facility_management_unit)
+      params.require(:unit).permit(:no, :name, :unit_desc, :short_name, :tcbd_khdh, :unit_level, :parent_id, :is_facility_management_unit)
     end
 end

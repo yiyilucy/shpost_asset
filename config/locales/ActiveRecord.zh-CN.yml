@@ -357,7 +357,7 @@ zh-CN:
       unit:
         "no": "编号"
         name: "单位名称"
-        desc: "单位描述"
+        unit_desc: "单位描述"
         short_name: "英文缩写"
         tcbd_khdh: "商务投递客户编号"
         unit_level: "单位级别"

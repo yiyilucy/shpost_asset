@@ -30,8 +30,8 @@
   
   g.column do |low_value_consumption_catalog|
       ActiveSupport::SafeBuffer.new << 
-      (link_to t('.edit', :default => t("helpers.links.edit")), edit_low_value_consumption_catalog_path(low_value_consumption_catalog), :class => 'btn btn-xs btn-primary')<< ' ' <<
-      (link_to t('.destroy', :default => t("helpers.links.destroy")), low_value_consumption_catalog_path(low_value_consumption_catalog), :method => :delete, :data => { :confirm => t('wice_grid.saved_query_deletion_confirmation', :default => t("helpers.links.confirm", :default =>"确定删除?" )) }, :class => 'btn btn-xs btn-danger')
+      (link_to t('.edit', :default => t("helpers.links.edit")), edit_low_value_consumption_catalog_path(low_value_consumption_catalog), :class => 'btn btn-xs btn-primary' if (can? :update, low_value_consumption_catalog))<< ' ' <<
+      (link_to t('.destroy', :default => t("helpers.links.destroy")), low_value_consumption_catalog_path(low_value_consumption_catalog), :method => :delete, :data => { :confirm => t('wice_grid.saved_query_deletion_confirmation', :default => t("helpers.links.confirm", :default =>"确定删除?" )) }, :class => 'btn btn-xs btn-danger' if (can? :destroy, low_value_consumption_catalog))
          
   end
  end

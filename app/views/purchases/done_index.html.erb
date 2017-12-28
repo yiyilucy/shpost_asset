@@ -48,7 +48,7 @@
       ActiveSupport::SafeBuffer.new << 
       (link_to t('.low_value_consumption_infos', :default => t("helpers.links.low_value_consumption_infos")),
                 purchase_low_value_consumption_infos_path(purchase), :class => 'btn btn-xs btn-primary' if (can? :read, LowValueConsumptionInfo))<< ' ' <<
-      (link_to t('.print', :default => t("helpers.links.print")), "/purchases/" + purchase.id.to_s + "/print", target: '_blank', :class => 'btn btn-xs btn-primary')<< ' ' <<
+      (link_to t('.print', :default => t("helpers.links.print")), "/purchases/" + purchase.id.to_s + "/print", target: '_blank', :class => 'btn btn-xs btn-primary' if (can? :print, LowValueConsumptionInfo))<< ' ' <<
       button_tag("变动记录", class: "btn btn-xs btn-primary")
     end
 
