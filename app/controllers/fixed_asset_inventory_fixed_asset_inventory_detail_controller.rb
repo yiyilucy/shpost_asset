@@ -4,7 +4,11 @@ class FixedAssetInventoryFixedAssetInventoryDetailController < ApplicationContro
 
   def index
     # binding.pry
-    @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.joins("left join units as uunits on fixed_asset_inventory_details.unit_id = uunits.id").order("uunits.unit_level, fixed_asset_inventory_details.manage_unit_id, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
+    if RailsEnv.is_oracle?
+      @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.joins("left join units on fixed_asset_inventory_details.unit_id = units.id").order("units.unit_level, fixed_asset_inventory_details.manage_unit_id, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
+    else
+      @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.joins("left join units as uunits on fixed_asset_inventory_details.unit_id = uunits.id").order("uunits.unit_level, fixed_asset_inventory_details.manage_unit_id, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
+    end
     @fixed_asset_inventory_details_grid = initialize_grid(@fixed_asset_inventory_details,
       :name => 'fixed_asset_inventory_fixed_asset_inventory_details',
       :enable_export_to_csv => true,
@@ -17,10 +21,18 @@ class FixedAssetInventoryFixedAssetInventoryDetailController < ApplicationContro
   def doing_index
     # binding.pry
     if current_user.unit.unit_level == 2
-      @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where(manage_unit_id: current_user.unit_id).joins("left join units as uunits on fixed_asset_inventory_details.unit_id = uunits.id").order("uunits.unit_level, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
+      if RailsEnv.is_oracle?
+        @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where(manage_unit_id: current_user.unit_id).joins("left join units on fixed_asset_inventory_details.unit_id = units.id").order("units.unit_level, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
+      else
+        @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where(manage_unit_id: current_user.unit_id).joins("left join units as uunits on fixed_asset_inventory_details.unit_id = uunits.id").order("uunits.unit_level, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
+      end
     elsif current_user.unit.unit_level == 3 and !current_user.unit.is_facility_management_unit
       child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
-      @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where("fixed_asset_inventory_details.unit_id = ? or fixed_asset_inventory_details.unit_id in (?)", current_user.unit_id, child_ids).joins("left join units as uunits on fixed_asset_inventory_details.unit_id = uunits.id").order("uunits.unit_level, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
+      if RailsEnv.is_oracle?
+        @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where("fixed_asset_inventory_details.unit_id = ? or fixed_asset_inventory_details.unit_id in (?)", current_user.unit_id, child_ids).joins("left join units on fixed_asset_inventory_details.unit_id = units.id").order("units.unit_level, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
+      else
+        @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where("fixed_asset_inventory_details.unit_id = ? or fixed_asset_inventory_details.unit_id in (?)", current_user.unit_id, child_ids).joins("left join units as uunits on fixed_asset_inventory_details.unit_id = uunits.id").order("uunits.unit_level, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
+      end
     end
     
     @fixed_asset_inventory_details_grid = initialize_grid(@fixed_asset_inventory_details,

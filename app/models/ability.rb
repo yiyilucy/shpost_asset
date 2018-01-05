@@ -49,8 +49,10 @@ class Ability
         # can [:new, :read], Purchase
         can :manage, Sequence
         can :manage, FixedAssetInventory
+        cannot :doing_index, FixedAssetInventory
         can :manage, FixedAssetInventoryDetail
         can :manage, LowValueConsumptionInventory
+        cannot :doing_index, LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
     end
         

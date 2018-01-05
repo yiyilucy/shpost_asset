@@ -175,12 +175,14 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
             @low_value_consumption_info.measurement_unit = params[:measurement_unit]
             @low_value_consumption_info.sum = params[:sum]           
             @low_value_consumption_info.change_log = params[:change_log]
+            @low_value_consumption_info.use_years = params[:use_years]
           end
           @low_value_consumption_info.branch = params[:branch]
           @low_value_consumption_info.location = params[:location]
           @low_value_consumption_info.user = params[:user]
           @low_value_consumption_info.relevant_unit_id = params[:low_value_consumption_info][:relevant_unit_id]
           @low_value_consumption_info.use_unit_id = params[:low_value_consumption_info][:use_unit_id]
+          @low_value_consumption_info.desc1 = params[:desc1]
           @low_value_consumption_info.save
         end
         flash[:notice] = "批量修改成功"
@@ -214,7 +216,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
   end
 
   def low_value_consumption_info_params
-    params.require(:low_value_consumption_info).permit(:asset_name, :lvc_catalog_id, :relevant_unit_id, :buy_at, :measurement_unit, :sum, :use_unit_id, :branch, :location, :user, :brand_model, :batch_no, :manage_unit_id)
+    params.require(:low_value_consumption_info).permit(:asset_name, :lvc_catalog_id, :relevant_unit_id, :buy_at, :measurement_unit, :sum, :use_unit_id, :branch, :location, :user, :brand_model, :batch_no, :manage_unit_id, :use_years, :desc1)
   end
 
 end

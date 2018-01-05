@@ -42,6 +42,12 @@
 	      <%= text_field_tag(:sum,@low_value_consumption_info.sum) %>
 		  </div>
       </div>
+      <div class="control-group">
+	      <%= label_tag(:use_years, "使用年限") %>
+	      <div class="controls">
+	      <%= text_field_tag(:use_years,@low_value_consumption_info.use_years) %>
+		  </div>
+      </div>
       <% end %>
       <div class="control-group">
 	      <%= label_tag(:branch, "所在网点") %>
@@ -71,6 +77,12 @@
 	      <%= label_tag(:use_unit_id, "使用部门") %>
 	      <div class="controls">
 	      <%= use_unit_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
+		  </div>
+      </div>
+      <div class="control-group">
+	      <%= label_tag(:desc1, "使用单位") %>
+	      <div class="controls">
+	      <%= text_field_tag(:desc1,@low_value_consumption_info.desc1) %>
 		  </div>
       </div>
    <% if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked" %>

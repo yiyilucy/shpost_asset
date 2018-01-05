@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171221062520) do
+ActiveRecord::Schema.define(version: 20171228042317) do
 
   create_table "fixed_asset_catalogs", force: true do |t|
     t.string   "code",             limit: 8, null: false
@@ -270,7 +270,7 @@ ActiveRecord::Schema.define(version: 20171221062520) do
 
   create_table "units", force: true do |t|
     t.string   "name"
-    t.string   "desc"
+    t.string   "unit_desc"
     t.string   "no"
     t.string   "short_name"
     t.string   "tcbd_khdh"

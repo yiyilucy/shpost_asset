@@ -29859,6 +29859,14 @@ jQuery(function(){
 
 }).call(this);
 (function() {
+
+
+}).call(this);
+(function() {
+
+
+}).call(this);
+(function() {
   $(function() {
     return ajaxunits();
   });
@@ -29970,111 +29978,8 @@ ready = function() {
     return;
   });
 
+  
 
-var sizeLimit = 71680
-// var sizeLimit = 102400;
-var widthLmit = 138;
-var heightLmit = 180;
-var allowType = ["jpg","png","gif","bmp"];
-
-function changePic(obj) {
-  alert("hi");
-  var v = obj.value;
-  if (!checkFileExt(v)) {
-    alert("非法的图片格式");
-    $(obj).after($(obj).clone($(obj)));
-    $(obj).remove();
-      return;
-  }
-  if (obj.files) {
-    var f = obj.files[0];
-      var img = new Image();
-      img.file = f;
-      if (f.size > sizeLimit) {
-        alert('上传照片不能大于' + sizeLimit/1024 + 'k');
-        $(obj).after($(obj).clone($(obj)));
-      $(obj).remove();
-        return;
-      }
-    img.onload=function(){
-      var height = this.height;
-      var width = this.width;
-      if(width>widthLmit||height>heightLmit){
-        alert('上传照片不能大于' + widthLmit + '*' + heightLmit);
-        $(obj).after($(obj).clone($(obj)));
-        $(obj).remove();
-        return;
-      } else if(width==0&height==0) {
-        alert('非法图片');
-        $(obj).after($(obj).clone($(obj)));
-        $(obj).remove();
-        return;
-      } else {
-        $('#submit_button').removeAttr('disabled');
-      }
-    }
-      var reader = new FileReader();
-      reader.onload = function(e){
-          img.src = e.target.result;
-      };
-      reader.readAsDataURL(f);
-  } else {
-    alert("不支持当前浏览器，请使用firefox或chrome");
-  }
-}
-
-function checkFileExt(filename)
-{
-  var flag = false; //状态
-  //取出上传文件的扩展名
-  var index = filename.lastIndexOf(".");
-  var ext = filename.substr(index+1);
-  //循环比较
-  for(var i=0;i<allowType.length;i++){
-    if(ext.toLowerCase() == allowType[i]){
-      flag = true; //一旦找到合适的，立即退出循环
-      break;
-    }
-  }
-  return flag;
-}
-// get file size in IE 
-function getFileSize(obj){
-  try{
-    var file = obj; 
-    file.select(); 
-    file.blur(); 
-    var path = document.selection.createRange().text; 
-    var fso = new ActiveXObject("Scripting.FileSystemObject"); 
-    fileSize = fso.GetFile(path).size;
-    var img = new Image();
-      img.file = fso.GetFile(path);
-    alert(fileSize);//弹出文件大小
-    img.onload=function(){
-      var height = this.height;
-      var width = this.width;
-      if(width>widthLmit||height>heightLmit){
-        alert('上传照片不能大于' + widthLmit + '*' + heightLmit);
-        $(obj).after($(obj).clone($(obj)));
-        $(obj).remove();
-        return;
-      } else if(width==0&height==0) {
-        alert('非法图片');
-        $(obj).after($(obj).clone($(obj)));
-        $(obj).remove();
-        return;
-      } else {
-        $('#submit_button').removeAttr('disabled');
-      }
-    }
-    var reader = new FileReader();
-      reader.onload = function(e){
-          img.src = e.target.result;
-      };
-      reader.readAsDataURL(fso.GetFile(path));
-  }catch(e){ 
-    alert(e+"\n"+"如果错误为：Error:Automation 服务器不能创建对象；"+"\n"+"请按以下方法配置浏览器："+"\n"+"请打开【Internet选项-安全-Internet-自定义级别-ActiveX控件和插件-对未标记为可安全执行脚本的ActiveX控件初始化并执行脚本（不安全）-点击启用-确定】"); 
-    return window.location.reload(); } }
 }
 
 

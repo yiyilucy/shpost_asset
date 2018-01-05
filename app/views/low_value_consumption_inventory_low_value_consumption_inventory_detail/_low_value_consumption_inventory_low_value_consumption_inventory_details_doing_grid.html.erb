@@ -52,7 +52,7 @@
 
     g.column in_csv: false do |low_value_consumption_inventory_detail|
       ActiveSupport::SafeBuffer.new << 
-      (link_to t('.scan', :default => t("helpers.links.scan")), "/low_value_consumption_inventory_details/" + low_value_consumption_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, low_value_consumption_inventory_detail))
+      (link_to t('.scan', :default => t("helpers.links.scan")), "/low_value_consumption_inventory_details/" + low_value_consumption_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, low_value_consumption_inventory_detail) and !(current_user.unit.unit_level == 3 and !current_user.unit.is_facility_management_unit))
     end
 
   end 
