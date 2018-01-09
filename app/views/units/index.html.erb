@@ -31,7 +31,15 @@
       <% end %>
     </tr>
   </table>
+  <% if current_user.role.eql?"sgsadmin" %>
+  <div style="float:right">
+    <%= link_to t('.import', :default => t("helpers.links.import")),
+                  "/units/import",
+                  :class => 'btn btn-primary' %> 
+  </div>
+  <% end %>
 </div>
+
 
 <%= grid(@units_grid) do |g|
     g.column name: model_class.human_attribute_name(:no), attribute: 'no'

@@ -43,6 +43,9 @@ class FixedAssetInventoriesController < ApplicationController
   end
 
   def create
+    @start_sum = 0
+    @end_sum = nil
+# binding.pry
     ActiveRecord::Base.transaction do
       if !params[:g1].nil?
         units = params[:g1][:selected]
@@ -59,6 +62,14 @@ class FixedAssetInventoriesController < ApplicationController
         redirect_to fixed_asset_inventories_url and return
       end
 
+      if !params[:start_sum].blank? and !params[:start_sum]["start_sum"].blank?
+        @start_sum = params[:start_sum]["start_sum"].to_i
+      end
+
+      if !params[:end_sum].blank? and !params[:end_sum]["end_sum"].blank?
+        @end_sum = params[:end_sum]["end_sum"].to_i
+      end
+
       # if current_user.unit.unit_level == 1 or current_user.unit.is_facility_management_unit
       #   fixed_asset_infos = FixedAssetInfo.where(relevant_department: relevant_departments, manage_unit_id: units)
       # elsif current_user.unit.unit_level == 2
@@ -66,9 +77,17 @@ class FixedAssetInventoriesController < ApplicationController
       # end
 # binding.pry
       if current_user.unit.unit_level == 2
-        fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id in (?) and fixed_asset_infos.status = ?", relevant_departments, units, "in_use")
+        if @end_sum.blank?
+          fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id in (?) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? ", relevant_departments, units, "in_use", @start_sum)
+        else
+          fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id in (?) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? and fixed_asset_infos.sum <= ?", relevant_departments, units, "in_use", @start_sum, @end_sum)
+        end
       else
-        fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id in (?) or fixed_asset_infos.manage_unit_id in (?)) and fixed_asset_infos.status = ?", relevant_departments, units, units, "in_use")
+        if @end_sum.blank?
+          fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id in (?) or fixed_asset_infos.manage_unit_id in (?)) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? ", relevant_departments, units, units, "in_use", @start_sum)
+        else
+          fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id in (?) or fixed_asset_infos.manage_unit_id in (?)) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? and fixed_asset_infos.sum <= ?", relevant_departments, units, units, "in_use", @start_sum, @end_sum)
+        end
       end
 
       if fixed_asset_infos.blank?
@@ -104,18 +123,32 @@ class FixedAssetInventoriesController < ApplicationController
         @fixed_asset_inventory.save
 
         Unit.where(id: units).each do |x|
+          # binding.pry
           if @fixed_asset_inventory.is_lv2_unit
-            if !FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id = ? and fixed_asset_infos.status = ?", relevant_departments, x.id, "in_use").blank?
-              @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: x.id, status: "unfinished")
+            if @end_sum.blank?
+              if !FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id = ? and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ?", relevant_departments, x.id, "in_use", @start_sum).blank?
+                @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: x.id, status: "unfinished")
+              end
+            else
+              if !FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id = ? and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? and fixed_asset_infos.sum <= ?", relevant_departments, x.id, "in_use", @start_sum, @end_sum).blank?
+                @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: x.id, status: "unfinished")
+              end
             end
           else
-            if !FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id = ? or fixed_asset_infos.manage_unit_id = ?) and fixed_asset_infos.status = ?", relevant_departments, x.id, x.id, "in_use").blank?
-              @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: x.id, status: "unfinished")
+            if @end_sum.blank?
+              if !FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id = ? or fixed_asset_infos.manage_unit_id = ?) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ?", relevant_departments, x.id, x.id, "in_use", @start_sum).blank?
+                @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: x.id, status: "unfinished")
+              end
+            else
+              if !FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id = ? or fixed_asset_infos.manage_unit_id = ?) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? and fixed_asset_infos.sum <= ?", relevant_departments, x.id, x.id, "in_use", @start_sum, @end_sum).blank?
+                @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: x.id, status: "unfinished")
+              end
             end
           end
         end
           
         fixed_asset_infos.each do |x|
+          # binding.pry
           if @fixed_asset_inventory.is_lv2_unit
             inventory_unit_id = FixedAssetInventoryUnit.find_by(fixed_asset_inventory_id: @fixed_asset_inventory.id, unit_id: x.unit_id).blank? ? nil : FixedAssetInventoryUnit.find_by(fixed_asset_inventory_id: @fixed_asset_inventory.id, unit_id: x.unit_id).id
           else

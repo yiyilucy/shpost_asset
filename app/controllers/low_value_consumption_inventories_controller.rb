@@ -41,6 +41,9 @@ class LowValueConsumptionInventoriesController < ApplicationController
   end
 
   def create
+    @start_sum = 0
+    @end_sum = nil
+
     ActiveRecord::Base.transaction do
       if !params[:g1].nil?
         units = params[:g1][:selected]
@@ -57,12 +60,28 @@ class LowValueConsumptionInventoriesController < ApplicationController
         redirect_to low_value_consumption_inventories_url and return
       end
 
+      if !params[:start_sum].blank? and !params[:start_sum]["start_sum"].blank?
+        @start_sum = params[:start_sum]["start_sum"].to_i
+      end
+
+      if !params[:end_sum].blank? and !params[:end_sum]["end_sum"].blank?
+        @end_sum = params[:end_sum]["end_sum"].to_i
+      end
+
       
 # binding.pry
       if current_user.unit.unit_level == 2
-        low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id in (?) and low_value_consumption_infos.status = ?", relevant_departments, units, "in_use")
+        if @end_sum.blank?
+          low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id in (?) and low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ? ", relevant_departments, units, "in_use", @start_sum)
+        else
+          low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id in (?) and low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ? and low_value_consumption_infos.sum <= ?", relevant_departments, units, "in_use", @start_sum, @end_sum)
+        end
       else
-        low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id in (?) or low_value_consumption_infos.manage_unit_id in (?)) and low_value_consumption_infos.status = ?", relevant_departments, units, units, "in_use")
+        if @end_sum.blank?
+          low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id in (?) or low_value_consumption_infos.manage_unit_id in (?)) and low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ?", relevant_departments, units, units, "in_use", @start_sum)
+        else
+          low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id in (?) or low_value_consumption_infos.manage_unit_id in (?)) and low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ? and low_value_consumption_infos.sum <= ?", relevant_departments, units, units, "in_use", @start_sum, @end_sum)
+        end
       end
 
       if low_value_consumption_infos.blank?
@@ -99,12 +118,24 @@ class LowValueConsumptionInventoriesController < ApplicationController
 
         Unit.where(id: units).each do |x|
           if @low_value_consumption_inventory.is_lv2_unit
-            if !LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id = ? and low_value_consumption_infos.status = ?", relevant_departments, x.id, "in_use").blank?
-              @low_value_consumption_inventory.low_value_consumption_inventory_units.create(unit_id: x.id, status: "unfinished")
+            if @end_sum.blank?
+              if !LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id = ? and low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ?", relevant_departments, x.id, "in_use", @start_sum).blank?
+                @low_value_consumption_inventory.low_value_consumption_inventory_units.create(unit_id: x.id, status: "unfinished")
+              end
+            else
+              if !LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id = ? and low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ? and low_value_consumption_infos.sum <= ?", relevant_departments, x.id, "in_use", @start_sum, @end_sum).blank?
+                @low_value_consumption_inventory.low_value_consumption_inventory_units.create(unit_id: x.id, status: "unfinished")
+              end
             end
           else
-            if !LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id = ? or low_value_consumption_infos.manage_unit_id = ?) and low_value_consumption_infos.status = ?", relevant_departments, x.id, x.id, "in_use").blank?
-              @low_value_consumption_inventory.low_value_consumption_inventory_units.create(unit_id: x.id, status: "unfinished")
+            if @end_sum.blank?
+              if !LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id = ? or low_value_consumption_infos.manage_unit_id = ?) and low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ?", relevant_departments, x.id, x.id, "in_use", @start_sum).blank?
+                @low_value_consumption_inventory.low_value_consumption_inventory_units.create(unit_id: x.id, status: "unfinished")
+              end
+            else
+              if !LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id = ? or low_value_consumption_infos.manage_unit_id = ?) and low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ? and low_value_consumption_infos.sum <= ?", relevant_departments, x.id, x.id, "in_use", @start_sum, @end_sum).blank?
+                @low_value_consumption_inventory.low_value_consumption_inventory_units.create(unit_id: x.id, status: "unfinished")
+              end
             end
           end
         end

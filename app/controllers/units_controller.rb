@@ -153,6 +153,95 @@ class UnitsController < ApplicationController
     end
   end
 
+  def import
+    unless request.get?
+      if file = upload_unit(params[:file]['file'])       
+        ActiveRecord::Base.transaction do
+          begin
+            sheet_error = []
+            rowarr = [] 
+            instance=nil
+            flash_message = "导入成功!"
+
+            if file.include?('.xlsx')
+              instance= Roo::Excelx.new(file)
+            elsif file.include?('.xls')
+              instance= Roo::Excel.new(file)
+            elsif file.include?('.csv')
+              instance= Roo::CSV.new(file)
+            end
+            instance.default_sheet = instance.sheets.first
+            
+            unit2_arr = Array.new
+            unit3_arr = Array.new
+            unit4_arr = Array.new
+            unit23_hash = Hash.new
+            unit234_hash = Hash.new
+            no = 2
+
+            2.upto(instance.last_row) do |line|
+              rowarr = instance.row(line)
+              name2 = to_string(rowarr[1]).strip
+              name3 = to_string(rowarr[2]).strip
+              unit2_arr << name2
+              unit3_arr << name3
+              unit23_hash[name3] = name2
+              
+              if !rowarr[3].blank?
+                name4 = to_string(rowarr[3]).strip
+                unit4_arr << name4             
+                unit234_hash[name4] = [name2,name3]
+              end
+            end
+
+            unit2_arr.uniq.each do |x|
+              if Unit.find_by(name: x).blank?
+                Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 2, parent_id: Unit.find_by(unit_level: 1).blank? ? nil : Unit.find_by(unit_level: 1).id, is_facility_management_unit: false)
+
+                no = no + 1
+              end
+            end
+
+            unit3_arr.uniq.each do |x|
+              if Unit.find_by(name: x).blank?
+                unit = Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 3, parent_id: Unit.find_by(name: unit23_hash[x]).blank? ? nil : Unit.find_by(name: unit23_hash[x]).id)
+                unit.update is_facility_management_unit: (!unit.parent.blank? and unit.parent.name.eql?I18n.t("relevant_unit.parent")) ? true : false
+                no = no + 1
+              end
+            end
+
+            unit4_arr.uniq.each do |x|
+              if Unit.find_by(name: x).blank?
+                # binding.pry
+                unit = Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 4, parent_id: Unit.find_by(name: unit234_hash[x].last).blank? ? nil : Unit.find_by(name: unit234_hash[x].last).id)
+                unit.update is_facility_management_unit: (!unit.parent.blank? and unit.parent.name.eql?I18n.t("relevant_unit.parent")) ? true : false
+                no = no + 1
+              end
+            end
+
+            redirect_to :action => 'index'
+
+            rescue Exception => e
+            flash[:alert] = e.message
+            raise ActiveRecord::Rollback
+          end
+        end
+      end
+    end
+  end
+
+  def to_string(text)
+    if text.is_a? Float
+      return text.to_s.split('.0')[0]
+    else
+      return text
+    end
+  end
+
+
+
+
+
   # def select_level3_parents
   #     @level3_parents = Unit.where(unit_level: 3, parent_id: params[:level2_parent]).order(:no).map{|u| [u.name,u.id]}
       
@@ -171,5 +260,18 @@ class UnitsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def unit_params
       params.require(:unit).permit(:no, :name, :unit_desc, :short_name, :tcbd_khdh, :unit_level, :parent_id, :is_facility_management_unit)
+    end
+
+    def upload_unit(file)
+      if !file.original_filename.empty?
+        direct = "#{Rails.root}/upload/unit/"
+        filename = "#{Time.now.to_f}_#{file.original_filename}"
+
+        file_path = direct + filename
+        File.open(file_path, "wb") do |f|
+           f.write(file.read)
+        end
+        file_path
+      end
     end
 end
