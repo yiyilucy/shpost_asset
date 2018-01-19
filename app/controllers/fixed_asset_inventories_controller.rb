@@ -11,7 +11,7 @@ class FixedAssetInventoriesController < ApplicationController
     if current_user.unit.unit_level == 2
       @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id = ? and fixed_asset_inventories.create_unit_id != ?", ["doing", "canceled", "done"], current_user.unit_id, current_user.unit_id)
     elsif current_user.unit.unit_level == 3
-      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id = ?", ["doing", "canceled", "done"], current_user.unit.parent_id)
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id = ?)", ["doing", "canceled", "done"], current_user.unit.parent_id, current_user.unit.id)
     end
     
     @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',

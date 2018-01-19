@@ -75,7 +75,7 @@ class FixedAssetInventoryDetailsController < ApplicationController
     if !params.blank? and !params[:id].blank?
       @fixed_asset_inventory_detail = FixedAssetInventoryDetail.find(params[:id].to_i)
       @fixed_asset_inventory = @fixed_asset_inventory_detail.fixed_asset_inventory if !@fixed_asset_inventory_detail.blank?
-      @fixed_asset_inventory_detail.update inventory_status: "match"
+      @fixed_asset_inventory_detail.update inventory_status: "match", inventory_user_id: current_user.id
 
     end
     respond_to do |format|
@@ -92,7 +92,7 @@ class FixedAssetInventoryDetailsController < ApplicationController
       if !@fixed_asset_inventory_detail.blank?
         @fixed_asset_inventory = @fixed_asset_inventory_detail.fixed_asset_inventory 
         # binding.pry
-        @fixed_asset_inventory_detail.update inventory_status: "unmatch", desc: params[:desc_content].blank? ? "" : params[:desc_content]
+        @fixed_asset_inventory_detail.update inventory_status: "unmatch", desc: (params[:desc_content].blank? ? "" : params[:desc_content]), inventory_user_id: current_user.id
       end
     end
     respond_to do |format|

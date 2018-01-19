@@ -200,7 +200,7 @@ class PurchasesController < ApplicationController
           end
         end
       else
-        flash[:alert] = "低值易耗品的所在网点，所在地点，使用单位不能为空"
+        flash[:alert] = "低值易耗品的所在网点，所在地点，使用部门不能为空"
         if @purchase.create_user_id == current_user.id
           respond_to do |format|
             format.html { redirect_to purchases_url }

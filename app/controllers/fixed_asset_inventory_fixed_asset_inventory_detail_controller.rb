@@ -26,7 +26,7 @@ class FixedAssetInventoryFixedAssetInventoryDetailController < ApplicationContro
       else
         @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where(manage_unit_id: current_user.unit_id).joins("left join units as uunits on fixed_asset_inventory_details.unit_id = uunits.id").order("uunits.unit_level, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
       end
-    elsif current_user.unit.unit_level == 3 and !current_user.unit.is_facility_management_unit
+    elsif current_user.unit.unit_level == 3
       child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
       if RailsEnv.is_oracle?
         @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where("fixed_asset_inventory_details.unit_id = ? or fixed_asset_inventory_details.unit_id in (?)", current_user.unit_id, child_ids).joins("left join units on fixed_asset_inventory_details.unit_id = units.id").order("units.unit_level, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")

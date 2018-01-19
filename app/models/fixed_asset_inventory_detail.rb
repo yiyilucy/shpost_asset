@@ -7,6 +7,7 @@ class FixedAssetInventoryDetail < ActiveRecord::Base
 	belongs_to :manage_unit, class_name: 'Unit'
 	belongs_to :fixed_asset_info
 	has_one :fixed_asset_img, dependent: :destroy, inverse_of: :fixed_asset_inventory_detail, foreign_key: 'fa_inventory_detail_id'
+	belongs_to :inventory_user, class_name: 'User'
 
 	INVENTORY_STATUS = { waiting: '待扫描', match: '匹配', unmatch: '不匹配', no_scan: '未扫描'}
 

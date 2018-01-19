@@ -67,6 +67,8 @@ ShpostAsset::Application.routes.draw do
     collection do
       # get 'select_level3_parents'
       post 'update_unit_info'
+      get 'import'
+      post 'import' => 'units#import'
     end
     resources :users, :controller => 'unit_users'
     resources :sequences, :controller => 'unit_sequences'

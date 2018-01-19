@@ -54,6 +54,8 @@
       fixed_asset_inventory_detail.inventory_status_name
     end
 
+    g.column name: model_class.human_attribute_name(:inventory_user_id), assoc: :inventory_user, attribute: 'name'
+
     g.column name: model_class.human_attribute_name(:print_times), attribute: 'print_times'
 
     g.column name: model_class.human_attribute_name(:is_check), attribute: 'is_check', filter_type: :boolean do |fixed_asset_inventory_detail| 

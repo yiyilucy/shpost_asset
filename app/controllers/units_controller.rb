@@ -181,14 +181,14 @@ class UnitsController < ApplicationController
 
             2.upto(instance.last_row) do |line|
               rowarr = instance.row(line)
-              name2 = to_string(rowarr[1]).strip
-              name3 = to_string(rowarr[2]).strip
+              name2 = to_string(rowarr[1]).chomp
+              name3 = to_string(rowarr[2]).chomp
               unit2_arr << name2
               unit3_arr << name3
               unit23_hash[name3] = name2
               
               if !rowarr[3].blank?
-                name4 = to_string(rowarr[3]).strip
+                name4 = to_string(rowarr[3]).chomp
                 unit4_arr << name4             
                 unit234_hash[name4] = [name2,name3]
               end
@@ -196,7 +196,7 @@ class UnitsController < ApplicationController
 
             unit2_arr.uniq.each do |x|
               if Unit.find_by(name: x).blank?
-                Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 2, parent_id: Unit.find_by(unit_level: 1).blank? ? nil : Unit.find_by(unit_level: 1).id, is_facility_management_unit: false)
+                Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 2, parent_id: Unit.find_by(unit_level: 1).blank? ? nil : Unit.find_by(unit_level: 1).id, is_facility_management_unit: false, short_name: ((I18n.t("unit_short_name.#{x}").to_s.include?"translation missing") ? "" : I18n.t("unit_short_name.#{x}").to_s))
 
                 no = no + 1
               end
@@ -205,7 +205,7 @@ class UnitsController < ApplicationController
             unit3_arr.uniq.each do |x|
               if Unit.find_by(name: x).blank?
                 unit = Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 3, parent_id: Unit.find_by(name: unit23_hash[x]).blank? ? nil : Unit.find_by(name: unit23_hash[x]).id)
-                unit.update is_facility_management_unit: (!unit.parent.blank? and unit.parent.name.eql?I18n.t("relevant_unit.parent")) ? true : false
+                unit.update is_facility_management_unit: (!unit.parent.blank? and unit.parent.name.eql?I18n.t("relevant_unit.parent") and ["中国邮政集团公司上海市分公司企业发展与科技部", "中国邮政集团公司上海市分公司财务部", "中国邮政集团公司上海市分公司运营管理部", "中国邮政集团公司上海市分公司安全保卫部"].include?x) ? true : false
                 no = no + 1
               end
             end
@@ -213,8 +213,7 @@ class UnitsController < ApplicationController
             unit4_arr.uniq.each do |x|
               if Unit.find_by(name: x).blank?
                 # binding.pry
-                unit = Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 4, parent_id: Unit.find_by(name: unit234_hash[x].last).blank? ? nil : Unit.find_by(name: unit234_hash[x].last).id)
-                unit.update is_facility_management_unit: (!unit.parent.blank? and unit.parent.name.eql?I18n.t("relevant_unit.parent")) ? true : false
+                unit = Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 4, parent_id: unit234_hash[x].blank? ? nil : (Unit.find_by(name: unit234_hash[x].last).blank? ? nil : Unit.find_by(name: unit234_hash[x].last).id) , is_facility_management_unit: false)
                 no = no + 1
               end
             end

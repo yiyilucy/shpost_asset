@@ -58,7 +58,7 @@
 
 <% if @low_value_consumption_inventory_detail.inventory_status.eql?"waiting" and @low_value_consumption_inventory.status.eql?"doing" %>
 <div id="up"> 
-  <strong>上传照片(图片格式["jpg","png","gif","bmp"];小于70K;最大分辨率138*180): </strong><br/>
+  <strong>上传照片(图片格式["jpg","png","gif","bmp"];小于5M;最大分辨率2590*1940): </strong><br/>
   <%= file_field_tag('file',onclick: "", onchange: "changePic(this);") %>
   <%= submit_tag "确认上传",:id=>'submit_button', 
 onclick: "form1.action='/low_value_consumption_inventory_details/#{@low_value_consumption_inventory_detail.id}/import';form1.submit();this.disabled='disabled';" %>
@@ -98,10 +98,10 @@ $(document).ready(function(){
   })
 
 
-var sizeLimit = 71680
+var sizeLimit = 4998700
 // var sizeLimit = 102400;
-var widthLmit = 138;
-var heightLmit = 180;
+var widthLmit = 2590;
+var heightLmit = 1940;
 var allowType = ["jpg","png","gif","bmp"];
 
 function changePic(obj) {

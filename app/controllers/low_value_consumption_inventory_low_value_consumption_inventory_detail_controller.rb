@@ -27,7 +27,7 @@ class LowValueConsumptionInventoryLowValueConsumptionInventoryDetailController <
       else
         @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id).joins("left join units as uunits on lvc_inventory_details.use_unit_id = uunits.id").order("uunits.unit_level, lvc_inventory_details.use_unit_id, lvc_inventory_details.asset_no")
       end
-    elsif current_user.unit.unit_level == 3 and !current_user.unit.is_facility_management_unit
+    elsif current_user.unit.unit_level == 3
       # binding.pry
       child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
       if RailsEnv.is_oracle?

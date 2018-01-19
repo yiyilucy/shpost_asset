@@ -54,6 +54,8 @@
       fixed_asset_inventory_detail.inventory_status_name
     end
 
+    g.column name: model_class.human_attribute_name(:inventory_user_id), assoc: :inventory_user, attribute: 'name'
+
     g.column name: model_class.human_attribute_name(:print_times), attribute: 'print_times'
 
     g.column name: model_class.human_attribute_name(:is_check), attribute: 'is_check', filter_type: :boolean do |fixed_asset_inventory_detail| 
@@ -64,7 +66,7 @@
 
     g.column in_csv: false do |fixed_asset_inventory_detail|
       ActiveSupport::SafeBuffer.new << 
-      (link_to t('.scan', :default => t("helpers.links.scan")), "/fixed_asset_inventory_details/" + fixed_asset_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, fixed_asset_inventory_detail) and !(current_user.unit.unit_level == 3 and !current_user.unit.is_facility_management_unit))
+      (link_to t('.scan', :default => t("helpers.links.scan")), "/fixed_asset_inventory_details/" + fixed_asset_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, fixed_asset_inventory_detail) and !(current_user.unit.unit_level == 3))
     end
 
   end 

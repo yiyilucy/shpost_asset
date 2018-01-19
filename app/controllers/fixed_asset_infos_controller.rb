@@ -8,7 +8,7 @@ class FixedAssetInfosController < ApplicationController
       if current_user.unit.unit_level == 1
         @fixed_asset_infos = FixedAssetInfo.all.order(:relevant_unit_id, :manage_unit_id, :asset_no)
       elsif current_user.unit.is_facility_management_unit
-        @fixed_asset_infos = FixedAssetInfo.where(relevant_unit_id: current_user.unit_id).order(:manage_unit_id, :asset_no)
+        @fixed_asset_infos = FixedAssetInfo.where("(relevant_unit_id = ? or unit_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, "in_use").order(:manage_unit_id, :asset_no)
       elsif current_user.unit.unit_level == 2
         @fixed_asset_infos = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).order(:asset_no)
       end  
@@ -110,7 +110,7 @@ class FixedAssetInfosController < ApplicationController
             desc1_index = title_row.index("使用单位")
             use_years_index = title_row.index("使用年限")
             brand_model_index = title_row.index("结构/型号")
-            
+            location_desc_index = title_row.index("地点备注")
             
             8.upto(instance.last_row) do |line|
               # binding.pry
@@ -130,7 +130,7 @@ class FixedAssetInfosController < ApplicationController
               sum = rowarr[sum_index].blank? ? 0.0 : rowarr[sum_index].to_f
               unit_name = rowarr[unit_name_index].blank? ? "" : to_string(rowarr[unit_name_index])
               # branch = to_string(rowarr[12])
-              location = rowarr[location_index].blank? ? "" : to_string(rowarr[location_index])
+              location = rowarr[location_desc_index].blank? ? rowarr[location_index] : to_string(rowarr[location_desc_index])
               user = rowarr[user_index].blank? ? "" : to_string(rowarr[user_index])
               # change_log = to_string(rowarr[15])
               accounting_department = rowarr[accounting_department_index].blank? ? "" : to_string(rowarr[accounting_department_index])
@@ -170,7 +170,11 @@ class FixedAssetInfosController < ApplicationController
                 sheet_error << (rowarr << txt)
                 next
               end
-
+              if relevant_department.blank?
+                txt = "缺少归口管理部门"
+                sheet_error << (rowarr << txt)
+                next
+              end
               if !relevant_department.blank?
                 if !relevant_departments.has_key?relevant_department and !short_relevant_departments.has_key?relevant_department
                   txt = "归口管理部门不存在"
@@ -184,6 +188,9 @@ class FixedAssetInfosController < ApplicationController
               if !ori_info.blank?
                 if !relevant_department.blank?
                   ori_info.update!(relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department])
+                end
+                if !desc1.blank?
+                  ori_info.update!(desc1: desc1)
                 end
                 ori_infos.delete(asset_no)
               else

@@ -35,10 +35,35 @@
       low_value_consumption_inventory.is_lv2_unit_name
     end
 
+    g.column name: "资产总数" do |low_value_consumption_inventory| 
+      low_value_consumption_inventory.low_value_consumption_inventory_details.size
+    end
+
+    g.column name: "待扫描数" do |low_value_consumption_inventory| 
+      low_value_consumption_inventory.low_value_consumption_inventory_details.where(inventory_status: "waiting").size
+    end
+
+    g.column name: "匹配数" do |low_value_consumption_inventory| 
+      low_value_consumption_inventory.low_value_consumption_inventory_details.where(inventory_status: "match").size
+    end
+
+    g.column name: "不匹配数" do |low_value_consumption_inventory| 
+      low_value_consumption_inventory.low_value_consumption_inventory_details.where(inventory_status: "unmatch").size
+    end
+
+    g.column name: "未扫描数" do |low_value_consumption_inventory| 
+      low_value_consumption_inventory.low_value_consumption_inventory_details.where(inventory_status: "no_scan").size
+    end
+
     g.column do |low_value_consumption_inventory|
+      done_alert = "确定完成？" 
+      waiting_amount = low_value_consumption_inventory.low_value_consumption_inventory_details.where(inventory_status: "waiting").size
+      if waiting_amount > 0
+        done_alert = "还有#{waiting_amount}件资产待扫描，点击完成后所有待扫描资产的盘点状态将变为未扫描，且无法修改，确定完成？"
+      end
       ActiveSupport::SafeBuffer.new << 
       (link_to t('.cancel', :default => t("helpers.links.cancel")), "/low_value_consumption_inventories/" + low_value_consumption_inventory.id.to_s + "/cancel", :data => { :confirm => "确定取消?" }, :class => 'btn btn-xs btn-primary' if (can? :cancel, low_value_consumption_inventory) and (["waiting","doing"].include?low_value_consumption_inventory.status and low_value_consumption_inventory.create_user_id == current_user.id ))<< ' ' <<
-      (link_to t('.done', :default => t("helpers.links.done")), "/low_value_consumption_inventories/" + low_value_consumption_inventory.id.to_s + "/done", :data => { :confirm => "确定完成?" }, :class => 'btn btn-xs btn-primary' if (can? :done, low_value_consumption_inventory) and low_value_consumption_inventory.create_user_id == current_user.id and (low_value_consumption_inventory.status.eql?"doing") )<< ' ' <<
+      (link_to t('.done', :default => t("helpers.links.done")), "/low_value_consumption_inventories/" + low_value_consumption_inventory.id.to_s + "/done", :data => { :confirm => "#{done_alert}" }, :class => 'btn btn-xs btn-primary' if (can? :done, low_value_consumption_inventory) and low_value_consumption_inventory.create_user_id == current_user.id and (low_value_consumption_inventory.status.eql?"doing") )<< ' ' <<
       (link_to '盘点单明细',
                 low_value_consumption_inventory_low_value_consumption_inventory_details_path(low_value_consumption_inventory), :class => 'btn btn-xs btn-primary' )
     end
