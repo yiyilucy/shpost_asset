@@ -4,7 +4,8 @@ class Sequence < ActiveRecord::Base
   def self.generate_asset_no(obj,date)
     asset_no = nil
   	if obj.asset_no.blank?
-      asset_no = Sequence.generate_barcode(Unit.find_by(id:(obj.use_unit_id.blank? ? obj.manage_unit_id : obj.use_unit_id)), obj.class, Sequence.generate_sequence(Unit.find_by(id:(obj.use_unit_id.blank? ? obj.manage_unit_id : obj.use_unit_id)), obj.class), date)
+      # asset_no = Sequence.generate_barcode(Unit.find_by(id:(obj.use_unit_id.blank? ? obj.manage_unit_id : obj.use_unit_id)), obj.class, Sequence.generate_sequence(Unit.find_by(id:(obj.use_unit_id.blank? ? obj.manage_unit_id : obj.use_unit_id)), obj.class), date)
+      asset_no = Sequence.generate_barcode(Unit.find_by(id: obj.manage_unit_id), obj.class, Sequence.generate_sequence(Unit.find_by(id: obj.manage_unit_id), obj.class), date)
     end
   end
 

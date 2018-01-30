@@ -231,6 +231,9 @@ zh-CN:
   url:
     fixed_asset_info: "http://localhost:3000/fixed_asset_infos"
     low_value_consumption: "http://localhost:3000/low_value_consumption_infos"
+
+    # fixed_asset_info: "http://222.66.108.206:5500/fixed_asset_infos"
+    # low_value_consumption: "http://222.66.108.206:5500/low_value_consumption_infos"
     
   wice_grid:
     show_filter_tooltip: 显示过滤
