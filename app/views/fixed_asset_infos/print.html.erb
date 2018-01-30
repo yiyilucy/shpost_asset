@@ -34,7 +34,7 @@ function fixed_asset_infos_preview() {
     LODOP.ADD_PRINT_BARCODE(37,73,150,150,'QRCode','<%= url %>');
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(189,1,300,15,'<%= (info.unit_id.blank? ? "" : (Unit.find(info.unit_id).short_name.blank? ? Unit.find(info.unit_id).name : Unit.find(info.unit_id).short_name)) %>');
+    LODOP.ADD_PRINT_TEXT(189,1,300,15,'<%= (info.unit_id.blank? ? "" : (Unit.find(info.unit_id).unit_desc.blank? ? Unit.find(info.unit_id).name : Unit.find(info.unit_id).unit_desc)) %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
