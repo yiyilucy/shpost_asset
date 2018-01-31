@@ -12,6 +12,8 @@ class User < ActiveRecord::Base
 
   validates_uniqueness_of :username, :message => '该用户已存在'
 
+  validate :password_complexity
+
   ROLE = { superadmin: '超级管理员', unitadmin: '机构管理员', deviceadmin: '设备管理员', accountant: '财务', inventoryadmin: '盘点员', sgsadmin: '市公司管理员' }
 
   def rolename
@@ -52,6 +54,14 @@ class User < ActiveRecord::Base
 
   def password_required?
     encrypted_password.blank? ? true : false
+  end
+
+  def password_complexity
+    if password.present?
+       if !password.match(/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,128}$/) 
+         errors.add :password, "密码需同时包含英文字母和数字"
+       end
+    end
   end
 
 end
