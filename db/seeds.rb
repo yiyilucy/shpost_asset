@@ -5,8 +5,8 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
-unit1 = Unit.create(name: '中国邮政集团公司上海市分公司', desc: '中国邮政集团公司上海市分公司', no: '0001', short_name: 'sgs', unit_level: '1')
+unit1 = Unit.create(name: '中国邮政集团公司上海市分公司', unit_desc: '中国邮政集团公司上海市分公司', no: '0001', unit_level: 1)
 
-superadmin = User.create(email: 'superadmin@examples.com', username: 'superadmin', password: '11111111', name: 'superadmin', role: 'superadmin', unit_id: 0)
+superadmin = User.create(email: 'superadmin@examples.com', username: 'superadmin', password: '11111111aa', name: 'superadmin', role: 'superadmin', unit_id: 0)
 
 role_1 = Role.create(user: superadmin, unit: unit1, role: 'superadmin')
