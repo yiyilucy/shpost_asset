@@ -3,7 +3,11 @@
     g.action_column select_all_buttons: true
     g.column name: model_class.human_attribute_name(:sn), attribute: 'sn'
 
-	  g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name'
+    g.column name: model_class.human_attribute_name(:unit_id), attribute: 'name', assoc: :unit do |fixed_asset_info|
+      fixed_asset_info.unit.try :name
+    end
+
+	g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name'
 
     g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no'
 
@@ -33,11 +37,17 @@
 
     g.column name: model_class.human_attribute_name(:amount), attribute: 'amount'
 
-    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum'
+    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum'  
 
-    g.column name: model_class.human_attribute_name(:unit_id), attribute: 'name', assoc: :unit do |fixed_asset_info|
-      fixed_asset_info.unit.try :name
-    end
+    g.column name: model_class.human_attribute_name(:accumulate_depreciation), attribute: 'accumulate_depreciation'
+
+    g.column name: model_class.human_attribute_name(:net_value), attribute: 'net_value'
+
+    g.column name: model_class.human_attribute_name(:month_depreciation), attribute: 'month_depreciation'
+
+    g.column name: model_class.human_attribute_name(:use_status), attribute: 'use_status'
+
+    g.column name: model_class.human_attribute_name(:license), attribute: 'license'
 
     g.column name: model_class.human_attribute_name(:branch), attribute: 'branch'
 
@@ -47,7 +57,7 @@
 
     g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log'
 
-    g.column name: model_class.human_attribute_name(:accounting_department), attribute: 'accounting_department'
+    # g.column name: model_class.human_attribute_name(:accounting_department), attribute: 'accounting_department'
 
     g.column name: model_class.human_attribute_name(:desc1), attribute: 'desc1'
 

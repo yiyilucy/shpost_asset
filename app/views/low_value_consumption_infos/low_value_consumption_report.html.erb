@@ -1,0 +1,30 @@
+<%- model_class = LowValueConsumptionInfo -%>
+<div class="page-header">
+  <h1>低值易耗品报表</h1>
+</div> 
+<div text-align:center>
+<table class="table table-striped">
+<thead>
+<tr>
+	<th>单位名称</th>
+	<th>数量</th>
+	<th>总值</th>
+</tr>
+</thead>
+<tbody>
+  <% @counts.each do |x| %>
+<tr>
+	<td><%= Unit.find(x[0]).name %></td>
+	<td><%= x[1] %></td>
+	<td><%= @sums[x[0]].round(2) %></td>
+</tr>
+<% end %>
+<tr>
+	<td>合计</td>
+	<td><%= @total_count %></td>
+	<td><%= @total_sum.round(2) %></td>
+</tr>
+</tbody>
+</table>
+</div>
+

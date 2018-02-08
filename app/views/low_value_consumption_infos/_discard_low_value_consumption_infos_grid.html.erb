@@ -4,7 +4,9 @@
     g.column name: model_class.human_attribute_name(:lvc_catalog_id), attribute: 'name', assoc: :low_value_consumption_catalog do |low_value_consumption_info|
         low_value_consumption_info.low_value_consumption_catalog.try :name
     end
-  
+    
+    g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name', table_alias: 'use_units_low_value_consumption_infos'
+    
     g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name'
 
     g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no'
@@ -40,8 +42,6 @@
 
     g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_low_value_consumption_infos'
 
-    g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name', table_alias: 'use_units_low_value_consumption_infos'
-    
     g.column name: model_class.human_attribute_name(:branch), attribute: 'branch'
 
     g.column name: model_class.human_attribute_name(:location), attribute: 'location'

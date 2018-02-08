@@ -13,7 +13,7 @@ class FixedAssetInventory < ActiveRecord::Base
 
 	def self.start_inventory
 		FixedAssetInventory.where(status: "waiting").each do |x|
-			if DateTime.parse(x.start_time.to_s).strftime('%Y-%m-%d').to_s == DateTime.parse(Time.now.to_s).strftime('%Y-%m-%d').to_s
+			if DateTime.parse(x.start_time.to_s).strftime('%Y-%m-%d').to_s <= DateTime.parse(Time.now.to_s).strftime('%Y-%m-%d').to_s
 				x.update status: "doing"
 			end
 		end

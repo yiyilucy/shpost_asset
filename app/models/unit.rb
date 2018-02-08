@@ -22,11 +22,15 @@ class Unit < ActiveRecord::Base
   end
 
   def is_facility_management_unit_name
-     if is_facility_management_unit
-        name = "是"
-     else
-        name = "否"
-     end
-   end
+    if is_facility_management_unit
+      name = "是"
+    else
+      name = "否"
+    end
+  end
+
+  def print_unit_name
+    self.unit_desc.blank? ? self.name : self.unit_desc
+  end
 
 end

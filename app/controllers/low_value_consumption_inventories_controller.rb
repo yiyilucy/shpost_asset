@@ -95,7 +95,7 @@ class LowValueConsumptionInventoriesController < ApplicationController
           redirect_to low_value_consumption_inventories_url and return
         end
 # binding.pry
-        if LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("lvc_inventory_units.unit_id in (?) and lvc_inventories.start_time <= ? and lvc_inventories.status in (?)", units, DateTime.parse(params[:low_value_consumption_inventory][:start_time]), ["waiting", "doing"]).exists?
+        if LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("lvc_inventory_units.unit_id in (?) and lvc_inventories.start_time <= ? and lvc_inventories.status in (?) and lvc_inventories.relevant_unit_ids like ?", units, DateTime.parse(params[:low_value_consumption_inventory][:start_time]), ["waiting", "doing"], "%#{relevant_departments.compact.join(",")}%").exists?
         # if !lvinventories.blank?
           flash[:alert] = "同一时间同一单位不可重叠盘点"
           redirect_to low_value_consumption_inventories_url and return
@@ -109,6 +109,7 @@ class LowValueConsumptionInventoriesController < ApplicationController
         @low_value_consumption_inventory.status = "waiting"
         @low_value_consumption_inventory.create_user_id = current_user.id
         @low_value_consumption_inventory.create_unit_id = current_user.unit_id
+        @low_value_consumption_inventory.relevant_unit_ids = relevant_departments.compact.join(",")
 
         if current_user.unit.unit_level == 2
           @low_value_consumption_inventory.is_lv2_unit = true

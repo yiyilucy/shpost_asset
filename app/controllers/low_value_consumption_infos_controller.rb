@@ -221,6 +221,7 @@ class LowValueConsumptionInfosController < ApplicationController
             instance=nil
             flash_message = "导入成功!"
             catalog_code = ""
+            current_line = 0
 
             if file.include?('.xlsx')
               instance= Roo::Excelx.new(file)
@@ -248,6 +249,7 @@ class LowValueConsumptionInfosController < ApplicationController
             
             8.upto(instance.last_row) do |line|
               # binding.pry
+              current_line = line
               rowarr = instance.row(line)
               if (rowarr[0].blank? and rowarr[1].blank?) or rowarr[0].eql?"合计"
                 break
@@ -334,7 +336,7 @@ class LowValueConsumptionInfosController < ApplicationController
             end
 
           rescue Exception => e
-            flash[:alert] = e.message
+            flash[:alert] = e.message + "第" + current_line.to_s + "行"
             raise ActiveRecord::Rollback
           end
         end
@@ -401,6 +403,20 @@ class LowValueConsumptionInfosController < ApplicationController
       end
     end
     redirect_to lvc_discards_path
+  end
+
+  def low_value_consumption_report
+    if current_user.unit.unit_level == 1
+      @sums = LowValueConsumptionInfo.all.group(:manage_unit_id).order(:manage_unit_id).sum(:sum)
+      @counts = LowValueConsumptionInfo.all.group(:manage_unit_id).order(:manage_unit_id).count
+      @total_sum = LowValueConsumptionInfo.all.sum(:sum)
+      @total_count = LowValueConsumptionInfo.all.size
+    elsif current_user.unit.unit_level == 2
+      @sums = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id).group(:use_unit_id).order(:use_unit_id).sum(:sum)
+      @counts = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id).group(:use_unit_id).order(:use_unit_id).count
+      @total_sum = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id).sum(:sum)
+      @total_count = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id).size
+    end
   end
 
 

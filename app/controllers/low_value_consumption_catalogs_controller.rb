@@ -83,6 +83,7 @@ def create
             rowarr = [] 
             instance=nil
             flash_message = "导入成功!"
+            current_line = 0
 
             if file.include?('.xlsx')
               instance= Roo::Excelx.new(file)
@@ -94,6 +95,7 @@ def create
             instance.default_sheet = instance.sheets.first
             
             2.upto(instance.last_row) do |line|
+              current_line = line
               rowarr = instance.row(line)
               code1 = rowarr[0].blank? ? "" : rowarr[0].to_s.split('.0')[0]
               code2 = rowarr[1].blank? ? "" : rowarr[1].to_s.split('.0')[0]
@@ -153,7 +155,7 @@ def create
             end
 
           rescue Exception => e
-            flash[:alert] = e.message
+            flash[:alert] = e.message + "第" + current_line.to_s + "行"
             raise ActiveRecord::Rollback
           end
         end

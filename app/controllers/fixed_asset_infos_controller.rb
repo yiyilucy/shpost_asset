@@ -84,6 +84,8 @@ class FixedAssetInfosController < ApplicationController
             instance=nil
             flash_message = "导入成功!"
             catalog_code = ""
+            current_line = 0
+            is_error = false
 
             if file.include?('.xlsx')
               instance= Roo::Excelx.new(file)
@@ -105,15 +107,21 @@ class FixedAssetInfosController < ApplicationController
             unit_name_index = title_row.index("使用部门")
             location_index = title_row.index("[存放地点]")
             user_index = title_row.index("资产使用人")
-            accounting_department_index = title_row.index("核算部门")
+            # accounting_department_index = title_row.index("核算部门")
             belong_unit_index = title_row.index("归属管理")
             desc1_index = title_row.index("使用单位")
             use_years_index = title_row.index("使用年限")
             brand_model_index = title_row.index("结构/型号")
             location_desc_index = title_row.index("地点备注")
+            accumulate_depreciation_index = title_row.index("累计折旧")
+            net_value_index = title_row.index("账面净值")
+            month_depreciation_index = title_row.index("本月折旧")
+            use_status_index = title_row.index("使用状态")
+            license_index = title_row.index("[牌照]")
             
             8.upto(instance.last_row) do |line|
               # binding.pry
+              current_line = line
               rowarr = instance.row(line)
               if (rowarr[0].blank? and rowarr[1].blank?) or rowarr[0].eql?"合计"
                 break
@@ -133,68 +141,79 @@ class FixedAssetInfosController < ApplicationController
               location = rowarr[location_desc_index].blank? ? rowarr[location_index] : to_string(rowarr[location_desc_index])
               user = rowarr[user_index].blank? ? "" : to_string(rowarr[user_index])
               # change_log = to_string(rowarr[15])
-              accounting_department = rowarr[accounting_department_index].blank? ? "" : to_string(rowarr[accounting_department_index])
+              # accounting_department = rowarr[accounting_department_index].blank? ? "" : to_string(rowarr[accounting_department_index])
               belong_unit = rowarr[belong_unit_index].blank? ? "" : to_string(rowarr[belong_unit_index])
               desc1 = rowarr[desc1_index].blank? ? "" : to_string(rowarr[desc1_index])
               use_years = rowarr[use_years_index].blank? ? "" : to_string(rowarr[use_years_index])
               brand_model = rowarr[brand_model_index].blank? ? "" : to_string(rowarr[brand_model_index])
+              accumulate_depreciation = rowarr[accumulate_depreciation_index].blank? ? 0.0 : rowarr[accumulate_depreciation_index].to_f
+              net_value = rowarr[net_value_index].blank? ? 0.0 : rowarr[net_value_index].to_f
+              month_depreciation = rowarr[month_depreciation_index].blank? ? 0.0 : rowarr[month_depreciation_index].to_f
+              use_status = rowarr[use_status_index].blank? ? "" : to_string(rowarr[use_status_index])
+              license = rowarr[license_index].blank? ? "" : to_string(rowarr[license_index])
               
               if asset_name.blank?
+                is_error = true
                 txt = "缺少资产名称"
                 sheet_error << (rowarr << txt)
                 next
               end
               if asset_no.blank?
+                is_error = true
                 txt = "缺少资产编号"
                 sheet_error << (rowarr << txt)
                 next
               end
               if catalog_name.blank?
+                is_error = true
                 txt = "缺少类别目录"
                 sheet_error << (rowarr << txt)
                 next
               end
               
               if !catalogs.has_key?catalog_name
+                is_error = true
                 txt = "类别目录不存在"
                 sheet_error << (rowarr << txt)
                 next
               end
               if unit_name.blank?
+                is_error = true
                 txt = "缺少使用部门"
                 sheet_error << (rowarr << txt)
                 next
               end
               if !use_departments.has_key?unit_name
+                is_error = true
                 txt = "使用部门不存在"
                 sheet_error << (rowarr << txt)
                 next
               end
               if relevant_department.blank?
+                is_error = true
                 txt = "缺少归口管理部门"
                 sheet_error << (rowarr << txt)
                 next
               end
               if !relevant_department.blank?
                 if !relevant_departments.has_key?relevant_department and !short_relevant_departments.has_key?relevant_department
+                  is_error = true
                   txt = "归口管理部门不存在"
                   sheet_error << (rowarr << txt)
                   next
                 end
               end
 
+              sheet_error << (rowarr << txt)
+
               ori_info = FixedAssetInfo.find_by(asset_no:asset_no)
 
               if !ori_info.blank?
-                if !relevant_department.blank?
-                  ori_info.update!(relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department])
-                end
-                if !desc1.blank?
-                  ori_info.update!(desc1: desc1)
-                end
+                ori_info.update!(sum: sum, accumulate_depreciation: accumulate_depreciation, net_value: net_value, month_depreciation: month_depreciation, use_status: use_status, user: user, unit_id: use_departments[unit_name], location:location, relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department], desc1: desc1, license: license, status:"in_use")
+
                 ori_infos.delete(asset_no)
               else
-                FixedAssetInfo.create!(sn: sn, asset_name: asset_name, asset_no: asset_no, fixed_asset_catalog_id: catalogs[catalog_name], relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department], use_at:use_at, amount:amount, sum:sum, unit_id: use_departments[unit_name], location:location, user:user, status:"in_use", print_times:0, manage_unit_id: current_user.unit_id, accounting_department: accounting_department, belong_unit: belong_unit, desc1: desc1, use_years: use_years, brand_model: brand_model)
+                FixedAssetInfo.create!(sn: sn, asset_name: asset_name, asset_no: asset_no, fixed_asset_catalog_id: catalogs[catalog_name], relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department], use_at:use_at, amount:amount, sum:sum, unit_id: use_departments[unit_name], location:location, user:user, status:"in_use", print_times:0, manage_unit_id: current_user.unit_id, belong_unit: belong_unit, desc1: desc1, use_years: use_years, brand_model: brand_model, accumulate_depreciation: accumulate_depreciation, net_value: net_value, month_depreciation: month_depreciation, use_status: use_status, license: license)
               end
             end
 
@@ -204,12 +223,14 @@ class FixedAssetInfosController < ApplicationController
               end
             end
 
-            if !sheet_error.blank?
+            # if !sheet_error.blank?
+            if is_error
               flash_message << "有部分信息导入失败！"
             end
             flash[:notice] = flash_message
 
-            if !sheet_error.blank?
+            # if !sheet_error.blank?
+            if is_error
               send_data(exporterrorfixed_asset_infos_xls_content_for(sheet_error,title_row),  
               :type => "text/excel;charset=utf-8; header=present",  
               :filename => "Error_Fixed_Asset_Infos_#{Time.now.strftime("%Y%m%d")}.xls")  
@@ -218,7 +239,7 @@ class FixedAssetInfosController < ApplicationController
             end
 
           rescue Exception => e
-            flash[:alert] = e.message
+            flash[:alert] = e.message + "第" + current_line.to_s + "行"
             raise ActiveRecord::Rollback
           end
         end
@@ -235,9 +256,9 @@ class FixedAssetInfosController < ApplicationController
     red = Spreadsheet::Format.new :color => :red
     sheet1.row(0).default_format = blue 
     # sheet1.row(0).concat %w{序号 资产名称 资产编号 类别名称 类别目录 归口管理部门 购买日期 领用日期 计量单位 数量 金额 使用部门 所在网点 所在地点 使用人 变动记录} 
-    sheet1.row(0).concat title_row
+    sheet1.row(6).concat title_row
     size = obj.first.size 
-    count_row = 1
+    count_row = 7
     obj.each do |obj|
       count = 0
       while count<=size
@@ -289,6 +310,20 @@ class FixedAssetInfosController < ApplicationController
           format.json { head :no_content }
         end
       end
+    end
+  end
+
+  def fixed_asset_report
+    if current_user.unit.unit_level == 1
+      @sums = FixedAssetInfo.all.group(:manage_unit_id).order(:manage_unit_id).sum(:sum)
+      @counts = FixedAssetInfo.all.group(:manage_unit_id).order(:manage_unit_id).count
+      @total_sum = FixedAssetInfo.all.sum(:sum)
+      @total_count = FixedAssetInfo.all.size
+    elsif current_user.unit.unit_level == 2
+      @sums = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).group(:unit_id).order(:unit_id).sum(:sum)
+      @counts = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).group(:unit_id).order(:unit_id).count
+      @total_sum = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).sum(:sum)
+      @total_count = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).size
     end
   end
 

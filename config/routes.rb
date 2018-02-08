@@ -1,8 +1,5 @@
 ShpostAsset::Application.routes.draw do
   
-  
-
-  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -81,7 +78,11 @@ ShpostAsset::Application.routes.draw do
   end
 
   resources :users do
-     resources :roles, :controller => 'user_roles'
+    collection do
+      get 'import'
+      post 'import' => 'users#import'
+    end
+    resources :roles, :controller => 'user_roles'
   end
 
   resources :fixed_asset_catalogs do
@@ -103,7 +104,7 @@ ShpostAsset::Application.routes.draw do
       get 'fixed_asset_info_import'
       post 'fixed_asset_info_import' => 'fixed_asset_infos#fixed_asset_info_import'
       post 'print'
-      # post 'export'
+      get 'fixed_asset_report'
     end
     member do 
       get 'to_scan'
@@ -155,6 +156,7 @@ ShpostAsset::Application.routes.draw do
       post 'low_value_consumption_info_import' => 'low_value_consumption_infos#low_value_consumption_info_import' 
       post 'batch_destroy'
       post 'discard'
+      get 'low_value_consumption_report'
     end
     member do 
       get 'to_scan'
@@ -244,6 +246,21 @@ ShpostAsset::Application.routes.draw do
     end
 
     resources :lvc_discard_details, :controller => 'lvc_discard_lvc_discard_detail'
+  end
+
+  resources :up_downloads do
+    collection do 
+      get 'up_download_import'
+      post 'up_download_import' => 'up_downloads#up_download_import'
+      
+      get 'to_import'
+      
+      
+    end
+    member do
+      get 'up_download_export'
+      post 'up_download_export' => 'up_downloads#up_download_export'
+    end
   end
 
 

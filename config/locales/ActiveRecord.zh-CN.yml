@@ -165,6 +165,8 @@ zh-CN:
       print: 打印
       discard: 报废
       lvc_discard_details: 报废明细
+      up_download_import: 模板上传
+      up_download_export: 模板下载
     titles:
       edit: 编辑%{model}
       new: 新增%{model}
@@ -345,6 +347,9 @@ zh-CN:
       lvc_discard_detail:
         one: 低值易耗品报废明细
         other: 低值易耗品报废明细
+      up_download:
+        one: 上传下载模板
+        other: 上传下载模板
     attributes:
       user:
         email: "电子邮件"
@@ -414,6 +419,11 @@ zh-CN:
         brand_model: "结构/型号"
         desc1: "使用单位"
         belong_unit: "归属管理"
+        accumulate_depreciation: "累计折旧"
+        net_value: "账面净值"
+        month_depreciation: "本月折旧"
+        use_status: "使用状态"
+        license: "牌照"
       low_value_consumption_info:
         sn: "序号"
         asset_name: "资产名称"
@@ -588,6 +598,13 @@ zh-CN:
       lvc_discard_detail:
         lvc_discard_id: "低值易耗品报废单"
         low_value_consumption_info_id: "低值易耗品"
+      up_download:
+        name: "名字"
+        use: "用途"
+        desc: "备注"
+        ver_no: "版本号"
+        url: "地址"
+        oper_date: "操作时间"
   menu:
     permission:
       name: "权限管理"
@@ -642,6 +659,13 @@ zh-CN:
           needrole:
             can: :read
             role: :FixedAssetInfo
+        fixed_asset_report:
+          name: "固定资产报表"
+          link: "/fixed_asset_infos/fixed_asset_report"
+          need_count: false
+          needrole:
+            can: :fixed_asset_report
+            role: :FixedAssetInfo
     low_value_consumptions:
       name: "低值易耗品"
       needrole:
@@ -668,6 +692,13 @@ zh-CN:
           need_count: false
           needrole:
             can: :read
+            role: :LowValueConsumptionInfo
+        low_value_consumption_report:
+          name: "低值易耗品报表"
+          link: "/low_value_consumption_infos/low_value_consumption_report"
+          need_count: false
+          needrole:
+            can: :low_value_consumption_report
             role: :LowValueConsumptionInfo
     purchases:
       name: "采购单"  
@@ -757,6 +788,16 @@ zh-CN:
           needrole:
             can: :doing_index
             role: :LowValueConsumptionInventory
+    up_downloads:
+      name: "模板管理"
+      needrole:
+        can: :read
+        role: :UpDownload
+      submenu:
+        up_download:
+          name: "模板上传下载"
+          link: "/up_downloads"
+          need_count: false
         
 
         # interface_log:
