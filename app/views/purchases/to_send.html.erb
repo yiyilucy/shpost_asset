@@ -9,6 +9,6 @@
 	<%= label_tag 'use_unit_id', '使用部门:', class: 'control-group' %>
 	<%= send_unit_select_autocom("purchase",@purchase.id) %>
 </div>
-<%= submit_tag "下发",:class => 'btn btn-primary', onclick: "if($('#send_unit_name').val() == ''){ alert('请输入使用部门'); return false;}; form1.action='/purchases/do_send';form1.submit();" %>
+<%= submit_tag "下发",:class => 'btn btn-primary', onclick: "if($('#send_unit_name').val() == ''){ alert('请输入使用部门'); return false;}; form1.action='/shpost_asset/purchases/do_send';form1.submit();" %>
 </form>
 

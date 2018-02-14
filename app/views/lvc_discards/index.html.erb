@@ -18,8 +18,8 @@
 
     g.column do |lvc_discard|
       ActiveSupport::SafeBuffer.new << 
-      (link_to t('.approve', :default => t("helpers.links.approve")), "/lvc_discards/" + lvc_discard.id.to_s + "/approve", :data => { :confirm => "确定通过?" }, :class => 'btn btn-xs btn-primary' if (can? :approve, lvc_discard) and lvc_discard.status.eql?"checking")<< ' ' <<
-      (link_to t('.decline', :default => t("helpers.links.decline")), "/lvc_discards/" + lvc_discard.id.to_s + "/decline", :data => { :confirm => "确定拒绝?" }, :class => 'btn btn-xs btn-primary' if (can? :decline, lvc_discard) and lvc_discard.status.eql?"checking")<< ' ' <<
+      (link_to t('.approve', :default => t("helpers.links.approve")), "/shpost_asset/lvc_discards/" + lvc_discard.id.to_s + "/approve", :data => { :confirm => "确定通过?" }, :class => 'btn btn-xs btn-primary' if (can? :approve, lvc_discard) and lvc_discard.status.eql?"checking")<< ' ' <<
+      (link_to t('.decline', :default => t("helpers.links.decline")), "/shpost_asset/lvc_discards/" + lvc_discard.id.to_s + "/decline", :data => { :confirm => "确定拒绝?" }, :class => 'btn btn-xs btn-primary' if (can? :decline, lvc_discard) and lvc_discard.status.eql?"checking")<< ' ' <<
       (link_to t('.lvc_discard_details', :default => t("helpers.links.lvc_discard_details")),lvc_discard_lvc_discard_details_path(lvc_discard), :class => 'btn btn-xs btn-primary' if (can? :read, LvcDiscardDetail))
     end
 

@@ -3,7 +3,7 @@ class PurchasesController < ApplicationController
 
   def index
     # binding.pry
-    if current_user.role.eql?"deviceadmin"
+    if current_user.deviceadmin?
       @purchases = @purchases.accessible_by(current_ability).where("(create_user_id = ? or create_unit_id = ?) and status = ? and is_send = ?", current_user.id, current_user.unit_id, "waiting", false)
     end
 
@@ -13,9 +13,9 @@ class PurchasesController < ApplicationController
 
   def to_do_index
     # binding.pry
-    if current_user.role.eql?"deviceadmin"
+    if current_user.deviceadmin?
       @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? and status in (?) and is_send = ? ) or ((create_user_id = ? or create_unit_id = ?) and status in (?)) or ((create_user_id = ? or create_unit_id = ?) and status = ? and is_send = ?)", current_user.unit_id, ["waiting", "declined"], true, current_user.id, current_user.unit_id, ["declined", "revoked"], current_user.id, current_user.unit_id, "waiting", true )
-    elsif current_user.role.eql?"accountant"
+    elsif current_user.accountant?
       @purchases = @purchases.accessible_by(current_ability).where(manage_unit_id: current_user.unit_id, status: "checking")
     end
 
@@ -24,9 +24,9 @@ class PurchasesController < ApplicationController
 
   def doing_index
     # binding.pry
-    if current_user.role.eql?"accountant"
+    if current_user.accountant?
       @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? and status in (?) and is_send = ? ) or (create_unit_id = ? and status in (?)) or (create_unit_id = ? and status = ? and is_send = ?)", current_user.unit_id, ["waiting", "declined"], true, current_user.unit_id, ["declined", "revoked"], current_user.unit_id, "waiting", true )
-    elsif current_user.role.eql?"deviceadmin"
+    elsif current_user.deviceadmin?
       @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? or create_unit_id = ? or create_user_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, current_user.id, "checking")
     end
 
@@ -35,9 +35,9 @@ class PurchasesController < ApplicationController
 
   def done_index
     # binding.pry
-    if current_user.role.eql?"deviceadmin"
+    if current_user.deviceadmin?
       @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? or create_unit_id = ? or create_user_id = ?) and status in (?)", current_user.unit_id, current_user.unit_id, current_user.id, ["canceled", "done"])
-    elsif current_user.role.eql?"accountant"
+    elsif current_user.accountant?
       @purchases = @purchases.accessible_by(current_ability).where("manage_unit_id = ? and status in (?)", current_user.unit_id, ["canceled", "done"])
     end
     

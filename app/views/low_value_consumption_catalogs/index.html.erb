@@ -4,7 +4,7 @@
 <div style="float:right">
     <% if can? :low_value_consumption_catalog_import, LowValueConsumptionCatalog %>
       <%= link_to t('.import', :default => t("helpers.links.import")),
-                  "/low_value_consumption_catalogs/low_value_consumption_catalog_import",
+                  "/shpost_asset/low_value_consumption_catalogs/low_value_consumption_catalog_import",
                   :class => 'btn btn-primary' %>
     <% end %>
      <% if can? :new, LowValueConsumptionCatalog  %>

@@ -3,9 +3,9 @@ class LvcDiscardsController < ApplicationController
 
   def index
     @lvc_discards = nil
-    if current_user.role.eql?"deviceadmin"
+    if current_user.deviceadmin?
       @lvc_discards = LvcDiscard.accessible_by(current_ability).where("create_user_id = ? or create_unit_id = ?", current_user.id, current_user.unit_id)
-    elsif current_user.role.eql?"accountant"
+    elsif current_user.accountant?
       @lvc_discards = LvcDiscard.accessible_by(current_ability).where("(create_unit_id = ? and status = ?) or checked_user_id = ?", current_user.unit_id, "checking", current_user.id)
     end
     

@@ -69,11 +69,11 @@
   <strong>上传照片(图片格式["jpg","png","gif","bmp"];小于5M;最大分辨率2590*1940): </strong><br/>
   <%= file_field_tag('file',onclick: "", onchange: "changePic(this);") %>
   <%= submit_tag "确认上传",:id=>'submit_button', 
-onclick: "form1.action='/fixed_asset_inventory_details/#{@fixed_asset_inventory_detail.id}/import';form1.submit();this.disabled='disabled';" %>
+onclick: "form1.action='/shpost_asset/fixed_asset_inventory_details/#{@fixed_asset_inventory_detail.id}/import';form1.submit();this.disabled='disabled';" %>
 </div>
 <table>
 <tr>
-  <td><%= button_tag "匹配", onclick: "if(!confirm('确定匹配?')){return false;} form1.action='/fixed_asset_inventory_details/#{@fixed_asset_inventory_detail.id}/match';form1.submit();", :class => 'btn btn-primary' %></td>
+  <td><%= button_tag "匹配", onclick: "if(!confirm('确定匹配?')){return false;} form1.action='/shpost_asset/fixed_asset_inventory_details/#{@fixed_asset_inventory_detail.id}/match';form1.submit();", :class => 'btn btn-primary' %></td>
   <td>
   <%= button_tag "不匹配",:class => 'btn btn-primary', :id => "unmatch", :type => "button" %></td>
 </tr>
@@ -84,7 +84,7 @@ onclick: "form1.action='/fixed_asset_inventory_details/#{@fixed_asset_inventory_
 <div id="desc">
    <%= label_tag 'desc_name', '备注:', class: 'control-group' %>
    <%= text_field_tag 'desc_content', nil, class: "controls" %>
-   <%= button_tag "确定", onclick: "if(!confirm('确定不匹配?')){return false;} form1.action='/fixed_asset_inventory_details/#{@fixed_asset_inventory_detail.id}/unmatch';form1.submit();", :class => 'btn btn-primary' %>
+   <%= button_tag "确定", onclick: "if(!confirm('确定不匹配?')){return false;} form1.action='/shpost_asset/fixed_asset_inventory_details/#{@fixed_asset_inventory_detail.id}/unmatch';form1.submit();", :class => 'btn btn-primary' %>
 </div>
 </td>
 </tr>

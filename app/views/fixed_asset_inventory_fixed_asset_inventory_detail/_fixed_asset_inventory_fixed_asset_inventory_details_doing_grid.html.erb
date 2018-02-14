@@ -64,7 +64,7 @@
 
     g.column in_csv: false do |fixed_asset_inventory_detail|
       ActiveSupport::SafeBuffer.new << 
-      (link_to t('.scan', :default => t("helpers.links.scan")), "/fixed_asset_inventory_details/" + fixed_asset_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, fixed_asset_inventory_detail) and !(current_user.unit.unit_level == 3))
+      (link_to t('.scan', :default => t("helpers.links.scan")), "/shpost_asset/fixed_asset_inventory_details/" + fixed_asset_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, fixed_asset_inventory_detail) and !(current_user.unit.unit_level == 3))
     end
 
   end 

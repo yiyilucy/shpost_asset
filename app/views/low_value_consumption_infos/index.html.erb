@@ -8,7 +8,7 @@
   <%= form_tag('', :method => "post", name: 'form1') do %>
   <div style="float:right">
     <% if can? :low_value_consumption_info_import, LowValueConsumptionInfo %>
-      <%= link_to t('.import', :default => t("helpers.links.import")), "/low_value_consumption_infos/low_value_consumption_info_import", :class => 'btn btn-primary' %>
+      <%= link_to t('.import', :default => t("helpers.links.import")), "/shpost_asset/low_value_consumption_infos/low_value_consumption_info_import", :class => 'btn btn-primary' %>
     <% end %>
   	<% if (can? :update, LowValueConsumptionInfo) %>
     <%= submit_tag "批量修改",:class => 'btn btn-primary', onclick: "form1.action='low_value_consumption_infos/batch_edit';form1.submit();" %>

@@ -4,7 +4,7 @@
 <div style="float:right">
     <% if can? :fixed_asset_catalog_import, FixedAssetCatalog %>
       <%= link_to t('.import', :default => t("helpers.links.import")),
-                  "/fixed_asset_catalogs/fixed_asset_catalog_import",
+                  "/shpost_asset/fixed_asset_catalogs/fixed_asset_catalog_import",
                   :class => 'btn btn-primary' %>
     <% end %>
      <% if can? :new, FixedAssetCatalog  %>

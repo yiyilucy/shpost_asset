@@ -54,8 +54,8 @@
 
     g.column in_csv: false do |low_value_consumption_inventory_detail|
       ActiveSupport::SafeBuffer.new << 
-      (link_to t('.recheck', :default => t("helpers.links.recheck")), "/low_value_consumption_inventory_details/" + low_value_consumption_inventory_detail.id.to_s + "/recheck", :data => { :confirm => "确定复核?" }, :class => 'btn btn-xs btn-primary' if (can? :recheck, low_value_consumption_inventory_detail) and (!low_value_consumption_inventory_detail.inventory_status.eql?"waiting") and (@low_value_consumption_inventory.create_user_id == current_user.id ) and (!(["canceled", "done"].include?@low_value_consumption_inventory.status)))<< ' ' <<
-      (link_to t('.scan', :default => t("helpers.links.scan")), "/low_value_consumption_inventory_details/" + low_value_consumption_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, low_value_consumption_inventory_detail) and (current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit))
+      (link_to t('.recheck', :default => t("helpers.links.recheck")), "/shpost_asset/low_value_consumption_inventory_details/" + low_value_consumption_inventory_detail.id.to_s + "/recheck", :data => { :confirm => "确定复核?" }, :class => 'btn btn-xs btn-primary' if (can? :recheck, low_value_consumption_inventory_detail) and (!low_value_consumption_inventory_detail.inventory_status.eql?"waiting") and (@low_value_consumption_inventory.create_user_id == current_user.id ) and (!(["canceled", "done"].include?@low_value_consumption_inventory.status)))<< ' ' <<
+      (link_to t('.scan', :default => t("helpers.links.scan")), "/shpost_asset/low_value_consumption_inventory_details/" + low_value_consumption_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, low_value_consumption_inventory_detail) and (current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit))
     end
 
   end 
