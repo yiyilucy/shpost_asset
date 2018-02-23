@@ -93,6 +93,7 @@ class Ability
         can :manage, FixedAssetInventoryDetail
         can :manage, LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
+        can :update, User, id: user.id
     end
 
     if user.accountant?
@@ -103,6 +104,7 @@ class Ability
         can [:to_do_index, :doing_index, :done_index, :read, :approve, :decline], Purchase
         can :manage, LvcDiscard
         can :manage, LvcDiscardDetail
+        can :update, User, id: user.id
         
     end
     
