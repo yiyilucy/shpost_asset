@@ -12,11 +12,10 @@ function fixed_asset_infos_preview() {
 	LODOP=getLodop(document.getElementById('LODOP_OB'),document.getElementById('LODOP_EM'));  
 	LODOP.SET_LICENSES("上海市邮政公司信息技术局","452677782688188907989821905623","","");
 
-    <% @selected.each do |x| %>
+    <% @result.each do |info| %>
     LODOP.PRINT_INITA("0.1mm","0.1mm","8cm","6cm","fixed_asset_info");
     LODOP.SET_PRINT_PAGESIZE(1,800,600,"fixed_asset_info");
-	<% info = FixedAssetInfo.find(x.to_i) %>
-    // LODOP.PRINT_INIT("打印");
+	// LODOP.PRINT_INIT("打印");
     // LODOP.SET_PRINT_STYLE("HOrient",2,);
     LODOP.SET_PRINT_STYLE("Alignment",2);
     // LODOP.ADD_PRINT_TEXT(3,1,227,15,'<%= info.try(:asset_name) %>');

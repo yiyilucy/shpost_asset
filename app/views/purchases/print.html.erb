@@ -12,7 +12,7 @@ function low_value_consumption_infos_preview() {
 	LODOP=getLodop(document.getElementById('LODOP_OB'),document.getElementById('LODOP_EM'));  
 	LODOP.SET_LICENSES("上海市邮政公司信息技术局","452677782688188907989821905623","","");
 
-	<% @purchase.low_value_consumption_infos.each do |info| %>
+	<% @purchase.low_value_consumption_infos.order("low_value_consumption_infos.use_unit_id, low_value_consumption_infos.lvc_catalog_id").each do |info| %>
     LODOP.PRINT_INITA("0.1mm","0.1mm","8cm","6cm","low_value_consumption");
     LODOP.SET_PRINT_PAGESIZE(1,800,600,"low_value_consumption");
     // LODOP.PRINT_INIT("打印");
@@ -40,8 +40,8 @@ function low_value_consumption_infos_preview() {
     <% print_times = info.print_times+1 %>
     <% info.update print_times: print_times %>
 
-    // LODOP.PREVIEW(); 
-    LODOP.PRINT();
+    LODOP.PREVIEW(); 
+    // LODOP.PRINT();
     <% end %>
     };
 

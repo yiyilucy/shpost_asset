@@ -3,14 +3,14 @@ class FixedAssetInfosController < ApplicationController
 
   def index
     if current_user.unit.blank?
-      @fixed_asset_infos = FixedAssetInfo.all.order(:relevant_unit_id, :manage_unit_id, :asset_no)
+      @fixed_asset_infos = FixedAssetInfo.all.order(:unit_id, :fixed_asset_catalog_id)
     else
       if current_user.unit.unit_level == 1
-        @fixed_asset_infos = FixedAssetInfo.all.order(:relevant_unit_id, :manage_unit_id, :asset_no)
+        @fixed_asset_infos = FixedAssetInfo.all.order(:unit_id, :fixed_asset_catalog_id)
       elsif current_user.unit.is_facility_management_unit
-        @fixed_asset_infos = FixedAssetInfo.where("(relevant_unit_id = ? or unit_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, "in_use").order(:manage_unit_id, :asset_no)
+        @fixed_asset_infos = FixedAssetInfo.where("(relevant_unit_id = ? or unit_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, "in_use").order(:unit_id, :fixed_asset_catalog_id)
       elsif current_user.unit.unit_level == 2
-        @fixed_asset_infos = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).order(:asset_no)
+        @fixed_asset_infos = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).order(:unit_id, :fixed_asset_catalog_id)
       end  
     end     
 # binding.pry        
@@ -283,6 +283,16 @@ class FixedAssetInfosController < ApplicationController
   def print
     if params[:fixed_asset_infos] && params[:fixed_asset_infos][:selected]
       @selected = params[:fixed_asset_infos][:selected]
+      
+      @result = []
+      
+      until @selected.blank? do 
+        @result = @result + FixedAssetInfo.where(id:@selected.pop(1000))
+      end
+
+      @result.sort_by{|x| "#{x.unit_id.to_s} #{x.fixed_asset_catalog_id.to_s}"}
+
+      # @result.sort_by{|x| "#{x.unit_id.to_s} #{x.fixed_asset_catalog_id.to_s}"}.each{|x| puts "#{x.id}  #{x.unit_id}  #{x.fixed_asset_catalog_id}"}
     else
       flash[:alert] = "请勾选需要打印的固定资产"
       respond_to do |format|

@@ -4,9 +4,9 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
 
   def index
     # binding.pry
+    @low_value_consumption_infos = @low_value_consumption_infos.order(:use_unit_id, :lvc_catalog_id)
     @low_value_consumption_infos_grid = initialize_grid(@low_value_consumption_infos,
-      :order => 'low_value_consumption_infos.asset_no',
-      :order_direction => 'asc', per_page: 50,
+      per_page: 50,
       :name => 'purchase_low_value_consumption_infos',
       :enable_export_to_csv => true,
       :csv_file_name => 'low_value_consumption_infos')
@@ -197,6 +197,13 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
   def print
     if params[:purchase_low_value_consumption_infos] && params[:purchase_low_value_consumption_infos][:selected]
       @selected = params[:purchase_low_value_consumption_infos][:selected]
+      @result = []
+      
+      until @selected.blank? do 
+        @result = @result + LowValueConsumptionInfo.where(id:@selected.pop(1000))
+      end
+
+      @result.sort_by{|x| "#{x.use_unit_id.to_s} #{x.lvc_catalog_id.to_s}"}
     else
       flash[:alert] = "请勾选需要打印的低值易耗品"
       respond_to do |format|

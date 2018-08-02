@@ -11,8 +11,8 @@
 
     g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no'
 
-    g.column name: model_class.human_attribute_name(:fixed_asset_catalog_id), attribute: 'code', assoc: :fixed_asset_catalog do |fixed_asset_info|
-      fixed_asset_info.fixed_asset_catalog.try :code
+    g.column name: model_class.human_attribute_name(:fixed_asset_catalog_id), attribute: 'name', assoc: :fixed_asset_catalog do |fixed_asset_info|
+      fixed_asset_info.fixed_asset_catalog.try :name
     end
 
     g.column name: model_class.human_attribute_name(:belong_unit), attribute: 'belong_unit'

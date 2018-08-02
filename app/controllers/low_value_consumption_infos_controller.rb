@@ -4,14 +4,14 @@ class LowValueConsumptionInfosController < ApplicationController
 
   def index
     if current_user.unit.blank?
-      @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use").order(:relevant_unit_id, :manage_unit_id, :asset_no)
+      @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use").order(:use_unit_id, :lvc_catalog_id)
     else
       if current_user.unit.unit_level == 1
-        @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use").order(:relevant_unit_id, :manage_unit_id, :asset_no)
+        @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use").order(:use_unit_id, :lvc_catalog_id)
       elsif current_user.unit.is_facility_management_unit
-        @low_value_consumption_infos = LowValueConsumptionInfo.where("(relevant_unit_id = ? or use_unit_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, "in_use").order(:manage_unit_id, :asset_no)
+        @low_value_consumption_infos = LowValueConsumptionInfo.where("(relevant_unit_id = ? or use_unit_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, "in_use").order(:use_unit_id, :lvc_catalog_id)
       elsif current_user.unit.unit_level == 2
-        @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").order(:asset_no)
+        @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").order(:use_unit_id, :lvc_catalog_id)
       end
     end
 
@@ -103,6 +103,13 @@ class LowValueConsumptionInfosController < ApplicationController
   def print
     if params[:low_value_consumption_infos] && params[:low_value_consumption_infos][:selected]
       @selected = params[:low_value_consumption_infos][:selected]
+      @result = []
+      
+      until @selected.blank? do 
+        @result = @result + LowValueConsumptionInfo.where(id:@selected.pop(1000))
+      end
+
+      @result.sort_by{|x| "#{x.use_unit_id.to_s} #{x.lvc_catalog_id.to_s}"}
     else
       flash[:alert] = "请勾选需要打印的低值易耗品"
       respond_to do |format|
