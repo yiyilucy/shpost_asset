@@ -8,7 +8,7 @@
       <%= link_to t('.import', :default => t("helpers.links.import")), "/shpost_asset/fixed_asset_infos/fixed_asset_info_import", :class => 'btn btn-primary' %>
     <% end %>
     <%= submit_tag "打印",:class => 'btn btn-primary', target: '_blank', onclick: "form1.action='fixed_asset_infos/print';form1.submit();" %>
-    <button class="wg-external-csv-export-button" data-grid-name="fixed_asset_infos">导出</button>
+    <button class="btn btn-primary" data-grid-name="fixed_asset_infos">导出</button>
     
   </div>
  
