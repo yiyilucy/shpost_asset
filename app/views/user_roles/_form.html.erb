@@ -16,7 +16,7 @@
         <% elsif @user.accountant? %>
           <%= f.select(:role, Role::ROLE1_CW.invert) %>
         <% else %>
-          <%= f.select(:role, Role::ROLE1.invert) %>
+          <%= f.select(:role, Role::ROLE_SGS.invert) %>
         <% end %>
       <% else %>
         <% if @user.deviceadmin? %>
@@ -24,7 +24,7 @@
         <% elsif @user.accountant? %>
           <%= f.select(:role, Role::ROLE2_CW.invert) %>
         <% else %>
-          <%= f.select(:role, Role::ROLE2.invert) %>
+          <%= f.select(:role, Role::ROLE2_JG.invert) %>
         <% end %>
       <% end %>
     </div>
