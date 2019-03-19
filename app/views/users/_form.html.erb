@@ -42,7 +42,8 @@
     <div class="control-group">
       <%= f.label :unit_id, :class => 'control-label' %>
       <div class="controls">
-        <%= f.select(:unit_id, Unit.accessible_by(current_ability).map{|u| [u.name,u.id]})%>
+        <% lv3units = Unit.where("parent_id in (?)", current_user.unit.children.map{|x| x.id}).map{|y| y.id} %>
+        <%= f.select(:unit_id, Unit.accessible_by(current_ability).where("id=? or parent_id=? or parent_id in (?) or parent_id in (?)", current_user.unit_id, current_user.unit_id, current_user.unit.children.map{|x| x.id}, lv3units).map{|u| [u.name,u.id]})%>
       </div>
     </div>
 
@@ -51,21 +52,9 @@
       <div class="controls">
         <% #f.select(:role, User::ROLE.invert.select{|k, v| can? :role, v.to_sym}) %>
         <% if current_user.unit.blank? or current_user.unit.unit_level == 1 %>
-          <% if @user.deviceadmin? %>
-            <%= f.select(:role, Role::ROLE1_SB.invert) %>
-          <% elsif @user.accountant? %>
-            <%= f.select(:role, Role::ROLE1_CW.invert) %>
-          <% else %>
-            <%= f.select(:role, Role::ROLE1.invert) %>
-          <% end %>
+          <%= f.select(:role, Role::ROLE1.invert) %>
         <% else %>
-          <% if @user.deviceadmin? %>
-            <%= f.select(:role, Role::ROLE2_SB.invert) %>
-          <% elsif @user.accountant? %>
-            <%= f.select(:role, Role::ROLE2_CW.invert) %>
-          <% else %>
-            <%= f.select(:role, Role::ROLE2.invert) %>
-          <% end %>
+          <%= f.select(:role, Role::ROLE2.invert) %>
         <% end %>
       </div>
     </div>
@@ -82,7 +71,7 @@
   <% end %>
 
   <div class="form-actions">
-    <%= f.submit nil, :class => 'btn btn-primary', onclick: "if($('#user_email').val() == ''){ alert('请输入电子邮件'); return false;}; " %>
+    <%= f.submit nil, :class => 'btn btn-primary' %>
     <% if can? :index, User%>
     <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
                 users_path, :class => 'btn' %>

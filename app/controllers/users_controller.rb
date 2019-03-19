@@ -97,7 +97,8 @@ class UsersController < ApplicationController
               role_index = to_string(rowarr[1]).strip
               name_index = to_string(rowarr[2]).strip
               username_index = to_string(rowarr[3]).strip.downcase
-              password_index = to_string(rowarr[4]).strip
+              # password_index = to_string(rowarr[4]).strip
+              password_index = username_index + "12345"
 
               unit = Unit.where("unit_level = ? and name like ?", 2, "%#{unit_index}%").first
 

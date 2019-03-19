@@ -183,10 +183,13 @@ class UnitsController < ApplicationController
             2.upto(instance.last_row) do |line|
               rowarr = instance.row(line)
               name2 = to_string(rowarr[1]).strip
-              name3 = to_string(rowarr[2]).strip
               unit2_arr << name2
-              unit3_arr << name3
-              unit23_hash[name3] = name2
+
+              if !rowarr[2].blank?
+                name3 = to_string(rowarr[2]).strip 
+                unit3_arr << name3
+                unit23_hash[name3] = name2
+              end
               
               if !rowarr[3].blank?
                 name4 = to_string(rowarr[3]).strip
@@ -208,7 +211,7 @@ class UnitsController < ApplicationController
               a = x
               if Unit.find_by(name: x).blank?
                 unit = Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 3, parent_id: Unit.find_by(name: unit23_hash[x]).blank? ? nil : Unit.find_by(name: unit23_hash[x]).id)
-                unit.update is_facility_management_unit: (!unit.parent.blank? and unit.parent.name.eql?I18n.t("relevant_unit.parent") and ["中国邮政集团公司上海市分公司企业发展与科技部", "中国邮政集团公司上海市分公司财务部", "中国邮政集团公司上海市分公司运营管理部", "中国邮政集团公司上海市分公司安全保卫部"].include?x) ? true : false
+                unit.update is_facility_management_unit: (!unit.parent.blank? and unit.parent.name.eql?I18n.t("relevant_unit.parent") and ["企业发展与科技部", "财务部", "运营管理部(设备)", "运营管理部(车辆)", "办公室", "安全保卫部(监控)", "安全保卫部(消防)"].include?x) ? true : false
                 no = no + 1
               end
             end
@@ -232,6 +235,8 @@ class UnitsController < ApplicationController
       end
     end
   end
+
+  
 
   def to_string(text)
     if text.is_a? Float
