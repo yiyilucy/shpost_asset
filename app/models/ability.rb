@@ -60,7 +60,7 @@ class Ability
     if user.unitadmin?
     #can :manage, :all
 
-        can :manage, Unit
+        can :read, Unit
 
         can :manage, User
 
@@ -86,7 +86,7 @@ class Ability
         can :manage, LowValueConsumptionInfo
         can :manage, Purchase
         cannot [:approve, :decline], Purchase
-        can :manage, Unit
+        can :read, Unit
         can :read, LvcDiscard
         can :read, LvcDiscardDetail
         can :manage, FixedAssetInventory
@@ -94,8 +94,6 @@ class Ability
         can :manage, LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
         can :update, User, id: user.id
-        can [:read, :up_download_export], UpDownload
-        cannot [:create, :to_import, :up_download_import,:destroy], UpDownload
     end
 
     if user.accountant?
@@ -107,8 +105,7 @@ class Ability
         can :manage, LvcDiscard
         can :manage, LvcDiscardDetail
         can :update, User, id: user.id
-        can [:read, :up_download_export], UpDownload
-        cannot [:create, :to_import, :up_download_import,:destroy], UpDownload
+        
     end
     
     if user.inventoryadmin?

@@ -36,7 +36,6 @@
     <%= link_to t('.import', :default => t("helpers.links.import")),
                   "/shpost_asset/units/import",
                   :class => 'btn btn-primary' %> 
-    
   </div>
   <% end %>
 </div>
@@ -71,7 +70,7 @@
         (link_to t("新增下级单位"), newsub_unit_path(unit), :class => 'btn btn-xs btn-primary' if (can? :newsub, unit) and [1,2,3].include?unit.unit_level) << ' ' << 
         (link_to t('.edit', :default => t("helpers.links.edit")), update_unit_unit_path(unit), :class => 'btn btn-xs btn-primary' if can? :update, unit) << ' ' <<
         (link_to t('.destroy', :default => t("helpers.links.destroy")), destroy_unit_unit_path(unit), :data => { :confirm => t('wice_grid.saved_query_deletion_confirmation', :default => t("helpers.links.confirm", :default => '确定删除?')) }, :class => 'btn btn-xs btn-danger' if can? :destroy, unit) << ' ' <<
-        (link_to t('.users', :default => t("helpers.links.users")), unit_users_path(unit), :class => 'btn btn-xs btn-info' if can? :user, unit) << ' ' <<
+        (link_to t('.users', :default => t("helpers.links.users")), unit_users_path(unit), :class => 'btn btn-xs btn-info' if can? :manage, User) << ' ' <<
         (link_to "下级单位", unit_path(unit), :class => 'btn btn-xs btn-primary' if (can? :read, unit) and [1,2,3].include?unit.unit_level)
     end
   end 
