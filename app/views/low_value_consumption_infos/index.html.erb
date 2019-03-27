@@ -22,7 +22,6 @@
   	<%= submit_tag "打印",:class => 'btn btn-primary', target: '_blank', onclick: "form1.action='low_value_consumption_infos/print';form1.submit();" %>
   	<% end %>
     <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="low_value_consumption_infos">导出</button>
-
   </div>
 <%= form_tag('', :method => "post", name: 'form1') do %>
   
