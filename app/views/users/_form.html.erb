@@ -39,7 +39,7 @@
 
 
   <% if can? :role, @user %>
-    <div class="control-group">
+    <div id="unit", class="control-group">
       <%= f.label :unit_id, :class => 'control-label' %>
       <div class="controls">
         <% lv3units = Unit.where("parent_id in (?)", current_user.unit.children.map{|x| x.id}).map{|y| y.id} %>
@@ -47,14 +47,14 @@
       </div>
     </div>
 
-    <div class="control-group">
+    <div id="role", class="control-group">
       <%= f.label :role, :class => 'control-label' %>
       <div class="controls">
         <% #f.select(:role, User::ROLE.invert.select{|k, v| can? :role, v.to_sym}) %>
-        <% if current_user.unit.blank? or current_user.unit.unit_level == 1 %>
-          <%= f.select(:role, Role::ROLE1.invert) %>
+        <% if !@roles.blank? %>
+          <%= f.select(:role, options_for_select(@roles)) %>
         <% else %>
-          <%= f.select(:role, Role::ROLE2.invert) %>
+          <%= f.select(:role, options_for_select("请选择"))%>
         <% end %>
       </div>
     </div>
@@ -78,3 +78,21 @@
     <% end %>
   </div>
 <% end %>
+
+
+<script language="javascript" type="text/javascript"> 
+
+$(document).ready(function(){
+  $('#unit').click(function(){
+    $.ajax({
+      type : 'GET',
+      url : '/shpost_asset/users/select_roles/',
+      data: { unit_id: $('#user_unit_id').val()},
+      dataType : 'script'
+    });
+
+    return false;
+  });     
+})
+
+</script>

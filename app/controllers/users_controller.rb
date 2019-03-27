@@ -149,7 +149,22 @@ class UsersController < ApplicationController
     end
   end
 
-
+  def select_roles
+    if !params[:unit_id].blank?
+      unit = Unit.find(params[:unit_id].to_i)
+      if unit.unit_level == 1
+        @roles = Role::ROLE1.invert
+      elsif unit.unit_level == 2
+        @roles = Role::ROLE2.invert
+      elsif unit.unit_level == 3 || unit.unit_level == 4
+        @roles = Role::ROLE34.invert
+      end    
+      
+      respond_to do |format|
+        format.js 
+      end
+    end
+  end
 
 
   private

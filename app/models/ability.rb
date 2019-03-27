@@ -83,15 +83,33 @@ class Ability
         can :read, FixedAssetCatalog
         can :read, LowValueConsumptionCatalog
         can :manage, FixedAssetInfo
+        if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
+            cannot [:fixed_asset_info_import, :fixed_asset_report], FixedAssetInfo
+        end
         can :manage, LowValueConsumptionInfo
+        if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
+            cannot [:low_value_consumption_info_import, :batch_destroy, :discard, :low_value_consumption_report], LowValueConsumptionInfo
+        end
         can :manage, Purchase
+        if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
+            cannot :read, Purchase
+        end
         cannot [:approve, :decline], Purchase
         can :manage, Unit
         can :read, LvcDiscard
         can :read, LvcDiscardDetail
+        if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
+            cannot :read, LvcDiscard
+        end
         can :manage, FixedAssetInventory
+        if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
+            cannot :create, FixedAssetInventory
+        end
         can :manage, FixedAssetInventoryDetail
         can :manage, LowValueConsumptionInventory
+        if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
+            cannot :create, LowValueConsumptionInventory
+        end
         can :manage, LowValueConsumptionInventoryDetail
         can :update, User, id: user.id
         can [:read, :up_download_export], UpDownload

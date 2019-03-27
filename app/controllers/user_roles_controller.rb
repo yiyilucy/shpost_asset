@@ -53,6 +53,38 @@ class UserRolesController < ApplicationController
     end
   end
 
+  def select_roles
+    if !params[:unit_id].blank? and !params[:user_id].blank?
+      unit = Unit.find(params[:unit_id].to_i)
+      user = User.find(params[:user_id].to_i)
+      if unit.unit_level == 1
+        if user.deviceadmin?
+          @roles = Role::ROLE1_SB.invert
+        elsif user.accountant? 
+          @roles = Role::ROLE1_CW.invert
+        else
+          @roles = Role::ROLE1_JG.invert
+        end
+      elsif unit.unit_level == 2
+        if user.deviceadmin? 
+          @roles = Role::ROLE23_SB.invert
+        elsif user.accountant? 
+          @roles = Role::ROLE2_CW.invert
+        else
+          @roles = Role::ROLE2_JG.invert
+        end
+      elsif unit.unit_level == 3
+        @roles = Role::ROLE23_SB.invert
+      elsif unit.unit_level == 4
+        @roles = Role::ROLE4_PD.invert  
+      end    
+      
+      respond_to do |format|
+        format.js 
+      end
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     #def set_role

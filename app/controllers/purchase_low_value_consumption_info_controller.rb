@@ -103,7 +103,9 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
             purchase_id: @purchase.id, 
             status: "waiting", 
             print_times: 0, 
-            manage_unit_id: @purchase.manage_unit_id)
+            manage_unit_id: @purchase.manage_unit_id,
+            use_years: params[:low_value_consumption_info][:use_years],
+            desc1: params[:low_value_consumption_info][:desc1])
           
           amount = amount-1
         end

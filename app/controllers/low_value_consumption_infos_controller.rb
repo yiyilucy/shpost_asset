@@ -12,6 +12,8 @@ class LowValueConsumptionInfosController < ApplicationController
         @low_value_consumption_infos = LowValueConsumptionInfo.where("(relevant_unit_id = ? or use_unit_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, "in_use").order(:use_unit_id, :lvc_catalog_id)
       elsif current_user.unit.unit_level == 2
         @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").order(:use_unit_id, :lvc_catalog_id)
+      elsif current_user.unit.unit_level == 3 && !current_user.unit.is_facility_management_unit 
+        @low_value_consumption_infos = LowValueConsumptionInfo.where("(use_unit_id = ? or use_unit_id in (?)) and status = ?", current_user.unit_id, current_user.unit.children.map{|x| x.id}, "in_use").order(:use_unit_id, :lvc_catalog_id)
       end
     end
 
@@ -44,6 +46,8 @@ class LowValueConsumptionInfosController < ApplicationController
         @low_value_consumption_infos = LowValueConsumptionInfo.where(relevant_unit_id: current_user.unit_id, status: "discard").order(:manage_unit_id, :asset_no)
       elsif current_user.unit.unit_level == 2
         @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "discard").order(:asset_no)
+      elsif current_user.unit.unit_level == 3 && !current_user.unit.is_facility_management_unit   
+        @low_value_consumption_infos = LowValueConsumptionInfo.where("(use_unit_id = ? or use_unit_id in (?)) and status = ?", current_user.unit_id, current_user.unit.children.map{|x| x.id}, "discard").order(:use_unit_id, :asset_no)
       end
     end
     
@@ -51,6 +55,7 @@ class LowValueConsumptionInfosController < ApplicationController
       :name => 'discard_low_value_consumption_infos',
       :enable_export_to_csv => true,
       :csv_file_name => 'low_value_consumption_infos')
+    export_grid_if_requested
   end
 
   def show
@@ -279,46 +284,52 @@ class LowValueConsumptionInfosController < ApplicationController
               use_years = rowarr[use_years_index].blank? ? "" : to_string(rowarr[use_years_index])
               brand_model = rowarr[brand_model_index].blank? ? "" : to_string(rowarr[brand_model_index])
               
-
               if asset_name.blank?
-                txt = "缺少资产名称"
+                txt = "缺少资产名称_"
                 sheet_error << (rowarr << txt)
-                next
+                raise txt
+                raise ActiveRecord::Rollback         
               end
               if catalog_name.blank?
-                txt = "缺少类别目录"
+                txt = "缺少类别目录_"
                 sheet_error << (rowarr << txt)
-                next
+                raise txt
+                raise ActiveRecord::Rollback 
               end
               
               if !catalogs.has_key?catalog_name
-                txt = "类别目录不存在"
+                txt = "类别目录不存在_"
                 sheet_error << (rowarr << txt)
-                next
+                raise txt
+                raise ActiveRecord::Rollback 
               end
               if unit_name.blank?
-                txt = "缺少使用部门"
+                txt = "缺少使用部门_"
                 sheet_error << (rowarr << txt)
-                next
+                raise txt
+                raise ActiveRecord::Rollback 
               end
               if !use_departments.has_key?unit_name
-                txt = "使用部门不存在"
+                txt = "使用部门不存在_"
                 sheet_error << (rowarr << txt)
-                next
+                raise txt
+                raise ActiveRecord::Rollback 
               end
 
               if !relevant_department.blank?
                 if !relevant_departments.has_key?relevant_department and !short_relevant_departments.has_key?relevant_department
-                  txt = "归口管理部门不存在"
+                  txt = "归口管理部门不存在_"
                   sheet_error << (rowarr << txt)
-                  next
+                  raise txt
+                  raise ActiveRecord::Rollback 
                 end
               end
 
               if !amount.is_a?(Integer) or amount <= 0
-                txt = "请填写正确数量"
+                txt = "请填写正确数量_"
                 sheet_error << (rowarr << txt)
-                next
+                raise txt
+                raise ActiveRecord::Rollback 
               end
               
               while amount>0

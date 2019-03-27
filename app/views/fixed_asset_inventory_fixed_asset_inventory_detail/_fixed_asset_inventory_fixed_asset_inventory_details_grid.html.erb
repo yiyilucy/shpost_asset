@@ -65,7 +65,7 @@
     g.column in_csv: false do |fixed_asset_inventory_detail|
       ActiveSupport::SafeBuffer.new << 
       (link_to t('.recheck', :default => t("helpers.links.recheck")), "/shpost_asset/fixed_asset_inventory_details/" + fixed_asset_inventory_detail.id.to_s + "/recheck", :data => { :confirm => "确定复核?" }, :class => 'btn btn-xs btn-primary' if (can? :recheck, fixed_asset_inventory_detail) and (!fixed_asset_inventory_detail.inventory_status.eql?"waiting") and (@fixed_asset_inventory.create_user_id == current_user.id ) and (!(["canceled", "done"].include?@fixed_asset_inventory.status)))<< ' ' <<
-      (link_to t('.scan', :default => t("helpers.links.scan")), "/shpost_asset/fixed_asset_inventory_details/" + fixed_asset_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, fixed_asset_inventory_detail) and (current_user.unit.unit_level == 2 and !current_user.unit.is_facility_management_unit))
+      (link_to t('.scan', :default => t("helpers.links.scan")), "/shpost_asset/fixed_asset_inventory_details/" + fixed_asset_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, fixed_asset_inventory_detail) and !([1,2,3,4].include?current_user.unit.unit_level))
     end
 
   end 
