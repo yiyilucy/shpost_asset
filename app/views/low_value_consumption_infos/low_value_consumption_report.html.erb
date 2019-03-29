@@ -12,17 +12,17 @@
 </tr>
 </thead>
 <tbody>
-  <% @counts.each do |x| %>
+  <% @units.each do |x| %>
 <tr>
-	<td><%= Unit.find(x[0]).name %></td>
-	<td><%= x[1] %></td>
-	<td><%= @sums[x[0]].round(2) %></td>
+	<td><%= x.name %></td>
+	<td><%= @counts[x.id].blank? ? 0 : @counts[x.id] %></td>
+	<td><%= @sums[x.id].blank? ? number_with_precision(0, precision: 2) : number_with_precision(@sums[x.id], precision: 2) %></td>
 </tr>
 <% end %>
 <tr>
 	<td>合计</td>
-	<td><%= @total_count %></td>
-	<td><%= @total_sum.round(2) %></td>
+	<td><%= @total_count.blank? ? 0 : @total_count %></td>
+	<td><%= @total_sum.blank? ? number_with_precision(0, precision: 2) : number_with_precision(@total_sum, precision: 2) %></td>
 </tr>
 </tbody>
 </table>

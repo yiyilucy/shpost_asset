@@ -429,11 +429,13 @@ class LowValueConsumptionInfosController < ApplicationController
       @counts = LowValueConsumptionInfo.all.group(:manage_unit_id).order(:manage_unit_id).count
       @total_sum = LowValueConsumptionInfo.all.sum(:sum)
       @total_count = LowValueConsumptionInfo.all.size
+      @units = Unit.where(unit_level: 2).map{|x| x.id}.select(:id, :name)
     elsif current_user.unit.unit_level == 2
       @sums = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id).group(:use_unit_id).order(:use_unit_id).sum(:sum)
       @counts = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id).group(:use_unit_id).order(:use_unit_id).count
       @total_sum = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id).sum(:sum)
       @total_count = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id).size
+      @units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit_id, current_user.unit_id, current_user.unit.children.map{|x| x.id}).select(:id, :name)
     end
   end
 

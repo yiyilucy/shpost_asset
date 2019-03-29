@@ -86,8 +86,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
         amount = params[:amount][:amount].to_i
         while amount>0 do 
           # binding.pry
-          LowValueConsumptionInfo.create!(sn: params[:low_value_consumption_info][:sn], 
-            lvc_catalog_id: params[:low_value_consumption_info][:lvc_catalog_id], 
+          LowValueConsumptionInfo.create!(lvc_catalog_id: params[:low_value_consumption_info][:lvc_catalog_id], 
             asset_name: params[:low_value_consumption_info][:asset_name], 
             batch_no: params[:low_value_consumption_info][:batch_no], 
             brand_model: params[:low_value_consumption_info][:brand_model], 

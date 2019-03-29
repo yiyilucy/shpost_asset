@@ -1,13 +1,13 @@
 <%= form_for ([ @purchase, @low_value_consumption_info]), :html => { :class => 'form-horizontal' } do |f| %>
 <% if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked" %>
   <div class="control-group">
-    <%= f.label :lvc_catalog_id, :class => 'control-label' %>
+    <%= f.label :lvc_catalog_id, :class => 'control-label' %><font color="#FF0000">  *</font>
     <div class="controls">
       <%= low_value_consumption_catalog_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
     </div>
   </div>
   <div class="control-group">
-    <%= f.label :asset_name, :class => 'control-label' %>
+    <%= f.label :asset_name, :class => 'control-label' %><font color="#FF0000">  *</font>
     <div class="controls">
       <%= f.text_field :asset_name, :class => 'text_field' %>
     </div>
@@ -19,7 +19,7 @@
     </div>
   </div>
   <div class="control-group">
-    <%= f.label :brand_model, :class => 'control-label' %>
+    <%= f.label :brand_model, :class => 'control-label' %><font color="#FF0000">  *</font>
     <div class="controls">
       <%= f.text_field :brand_model, :class => 'text_field' %>
     </div>
@@ -31,7 +31,7 @@
     </div>
   </div>
   <div class="control-group">
-    <%= f.label :sum, :class => 'control-label' %>
+    <%= f.label :sum, :class => 'control-label' %><font color="#FF0000">  *</font>
     <div class="controls">
       <%= f.text_field :sum, :class => 'text_field' %>
     </div>
@@ -43,7 +43,7 @@
     </div>
   </div>
   <div class="control-group">
-    <%= f.label :buy_at, :class => 'control-label' %>
+    <%= f.label :buy_at, :class => 'control-label' %><font color="#FF0000">  *</font>
     <div class="controls">
 
       <%= f.text_field  :buy_at %>
@@ -51,13 +51,13 @@
   </div>
   <% end %>
   <div class="control-group">
-    <%= f.label :branch, :class => 'control-label' %>
+    <%= f.label :branch, :class => 'control-label' %><font color="#FF0000">  *</font>
     <div class="controls">
       <%= f.text_field :branch, :class => 'text_field' %>
     </div>
   </div>
   <div class="control-group">
-    <%= f.label :location, :class => 'control-label' %>
+    <%= f.label :location, :class => 'control-label' %><font color="#FF0000">  *</font>
     <div class="controls">
       <%= f.text_field :location, :class => 'text_field' %>
     </div>
@@ -69,13 +69,13 @@
     </div>
   </div>
   <div class="control-group">
-    <%= f.label :relevant_unit_id, :class => 'control-label' %>
+    <%= f.label :relevant_unit_id, :class => 'control-label' %><font color="#FF0000">  *</font>
     <div class="controls">
       <%= relevant_department_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
     </div>
   </div>
   <div class="control-group">
-    <%= f.label :use_unit_id, :class => 'control-label' %>
+    <%= f.label :use_unit_id, :class => 'control-label' %><font color="#FF0000">  *</font>
     <div class="controls">
       <%= use_unit_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
     </div>
@@ -95,7 +95,7 @@
   </div>
 <% if @low_value_consumption_info.asset_name.blank? %>
   <div class="control-group">
-    <%= label_tag(:amount, "数量") %>
+    <%= label_tag(:amount, "数量") %><font color="#FF0000">  *</font>
     <div class="controls">
       <%= text_field("amount", "amount") %>
     </div>  

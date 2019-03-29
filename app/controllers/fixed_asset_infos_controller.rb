@@ -211,7 +211,7 @@ class FixedAssetInfosController < ApplicationController
               ori_info = FixedAssetInfo.find_by(asset_no:asset_no)
 
               if !ori_info.blank?
-                ori_info.update!(sum: sum, accumulate_depreciation: accumulate_depreciation, net_value: net_value, month_depreciation: month_depreciation, use_status: use_status, user: user, unit_id: use_departments[unit_name], location:location, relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department], desc1: desc1, license: license, status:"in_use")
+                ori_info.update!(sum: sum, accumulate_depreciation: accumulate_depreciation, net_value: net_value, month_depreciation: month_depreciation, use_status: use_status, user: user, unit_id: use_departments[unit_name], location:location, relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department], desc1: desc1, license: license, status:"in_use", manage_unit_id: current_user.unit_id)
 
                 ori_infos.delete(asset_no)
               else
@@ -331,11 +331,13 @@ class FixedAssetInfosController < ApplicationController
       @counts = FixedAssetInfo.all.group(:manage_unit_id).order(:manage_unit_id).count
       @total_sum = FixedAssetInfo.all.sum(:sum)
       @total_count = FixedAssetInfo.all.size
+      @units = Unit.where(unit_level: 2).map{|x| x.id}.select(:id, :name)
     elsif current_user.unit.unit_level == 2
       @sums = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).group(:unit_id).order(:unit_id).sum(:sum)
       @counts = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).group(:unit_id).order(:unit_id).count
       @total_sum = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).sum(:sum)
       @total_count = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).size
+      @units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit_id, current_user.unit_id, current_user.unit.children.map{|x| x.id}).select(:id, :name)
     end
   end
 
