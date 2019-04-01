@@ -327,16 +327,16 @@ class FixedAssetInfosController < ApplicationController
 
   def fixed_asset_report
     if current_user.unit.unit_level == 1
-      @sums = FixedAssetInfo.all.group(:manage_unit_id).order(:manage_unit_id).sum(:sum)
-      @counts = FixedAssetInfo.all.group(:manage_unit_id).order(:manage_unit_id).count
-      @total_sum = FixedAssetInfo.all.sum(:sum)
-      @total_count = FixedAssetInfo.all.size
+      @sums = FixedAssetInfo.where(status: "in_use").group(:manage_unit_id).order(:manage_unit_id).sum(:sum)
+      @counts = FixedAssetInfo.where(status: "in_use").group(:manage_unit_id).order(:manage_unit_id).count
+      @total_sum = FixedAssetInfo.where(status: "in_use").sum(:sum)
+      @total_count = FixedAssetInfo.where(status: "in_use").size
       @units = Unit.where(unit_level: 2).map{|x| x.id}.select(:id, :name)
     elsif current_user.unit.unit_level == 2
-      @sums = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).group(:unit_id).order(:unit_id).sum(:sum)
-      @counts = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).group(:unit_id).order(:unit_id).count
-      @total_sum = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).sum(:sum)
-      @total_count = FixedAssetInfo.where(manage_unit_id: current_user.unit_id).size
+      @sums = FixedAssetInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").group(:unit_id).order(:unit_id).sum(:sum)
+      @counts = FixedAssetInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").group(:unit_id).order(:unit_id).count
+      @total_sum = FixedAssetInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").sum(:sum)
+      @total_count = FixedAssetInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").size
       @units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit_id, current_user.unit_id, current_user.unit.children.map{|x| x.id}).select(:id, :name)
     end
   end
