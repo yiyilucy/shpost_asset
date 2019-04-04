@@ -201,7 +201,7 @@ class UnitsController < ApplicationController
             unit2_arr.uniq.each do |x|
               a = x
               if Unit.find_by(name: x).blank?
-                Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 2, parent_id: Unit.find_by(unit_level: 1).blank? ? nil : Unit.find_by(unit_level: 1).id, is_facility_management_unit: false, short_name: ((I18n.t("unit_short_name.#{x}").to_s.include?"translation missing") ? "" : I18n.t("unit_short_name.#{x}").to_s))
+                Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 2, parent_id: Unit.find_by(unit_level: 1).blank? ? nil : Unit.find_by(unit_level: 1).id, is_facility_management_unit: (I18n.t("relevant_unit.relevant_unit_name").include?x) ? true : false, short_name: ((I18n.t("unit_short_name.#{x}").to_s.include?"translation missing") ? "" : I18n.t("unit_short_name.#{x}").to_s))
 
                 no = no + 1
               end
@@ -211,7 +211,7 @@ class UnitsController < ApplicationController
               a = x
               if Unit.find_by(name: x).blank?
                 unit = Unit.create!(name: x, unit_desc: x, no: no.to_s.rjust(4, '0'), unit_level: 3, parent_id: Unit.find_by(name: unit23_hash[x]).blank? ? nil : Unit.find_by(name: unit23_hash[x]).id)
-                unit.update is_facility_management_unit: (!unit.parent.blank? and unit.parent.name.eql?I18n.t("relevant_unit.parent") and ["企业发展与科技部", "财务部", "运营管理部(设备)", "运营管理部(车辆)", "办公室", "安全保卫部(监控)", "安全保卫部(消防)"].include?x) ? true : false
+                unit.update is_facility_management_unit: (I18n.t("relevant_unit.relevant_unit_name").include?x) ? true : false
                 no = no + 1
               end
             end
