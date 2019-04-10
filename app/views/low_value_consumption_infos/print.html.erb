@@ -24,23 +24,23 @@ function low_value_consumption_infos_preview() {
     // LODOP.PRINT_INIT("打印");
     // LODOP.SET_PRINT_STYLE("HOrient",2,);
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(8,1,300,15,'<%= info.try(:asset_name) %>');
+    LODOP.ADD_PRINT_TEXT(12,1,300,15,'<%= info.try(:asset_name) %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(23,1,300,15,'<%= info.try(:asset_no) %>');
+    LODOP.ADD_PRINT_TEXT(27,1,300,15,'<%= info.try(:asset_no) %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
     
     LODOP.SET_PRINT_STYLE("Alignment",2);
     <% url = I18n.t("url.low_value_consumption")+'/'+info.id.to_s+'/to_scan' %>
-    LODOP.ADD_PRINT_BARCODE(38,73,150,150,'QRCode','<%= url %>');
+    LODOP.ADD_PRINT_BARCODE(57,93,150,150,'QRCode','<%= url %>');
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(189,1,300,15,'<%= (info.use_unit_id.blank? ? "" : (Unit.find(info.use_unit_id).print_unit_name)) %>');
+    LODOP.ADD_PRINT_TEXT(185,1,300,15,'<%= (info.use_unit_id.blank? ? "" : (Unit.find(info.use_unit_id).print_unit_name)) %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
 
     LODOP.SET_PRINT_STYLE("Alignment",2);
-    LODOP.ADD_PRINT_TEXT(206,1,300,15,'<%= info.use_at.blank? ? "" : info.use_at.strftime('%Y-%m-%d').to_s %>');
+    LODOP.ADD_PRINT_TEXT(202,1,300,15,'<%= info.use_at.blank? ? "" : info.use_at.strftime('%Y-%m-%d').to_s %>');
     LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
 
 

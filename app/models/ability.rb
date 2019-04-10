@@ -44,16 +44,18 @@ class Ability
 
         can :manage, FixedAssetCatalog
         can :manage, LowValueConsumptionCatalog
-        can [:read, :print, :fixed_asset_report], FixedAssetInfo
-        can [:read, :discard_index, :print, :low_value_consumption_report], LowValueConsumptionInfo
+        can [:read, :print, :fixed_asset_report, :to_scan], FixedAssetInfo
+        can [:read, :discard_index, :print, :low_value_consumption_report, :to_scan], LowValueConsumptionInfo
         # can [:new, :read], Purchase
         can :manage, Sequence
         can :manage, FixedAssetInventory
         cannot :doing_index, FixedAssetInventory
         can :manage, FixedAssetInventoryDetail
+        cannot :scan, FixedAssetInventoryDetail
         can :manage, LowValueConsumptionInventory
         cannot :doing_index, LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
+        cannot :scan, LowValueConsumptionInventoryDetail
         can :manage, UpDownload
     end
         
@@ -77,6 +79,8 @@ class Ability
         can :update, User, id: user.id
         can [:read, :up_download_export], UpDownload
         cannot [:create, :to_import, :up_download_import,:destroy], UpDownload
+        can :to_scan, FixedAssetInfo
+        can :to_scan, LowValueConsumptionInfo
     end    
 
     if user.deviceadmin?
@@ -123,7 +127,8 @@ class Ability
         can :manage, LvcDiscard
         can :manage, LvcDiscardDetail
         can :update, User, id: user.id
-        
+        can :to_scan, FixedAssetInfo
+        can :to_scan, LowValueConsumptionInfo
     end
     
     if user.inventoryadmin?
