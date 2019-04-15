@@ -116,6 +116,8 @@ class Ability
         end
         can :manage, LowValueConsumptionInventoryDetail
         can :update, User, id: user.id
+        can [:read, :up_download_export], UpDownload
+        cannot [:create, :to_import, :up_download_import,:destroy], UpDownload
     end
 
     if user.accountant?
@@ -129,6 +131,8 @@ class Ability
         can :update, User, id: user.id
         can :to_scan, FixedAssetInfo
         can :to_scan, LowValueConsumptionInfo
+        can [:read, :up_download_export], UpDownload
+        cannot [:create, :to_import, :up_download_import,:destroy], UpDownload
     end
     
     if user.inventoryadmin?
@@ -138,6 +142,8 @@ class Ability
         can [:read, :doing_index], LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
         can :to_scan, LowValueConsumptionInfo
+        can [:read, :up_download_export], UpDownload
+        cannot [:create, :to_import, :up_download_import,:destroy], UpDownload
     end
 
 

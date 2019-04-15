@@ -424,6 +424,7 @@ zh-CN:
         month_depreciation: "本月折旧"
         use_status: "使用状态"
         license: "牌照"
+        old_sys_no: "资产原系统编码"
       low_value_consumption_info:
         sn: "序号"
         asset_name: "资产名称"
