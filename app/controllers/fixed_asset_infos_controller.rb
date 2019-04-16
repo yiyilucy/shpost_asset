@@ -243,6 +243,7 @@ class FixedAssetInfosController < ApplicationController
             end
 
           rescue Exception => e
+            Rails.logger.error e.backtrace
             flash[:alert] = e.message + "第" + current_line.to_s + "行"
             raise ActiveRecord::Rollback
           end

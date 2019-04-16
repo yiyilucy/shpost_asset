@@ -331,6 +331,13 @@ class LowValueConsumptionInfosController < ApplicationController
                 raise txt
                 raise ActiveRecord::Rollback 
               end
+
+              if use_at.blank?
+                txt = "缺少启用日期_"
+                sheet_error << (rowarr << txt)
+                raise txt
+                raise ActiveRecord::Rollback 
+              end
               
               while amount>0
                 lvc_info = LowValueConsumptionInfo.create!(asset_name: asset_name, lvc_catalog_id: catalogs[catalog_name], relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department], use_at:use_at, sum:sum, use_unit_id: use_departments[unit_name], location: location, user: user, status: "in_use", print_times: 0, manage_unit_id: current_user.unit_id, desc1: desc1, use_years: use_years, brand_model: brand_model)
@@ -354,6 +361,7 @@ class LowValueConsumptionInfosController < ApplicationController
             end
 
           rescue Exception => e
+            Rails.logger.error e.backtrace
             flash[:alert] = e.message + "第" + current_line.to_s + "行"
             raise ActiveRecord::Rollback
           end
