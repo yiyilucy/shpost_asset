@@ -4,16 +4,16 @@ class LowValueConsumptionInfosController < ApplicationController
 
   def index
     if current_user.unit.blank?
-      @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use").order(:use_unit_id, :lvc_catalog_id)
+      @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use")
     else
       if current_user.unit.unit_level == 1
-        @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use").order(:use_unit_id, :lvc_catalog_id)
+        @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use")
       elsif current_user.unit.is_facility_management_unit
-        @low_value_consumption_infos = LowValueConsumptionInfo.where("(relevant_unit_id = ? or use_unit_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, "in_use").order(:use_unit_id, :lvc_catalog_id)
+        @low_value_consumption_infos = LowValueConsumptionInfo.where("(relevant_unit_id = ? or use_unit_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, "in_use")
       elsif current_user.unit.unit_level == 2
-        @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").order(:use_unit_id, :lvc_catalog_id)
+        @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use")
       elsif current_user.unit.unit_level == 3 && !current_user.unit.is_facility_management_unit 
-        @low_value_consumption_infos = LowValueConsumptionInfo.where("(use_unit_id = ? or use_unit_id in (?)) and status = ?", current_user.unit_id, current_user.unit.children.map{|x| x.id}, "in_use").order(:use_unit_id, :lvc_catalog_id)
+        @low_value_consumption_infos = LowValueConsumptionInfo.where("(use_unit_id = ? or use_unit_id in (?)) and status = ?", current_user.unit_id, current_user.unit.children.map{|x| x.id}, "in_use")
       end
     end
 

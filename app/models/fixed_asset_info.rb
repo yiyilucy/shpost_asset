@@ -4,7 +4,9 @@ class FixedAssetInfo < ActiveRecord::Base
 	has_many :fixed_asset_inventory_details
 	has_many :fixed_asset_imgs
 	validates_uniqueness_of :asset_no, :message => '该资产编号已存在'
-
+	belongs_to :relevant_unit, class_name: 'Unit'
+	belongs_to :manage_unit, class_name: 'Unit'
+	
 
 	STATUS = { in_use: '在用', discard: '报废' }
 

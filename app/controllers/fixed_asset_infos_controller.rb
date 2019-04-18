@@ -123,7 +123,7 @@ class FixedAssetInfosController < ApplicationController
             old_sys_no_index = title_row.index("资产原系统编码")
             
             8.upto(instance.last_row) do |line|
-              # binding.pry
+              binding.pry
               current_line = line
               rowarr = instance.row(line)
               if (rowarr[0].blank? and rowarr[1].blank?) or rowarr[0].eql?"合计"

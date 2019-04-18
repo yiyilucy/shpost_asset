@@ -10,9 +10,15 @@
 
     g.column name: model_class.human_attribute_name(:relevant_unit_id), assoc: :relevant_unit, attribute: 'unit_desc'
 
-    g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_low_value_consumption_inventory_details'
+    if RailsEnv.is_oracle?
+      g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_low_value_consump'
 
-    g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name', table_alias: 'use_units_low_value_consumption_inventory_details'
+      g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name', table_alias: 'use_units_low_value_consumptio'
+    else
+      g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_low_value_consumption_infos'
+
+      g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name', table_alias: 'use_units_low_value_consumption_infos'
+    end
 
     g.column name: model_class.human_attribute_name(:buy_at), attribute: 'buy_at' do |low_value_consumption_inventory_detail|
       low_value_consumption_inventory_detail.buy_at.blank? ? "" : DateTime.parse(low_value_consumption_inventory_detail.buy_at.to_s).strftime('%Y-%m-%d').to_s

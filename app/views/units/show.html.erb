@@ -23,7 +23,7 @@
 </dl>
 
 <%= link_to t('.back', :default => t("helpers.links.back")),
-              units_path, :class => 'btn btn-default'  %>
+              @unit.parent.blank? ? units_path : unit_path(@unit.parent), :class => 'btn btn-default'  %>
 <%= link_to t('.edit', :default => t("helpers.links.edit")),
               update_unit_unit_path(@unit), :class => 'btn btn-default' %>
 <%= link_to t('.destroy', :default => t("helpers.links.destroy")),

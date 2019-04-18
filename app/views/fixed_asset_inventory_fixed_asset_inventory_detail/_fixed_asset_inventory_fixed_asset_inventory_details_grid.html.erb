@@ -12,12 +12,18 @@
 
     g.column name: model_class.human_attribute_name(:belong_unit), attribute: 'belong_unit'
 
-    g.column name: model_class.human_attribute_name(:relevant_unit_id), assoc: :relevant_unit, attribute: 'unit_desc'
-
-    g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_fixed_asset_inventory_details'
-
     g.column name: model_class.human_attribute_name(:unit_id), attribute: 'name', assoc: :unit do |fixed_asset_inventory_detail|
       fixed_asset_inventory_detail.unit.try :name
+    end
+
+    if RailsEnv.is_oracle?
+      g.column name: model_class.human_attribute_name(:relevant_unit_id), assoc: :relevant_unit, attribute: 'unit_desc', table_alias: 'relevant_units_fixed_asset_inv'
+
+      g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_fixed_asset_inven'
+    else
+      g.column name: model_class.human_attribute_name(:relevant_unit_id), assoc: :relevant_unit, attribute: 'unit_desc', table_alias: 'relevant_units_fixed_asset_inventory_details'
+
+      g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_fixed_asset_inventory_details'
     end
 
     g.column name: model_class.human_attribute_name(:buy_at), attribute: 'buy_at' do |fixed_asset_inventory_detail|

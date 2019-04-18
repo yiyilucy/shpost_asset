@@ -5,7 +5,7 @@
         low_value_consumption_info.low_value_consumption_catalog.try :name
     end
     
-    g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name', table_alias: 'use_units_low_value_consumption_infos'
+    g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name'
     
     g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name'
 
@@ -38,9 +38,15 @@
 
     g.column name: model_class.human_attribute_name(:print_times), attribute: 'print_times'
 
-    g.column name: model_class.human_attribute_name(:relevant_unit_id), assoc: :relevant_unit, attribute: 'name'
+    if RailsEnv.is_oracle?
+        g.column name: model_class.human_attribute_name(:relevant_unit_id), assoc: :relevant_unit, attribute: 'name', table_alias: 'relevant_units_low_value_consu'
 
-    g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_low_value_consumption_infos'
+        g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_low_value_consump'
+    else
+        g.column name: model_class.human_attribute_name(:relevant_unit_id), assoc: :relevant_unit, attribute: 'name', table_alias: 'relevant_units_low_value_consumption_infos'
+
+        g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_low_value_consumption_infos'
+    end
 
     g.column name: model_class.human_attribute_name(:branch), attribute: 'branch'
 
