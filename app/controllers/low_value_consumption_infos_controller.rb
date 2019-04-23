@@ -270,7 +270,7 @@ class LowValueConsumptionInfosController < ApplicationController
               catalog_name = rowarr[catalog_name_index].blank? ? "" : rowarr[catalog_name_index].to_s.split(".").last.strip
               relevant_department =rowarr[relevant_department_index].blank? ? "" : to_string(rowarr[relevant_department_index])
               # buy_at = rowarr[6].blank? ? nil : DateTime.parse(rowarr[6].to_s).strftime('%Y-%m-%d')
-              use_at = rowarr[use_at_index].blank? ? nil : DateTime.parse(rowarr[use_at_index].to_s).strftime('%Y-%m-%d')
+              use_at = rowarr[use_at_index].blank? ? nil : DateTime.parse(rowarr[use_at_index].to_s.split(".0")[0]).strftime('%Y-%m-%d')
               # measurement_unit = to_string(rowarr[8])
               amount = rowarr[amount_index].blank? ? 0 : rowarr[amount_index].to_i
               sum = rowarr[sum_index].blank? ? 0.0 : rowarr[sum_index].to_f
@@ -281,7 +281,7 @@ class LowValueConsumptionInfosController < ApplicationController
               # change_log = to_string(rowarr[15])
               accounting_department = rowarr[accounting_department_index].blank? ? "" : to_string(rowarr[accounting_department_index])
               desc1 = rowarr[desc1_index].blank? ? "" : to_string(rowarr[desc1_index])
-              use_years = rowarr[use_years_index].blank? ? "" : to_string(rowarr[use_years_index])
+              use_years = rowarr[use_years_index].blank? ? "" : rowarr[use_years_index].to_s.split(".0")[0]
               brand_model = rowarr[brand_model_index].blank? ? "" : to_string(rowarr[brand_model_index])
               
               if asset_name.blank?

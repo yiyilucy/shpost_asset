@@ -135,7 +135,7 @@ class FixedAssetInfosController < ApplicationController
               catalog_name = rowarr[catalog_name_index].blank? ? "" : rowarr[catalog_name_index].to_s.split(".").last.strip
               relevant_department =rowarr[relevant_department_index].blank? ? "" : to_string(rowarr[relevant_department_index])
               # buy_at = rowarr[6].blank? ? nil : DateTime.parse(rowarr[6].to_s).strftime('%Y-%m-%d')
-              use_at = rowarr[use_at_index].blank? ? nil : DateTime.parse(rowarr[use_at_index].to_s).strftime('%Y-%m-%d')
+              use_at = rowarr[use_at_index].blank? ? nil : DateTime.parse(rowarr[use_at_index].to_s.split(".0")[0]).strftime('%Y-%m-%d')
               # measurement_unit = to_string(rowarr[8])
               amount = rowarr[amount_index].blank? ? 0 : rowarr[amount_index].to_i
               sum = rowarr[sum_index].blank? ? 0.0 : rowarr[sum_index].to_f
@@ -147,14 +147,14 @@ class FixedAssetInfosController < ApplicationController
               # accounting_department = rowarr[accounting_department_index].blank? ? "" : to_string(rowarr[accounting_department_index])
               belong_unit = rowarr[belong_unit_index].blank? ? "" : to_string(rowarr[belong_unit_index])
               desc1 = rowarr[desc1_index].blank? ? "" : to_string(rowarr[desc1_index])
-              use_years = rowarr[use_years_index].blank? ? "" : to_string(rowarr[use_years_index])
+              use_years = rowarr[use_years_index].blank? ? "" : rowarr[use_years_index].to_s.split('.0')[0]
               brand_model = rowarr[brand_model_index].blank? ? "" : to_string(rowarr[brand_model_index])
               accumulate_depreciation = rowarr[accumulate_depreciation_index].blank? ? 0.0 : rowarr[accumulate_depreciation_index].to_f
               net_value = rowarr[net_value_index].blank? ? 0.0 : rowarr[net_value_index].to_f
               month_depreciation = rowarr[month_depreciation_index].blank? ? 0.0 : rowarr[month_depreciation_index].to_f
               use_status = rowarr[use_status_index].blank? ? "" : to_string(rowarr[use_status_index])
               license = rowarr[license_index].blank? ? "" : to_string(rowarr[license_index])
-              old_sys_no = rowarr[old_sys_no_index].blank? ? "" : to_string(rowarr[old_sys_no_index])
+              old_sys_no = rowarr[old_sys_no_index].blank? ? "" : rowarr[old_sys_no_index].to_s.split('.0')[0]
               
               if asset_name.blank?
                 is_error = true
