@@ -15,14 +15,13 @@ class FixedAssetInfosController < ApplicationController
         @fixed_asset_infos = FixedAssetInfo.where("unit_id = ? or unit_id in (?)", current_user.unit_id, current_user.unit.children.map{|x| x.id})
       end  
     end     
-# binding.pry        
+       
     @fixed_asset_infos_grid = initialize_grid(@fixed_asset_infos,
       :name => 'fixed_asset_infos',
       :enable_export_to_csv => true,
       :csv_file_name => 'fixed_asset_infos'
       # :csv_encoding => Encoding::GBK
       )
-
     export_grid_if_requested
   end
 
@@ -292,12 +291,13 @@ class FixedAssetInfosController < ApplicationController
       @result = []
       
       until @selected.blank? do 
-        @result = @result + FixedAssetInfo.where(id:@selected.pop(1000))
+        @result = FixedAssetInfo.where(id:@selected.pop(1000))
       end
-
-      @result.sort_by{|x| "#{x.unit_id.to_s} #{x.fixed_asset_catalog_id.to_s}"}
-
+      
+      # @result.sort_by{|x| "#{x.unit_id.to_s} #{x.fixed_asset_catalog_id.to_s}"}
       # @result.sort_by{|x| "#{x.unit_id.to_s} #{x.fixed_asset_catalog_id.to_s}"}.each{|x| puts "#{x.id}  #{x.unit_id}  #{x.fixed_asset_catalog_id}"}
+
+      @result.sort_by{|x| "#{x.asset_no}"}    
     else
       flash[:alert] = "请勾选需要打印的固定资产"
       respond_to do |format|

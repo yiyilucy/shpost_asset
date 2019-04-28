@@ -1,6 +1,7 @@
 <%- model_class = FixedAssetInfo -%>
 <%= grid(@fixed_asset_infos_grid) do |g|
     g.action_column select_all_buttons: true
+
     g.column name: model_class.human_attribute_name(:sn), attribute: 'sn'
 
     g.column name: model_class.human_attribute_name(:unit_id), attribute: 'name', assoc: :unit do |fixed_asset_info|
