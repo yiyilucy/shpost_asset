@@ -297,7 +297,7 @@ class FixedAssetInfosController < ApplicationController
       # @result.sort_by{|x| "#{x.unit_id.to_s} #{x.fixed_asset_catalog_id.to_s}"}
       # @result.sort_by{|x| "#{x.unit_id.to_s} #{x.fixed_asset_catalog_id.to_s}"}.each{|x| puts "#{x.id}  #{x.unit_id}  #{x.fixed_asset_catalog_id}"}
 
-      @result.sort_by{|x| "#{x.asset_no}"}    
+      # @result.sort_by{|x| x.asset_no}    
     else
       flash[:alert] = "请勾选需要打印的固定资产"
       respond_to do |format|

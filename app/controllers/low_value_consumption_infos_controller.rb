@@ -115,7 +115,6 @@ class LowValueConsumptionInfosController < ApplicationController
       end
 
       # @result.sort_by{|x| "#{x.use_unit_id.to_s} #{x.lvc_catalog_id.to_s}"}
-      @result.sort_by{|x| "#{x.asset_no}"}
     else
       flash[:alert] = "请勾选需要打印的低值易耗品"
       respond_to do |format|

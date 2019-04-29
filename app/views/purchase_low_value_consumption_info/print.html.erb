@@ -18,7 +18,7 @@ function low_value_consumption_infos_preview() {
     }
 	LODOP.SET_LICENSES("上海市邮政公司信息技术局","452677782688188907989821905623","","");
 
-	<% @result.each do |info| %>
+	<% @result.sort_by{|x| x.asset_no.upcase}.each do |info| %>
     LODOP.PRINT_INITA("0.1mm","0.1mm","8cm","6cm","low_value_consumption");
     LODOP.SET_PRINT_PAGESIZE(1,800,600,"low_value_consumption");
     // LODOP.PRINT_INIT("打印");

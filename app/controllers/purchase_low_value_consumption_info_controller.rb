@@ -204,7 +204,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
         @result = @result + LowValueConsumptionInfo.where(id:@selected.pop(1000))
       end
 
-      @result.sort_by{|x| "#{x.asset_no}"}
+      # @result.sort_by{|x| "#{x.asset_no}"}
     else
       flash[:alert] = "请勾选需要打印的低值易耗品"
       respond_to do |format|
