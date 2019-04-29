@@ -20,9 +20,7 @@
 
     g.column name: model_class.human_attribute_name(:belong_unit), attribute: 'belong_unit'
 
-    g.column name: model_class.human_attribute_name(:relevant_unit_id), attribute: 'relevant_unit_id' do |fixed_asset_info|
-      fixed_asset_info.relevant_unit_id.blank? ? "" : Unit.find(fixed_asset_info.relevant_unit_id).name
-    end
+    g.column name: model_class.human_attribute_name(:relevant_unit_id), attribute: 'name', assoc: :relevant_unit, table_alias: 'relevant_units_fixed_asset_inf'
 
     g.column name: model_class.human_attribute_name(:buy_at), attribute: 'buy_at' do |fixed_asset_info|
       fixed_asset_info.buy_at.blank? ? "" : DateTime.parse(fixed_asset_info.buy_at.to_s).strftime('%Y-%m-%d').to_s
