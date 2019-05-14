@@ -33,6 +33,8 @@ class FixedAssetInventoryFixedAssetInventoryDetailController < ApplicationContro
       else
         @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where("fixed_asset_inventory_details.unit_id = ? or fixed_asset_inventory_details.unit_id in (?)", current_user.unit_id, child_ids).joins("left join units as uunits on fixed_asset_inventory_details.unit_id = uunits.id").order("uunits.unit_level, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
       end
+    elsif current_user.unit.unit_level == 4
+      @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where("fixed_asset_inventory_details.unit_id = ?", current_user.unit_id).order("fixed_asset_inventory_details.asset_no")
     end
     
     @fixed_asset_inventory_details_grid = initialize_grid(@fixed_asset_inventory_details,

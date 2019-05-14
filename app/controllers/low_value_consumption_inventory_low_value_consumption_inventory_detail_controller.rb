@@ -35,6 +35,8 @@ class LowValueConsumptionInventoryLowValueConsumptionInventoryDetailController <
       else
         @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.where("lvc_inventory_details.use_unit_id = ? or lvc_inventory_details.use_unit_id in (?)", current_user.unit_id, child_ids).joins("left join units as uunits on lvc_inventory_details.use_unit_id = uunits.id").order("uunits.unit_level, lvc_inventory_details.use_unit_id, lvc_inventory_details.asset_no")
       end
+    elsif current_user.unit.unit_level == 4
+      @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.where("lvc_inventory_details.use_unit_id = ?", current_user.unit_id).order("lvc_inventory_details.asset_no")
     end
     
     @low_value_consumption_inventory_details_grid = initialize_grid(@low_value_consumption_inventory_details,
