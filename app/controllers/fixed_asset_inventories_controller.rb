@@ -103,8 +103,15 @@ class FixedAssetInventoriesController < ApplicationController
           redirect_to fixed_asset_inventories_url and return
         end
 # binding.pry
-        fainventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventory_units.unit_id in (?) and fixed_asset_inventories.start_time <= ? and fixed_asset_inventories.status in (?) and fixed_asset_inventories.relevant_unit_ids like ?", units, DateTime.parse(params[:fixed_asset_inventory][:start_time]), ["waiting", "doing"], "%#{relevant_departments.compact.join(",")}%")
-        if !fainventories.blank?
+        fainventories = false
+        relevant_departments.each do |x|
+          fi = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventory_units.unit_id in (?) and fixed_asset_inventories.start_time <= ? and fixed_asset_inventories.status in (?) and fixed_asset_inventories.relevant_unit_ids like ?", units, DateTime.parse(params[:fixed_asset_inventory][:start_time]), ["waiting", "doing"], "%#{x}%")
+          if !fi.blank?
+            fainventories = true
+            break
+          end
+        end
+        if fainventories
           flash[:alert] = "同一时间同一单位不可重叠盘点"
           redirect_to fixed_asset_inventories_url and return
         end

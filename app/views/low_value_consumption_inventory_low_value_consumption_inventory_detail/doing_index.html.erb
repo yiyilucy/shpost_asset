@@ -1,12 +1,8 @@
 <%- model_class = LowValueConsumptionInventoryDetail -%>
 <div class="page-header">
   <h1><%=t '.title', :default => model_class.model_name.human%></h1>
-  <%= form_tag('', :method => "get", name: 'form1') do %>
   <div style="float:right">
     <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="low_value_consumption_inventory_low_value_consumption_inventory_details_doing">导出</button>
   </div>
-</div>
-
 <%= render :partial => 'low_value_consumption_inventory_low_value_consumption_inventory_details_doing_grid' %>
-
-<%end %>
+</div>

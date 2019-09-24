@@ -8,6 +8,12 @@
       fixed_asset_info.unit.try :name
     end
 
+    if RailsEnv.is_oracle?
+        g.column name: model_class.human_attribute_name(:manage_unit_id), attribute: 'name', assoc: :manage_unit, table_alias: 'manage_units_fixed_asset_inf'
+    else
+        g.column name: model_class.human_attribute_name(:manage_unit_id), attribute: 'name', assoc: :manage_unit, table_alias: 'manage_units_fixed_asset_infos'
+    end
+
 	g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name'
 
     g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no'
