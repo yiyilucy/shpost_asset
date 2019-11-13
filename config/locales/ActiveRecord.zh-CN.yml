@@ -167,6 +167,7 @@ zh-CN:
       lvc_discard_details: 报废明细
       up_download_import: 模板上传
       up_download_export: 模板下载
+      sample_inventory: 抽样盘点
     titles:
       edit: 编辑%{model}
       new: 新增%{model}

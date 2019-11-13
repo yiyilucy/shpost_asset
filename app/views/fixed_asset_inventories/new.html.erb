@@ -2,4 +2,11 @@
 <div class="page-header">
   <h1><%=t '.title', :default => [:'helpers.titles.edit', 'New %{model}'], :model => model_class.model_name.human.titleize %></h1>
 </div>
+<% if (can? :to_sample_inventory, FixedAssetInventory) %>
+<div style="float:right">
+    <%= link_to t('.sample_inventory', :default => t("helpers.links.sample_inventory")),
+                  "/shpost_asset/fixed_asset_inventories/to_sample_inventory",
+                  :class => 'btn btn-primary' %> 
+</div>
+<% end %>
 <%= render :partial => 'form' %>

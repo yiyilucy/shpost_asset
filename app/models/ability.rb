@@ -109,11 +109,13 @@ class Ability
         if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
             cannot :create, FixedAssetInventory
         end
+        cannot [:to_sample_inventory, :sample_inventory], FixedAssetInventory
         can :manage, FixedAssetInventoryDetail
         can :manage, LowValueConsumptionInventory
         if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
             cannot :create, LowValueConsumptionInventory
         end
+        cannot [:to_sample_inventory, :sample_inventory], LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
         can :update, User, id: user.id
         can [:read, :up_download_export], UpDownload

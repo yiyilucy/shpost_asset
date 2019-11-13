@@ -9,7 +9,9 @@ class FixedAssetInventoriesController < ApplicationController
 
   def doing_index
     if current_user.unit.unit_level == 2
-      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id = ? and fixed_asset_inventories.create_unit_id != ?", ["doing", "canceled", "done"], current_user.unit_id, current_user.unit_id)
+      lv3_unit_ids = current_user.unit.children.select(:id)
+      
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id in (?)) and fixed_asset_inventories.create_unit_id != ?", ["doing", "canceled", "done"], current_user.unit_id, lv3_unit_ids, current_user.unit_id)
     elsif current_user.unit.unit_level == 3
       @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id = ?)", ["doing", "canceled", "done"], current_user.unit.parent_id, current_user.unit.id)
     elsif current_user.unit.unit_level == 4
@@ -47,7 +49,7 @@ class FixedAssetInventoriesController < ApplicationController
   def create
     @start_sum = 0
     @end_sum = nil
-# binding.pry
+
     ActiveRecord::Base.transaction do
       if !params[:g1].nil?
         units = params[:g1][:selected]
@@ -102,19 +104,19 @@ class FixedAssetInventoriesController < ApplicationController
           flash[:alert] = "请选择盘点开始时间和结束时间"
           redirect_to fixed_asset_inventories_url and return
         end
-# binding.pry
-        fainventories = false
-        relevant_departments.each do |x|
-          fi = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventory_units.unit_id in (?) and fixed_asset_inventories.start_time <= ? and fixed_asset_inventories.status in (?) and fixed_asset_inventories.relevant_unit_ids like ?", units, DateTime.parse(params[:fixed_asset_inventory][:start_time]), ["waiting", "doing"], "%#{x}%")
-          if !fi.blank?
-            fainventories = true
-            break
-          end
-        end
-        if fainventories
-          flash[:alert] = "同一时间同一单位不可重叠盘点"
-          redirect_to fixed_asset_inventories_url and return
-        end
+
+        # fainventories = false
+        # relevant_departments.each do |x|
+        #   fi = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventory_units.unit_id in (?) and fixed_asset_inventories.start_time <= ? and fixed_asset_inventories.status in (?) and fixed_asset_inventories.relevant_unit_ids like ?", units, DateTime.parse(params[:fixed_asset_inventory][:start_time]), ["waiting", "doing"], "%#{x}%")
+        #   if !fi.blank?
+        #     fainventories = true
+        #     break
+        #   end
+        # end
+        # if fainventories
+        #   flash[:alert] = "同一时间同一单位不可重叠盘点"
+        #   redirect_to fixed_asset_inventories_url and return
+        # end
         
         @fixed_asset_inventory.no = params[:fixed_asset_inventory][:no]
         @fixed_asset_inventory.name = params[:fixed_asset_inventory][:name]
@@ -133,7 +135,6 @@ class FixedAssetInventoriesController < ApplicationController
         @fixed_asset_inventory.save
 
         Unit.where(id: units).each do |x|
-          # binding.pry
           if @fixed_asset_inventory.is_lv2_unit
             if @end_sum.blank?
               if !FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id = ? and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ?", relevant_departments, x.id, "in_use", @start_sum).blank?
@@ -158,7 +159,6 @@ class FixedAssetInventoriesController < ApplicationController
         end
           
         fixed_asset_infos.each do |x|
-          # binding.pry
           if @fixed_asset_inventory.is_lv2_unit
             inventory_unit_id = FixedAssetInventoryUnit.find_by(fixed_asset_inventory_id: @fixed_asset_inventory.id, unit_id: x.unit_id).blank? ? nil : FixedAssetInventoryUnit.find_by(fixed_asset_inventory_id: @fixed_asset_inventory.id, unit_id: x.unit_id).id
           else
@@ -264,7 +264,76 @@ class FixedAssetInventoriesController < ApplicationController
     end
   end
 
-  
+  def to_sample_inventory
+    @inventory = FixedAssetInventory.new
+  end
+
+  def sample_inventory
+    @start_sum = 0
+    @end_sum = nil
+    fixed_asset_catalog_id = nil
+    lv3_unit_id = nil
+    fixed_asset_infos = nil
+    inventory_unit_id = nil
+
+    ActiveRecord::Base.transaction do
+      if !params[:fixed_asset_info].blank?
+        if !params[:fixed_asset_info][:fixed_asset_catalog_id].blank?
+          fixed_asset_catalog_id = params[:fixed_asset_info][:fixed_asset_catalog_id].to_i
+        else
+          flash[:alert] = "请先选择资产类别目录"
+          redirect_to to_sample_inventory_fixed_asset_inventories_url and return
+        end
+        if !params[:fixed_asset_info][:lv3_unit_id].blank?
+          lv3_unit_id = params[:fixed_asset_info][:lv3_unit_id].to_i
+        else
+          flash[:alert] = "请先选择三级单位"
+          redirect_to to_sample_inventory_fixed_asset_inventories_url and return
+        end
+      end
+
+      if params[:fixed_asset_inventory].blank? or params[:fixed_asset_inventory][:start_time].blank? or params[:fixed_asset_inventory][:end_time].blank?
+        flash[:alert] = "请选择盘点开始时间和结束时间"
+        redirect_to to_sample_inventory_fixed_asset_inventories_url and return
+      end
+
+      if !params[:start_sum].blank? and !params[:start_sum]["start_sum"].blank?
+        @start_sum = params[:start_sum]["start_sum"].to_i
+      end
+
+      if !params[:end_sum].blank? and !params[:end_sum]["end_sum"].blank?
+        @end_sum = params[:end_sum]["end_sum"].to_i
+      end
+
+      lv4_unit_ids = Unit.where(parent_id: lv3_unit_id).select(:id)
+      
+      if @end_sum.blank?
+        fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.fixed_asset_catalog_id = ? and (fixed_asset_infos.unit_id =? or fixed_asset_infos.unit_id in (?)) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? ", fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum)
+      else
+        fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.fixed_asset_catalog_id = ? and (fixed_asset_infos.unit_id =? or fixed_asset_infos.unit_id in (?)) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? and fixed_asset_infos.sum <= ?", fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum, @end_sum)
+      end
+# binding.pry      
+      if fixed_asset_infos.blank?
+        flash[:alert] = "没有符合条件的固定资产"
+        redirect_to to_sample_inventory_fixed_asset_inventories_url and return
+      end
+
+      @fixed_asset_inventory = FixedAssetInventory.create no: params[:fixed_asset_inventory][:no], name: params[:fixed_asset_inventory][:name], start_time: params[:fixed_asset_inventory][:start_time], end_time: params[:fixed_asset_inventory][:end_time], desc: params[:fixed_asset_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false
+      
+      if !fixed_asset_infos.blank?
+        inventory_unit_id = @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: lv3_unit_id, status: "unfinished")
+      end
+        
+      fixed_asset_infos.each do |x|
+        @fixed_asset_inventory.fixed_asset_inventory_details.create(sn: x.sn, asset_name: x.asset_name, asset_no: x.asset_no, fixed_asset_catalog_id: x.fixed_asset_catalog_id, relevant_unit_id: x.relevant_unit_id, buy_at: x.buy_at, use_at: x.use_at, measurement_unit: x.measurement_unit, amount: x.amount, sum: x.sum, unit_id: x.unit_id, branch: x.branch, location: x.location, user: x.user, change_log: x.change_log, accounting_department: x.accounting_department, asset_status: x.status, print_times: x.print_times, manage_unit_id: x.manage_unit_id, inventory_status: "waiting", fixed_asset_inventory_unit_id: inventory_unit_id, fixed_asset_info_id: x.id, brand_model: x.brand_model, use_years: x.use_years, desc1: x.desc1, belong_unit: x.belong_unit)
+      end
+
+      respond_to do |format|
+        format.html { redirect_to fixed_asset_inventories_url }
+        format.json { head :no_content }
+      end
+    end
+  end
 
   private
     def set_fixed_asset_inventory

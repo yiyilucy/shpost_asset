@@ -56,4 +56,26 @@ class UnitAutocomController < ApplicationController
 
 	    render :json => low_value_consumption_catalogs.map { |low_value_consumption_catalog| {:id => low_value_consumption_catalog.id, :label => low_value_consumption_catalog.name, :value => low_value_consumption_catalog.name, :obj => obj_id} }
     end
+
+    def si_autocomplete_fixed_asset_catalog
+    	# binding.pry
+    	term = params[:term]
+	    obj_id = params[:objid]
+	    obj = params[:obj]
+
+	    fixed_asset_catalogs = FixedAssetCatalog.where("fixed_asset_catalogs.name like ? or fixed_asset_catalogs.code like ?", "%#{term}%", "%#{term}%").order(:code).all
+
+	    render :json => fixed_asset_catalogs.map { |fixed_asset_catalog| {:id => fixed_asset_catalog.id, :label => fixed_asset_catalog.name, :value => fixed_asset_catalog.name, :obj => obj_id} }
+    end
+
+    def si_autocomplete_lv3_unit
+    	# binding.pry
+    	term = params[:term]
+	    obj_id = params[:objid]
+	    obj = params[:obj]
+
+	    lve_units = Unit.where("(units.name like ? or units.no like ?) and units.unit_level = 3", "%#{term}%", "%#{term}%").order(:no).all
+
+	    render :json => lve_units.map { |unit| {:id => unit.id, :label => unit.name, :value => unit.name, :obj => obj_id} }
+    end
 end

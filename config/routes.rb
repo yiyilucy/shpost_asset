@@ -175,6 +175,8 @@ ShpostAsset::Application.routes.draw do
       get 'p_autocomplete_use_unit_name'
       get 'p_autocomplete_send_unit_name'
       get 'p_autocomplete_low_value_consumption_catalog'
+      get 'si_autocomplete_fixed_asset_catalog'
+      get 'si_autocomplete_lv3_unit'
     end
   end
 
@@ -193,6 +195,8 @@ ShpostAsset::Application.routes.draw do
   resources :fixed_asset_inventories do 
     collection do
       get 'doing_index'
+      get 'to_sample_inventory'
+      post 'sample_inventory'
     end
 
     member do 
@@ -225,6 +229,8 @@ ShpostAsset::Application.routes.draw do
   resources :low_value_consumption_inventories do 
     collection do
       get 'doing_index'
+      get 'to_sample_inventory'
+      post 'sample_inventory'
     end
 
     member do 

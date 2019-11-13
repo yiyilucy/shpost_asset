@@ -20,26 +20,26 @@
 # Learn more: http://github.com/javan/whenever
 
 # development environment
-# set :environment , :development
+set :environment , :development
 
 #production environment
-env :PATH, ENV['PATH']
-env :GEM_PATH, ENV['GEM_PATH']
+# env :PATH, ENV['PATH']
+# env :GEM_PATH, ENV['GEM_PATH']
 
 set :output, "log/cron_log.log"
 
-every 1.day, :at => '0:01 am' do
-  runner "FixedAssetInventory.start_inventory"
-end
-
-every 1.day, :at => '0:01 am' do
-  runner "LowValueConsumptionInventory.start_inventory"
-end
-
-# every 2.minutes do
+# every 1.day, :at => '0:01 am' do
 #   runner "FixedAssetInventory.start_inventory"
 # end
 
-# every 2.minutes do
+# every 1.day, :at => '0:01 am' do
 #   runner "LowValueConsumptionInventory.start_inventory"
 # end
+
+every 2.minutes do
+  runner "FixedAssetInventory.start_inventory"
+end
+
+every 2.minutes do
+  runner "LowValueConsumptionInventory.start_inventory"
+end

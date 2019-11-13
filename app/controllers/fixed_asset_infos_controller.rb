@@ -313,7 +313,7 @@ class FixedAssetInfosController < ApplicationController
     if !params.blank? and !params[:id].blank?
       @fixed_asset_info = FixedAssetInfo.find(params[:id].to_i)
       
-      fixed_asset_inventory_details = FixedAssetInventoryDetail.joins(:fixed_asset_inventory).where("fixed_asset_inventory_details.fixed_asset_info_id = ? and fixed_asset_inventories.status = ?", @fixed_asset_info.id, "doing").order("fixed_asset_inventories.start_time desc")
+      fixed_asset_inventory_details = FixedAssetInventoryDetail.joins(:fixed_asset_inventory).where("fixed_asset_inventory_details.fixed_asset_info_id = ? and fixed_asset_inventories.status = ? and fixed_asset_inventory_details.inventory_status = ?", @fixed_asset_info.id, "doing", "waiting").order("fixed_asset_inventories.start_time")
    
       if !fixed_asset_inventory_details.blank? && (can? :scan, FixedAssetInventoryDetail)
         @fixed_asset_inventory_detail = fixed_asset_inventory_details.first
