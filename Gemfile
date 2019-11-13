@@ -1,4 +1,4 @@
-source 'https://ruby.taobao.org'
+source 'https://gems.ruby-china.com/'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.2'
@@ -111,3 +111,4 @@ gem 'rqrcode'
 gem 'rqrcode_png'
 
 # gem 'awesome_nested_set'
+gem 'mini_magick'

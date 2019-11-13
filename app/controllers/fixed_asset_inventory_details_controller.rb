@@ -142,6 +142,10 @@ class FixedAssetInventoryDetailsController < ApplicationController
     File.open(file_path, "wb") do |f|
       f.write(file.read)
     end
+    image = MiniMagick::Image.open(file_path) 
+    image.quality I18n.t("image_util_param.image_quality")
+    image.write(file_path)
+    # end
     file_path
     
   end
