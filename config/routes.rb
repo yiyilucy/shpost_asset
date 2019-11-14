@@ -110,6 +110,7 @@ ShpostAsset::Application.routes.draw do
       post 'fixed_asset_info_import' => 'fixed_asset_infos#fixed_asset_info_import'
       post 'print'
       get 'fixed_asset_report'
+      post 'fixed_asset_report_export'
     end
     member do 
       get 'to_scan'
@@ -146,6 +147,7 @@ ShpostAsset::Application.routes.draw do
         post 'batch_edit'
         post 'batch_update'
         post 'print'
+
       end
     end
       
@@ -162,6 +164,7 @@ ShpostAsset::Application.routes.draw do
       post 'batch_destroy'
       post 'discard'
       get 'low_value_consumption_report'
+      post 'low_value_consumption_report_export'
     end
     member do 
       get 'to_scan'
