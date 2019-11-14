@@ -62,6 +62,5 @@
       ActiveSupport::SafeBuffer.new << 
       (link_to t('.scan', :default => t("helpers.links.scan")), "/shpost_asset/low_value_consumption_inventory_details/" + low_value_consumption_inventory_detail.id.to_s + "/scan", :class => 'btn btn-xs btn-primary' if (can? :scan, low_value_consumption_inventory_detail) and !([1,2,3,4].include?current_user.unit.unit_level) )
     end
-# and !([1,2,3,4].include?current_user.unit.unit_level)
   end 
 %>

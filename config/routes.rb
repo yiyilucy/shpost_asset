@@ -197,6 +197,8 @@ ShpostAsset::Application.routes.draw do
       get 'doing_index'
       get 'to_sample_inventory'
       post 'sample_inventory'
+      get 'sample_inventory_index'
+      get 'sample_inventory_doing_index'
     end
 
     member do 
@@ -231,6 +233,8 @@ ShpostAsset::Application.routes.draw do
       get 'doing_index'
       get 'to_sample_inventory'
       post 'sample_inventory'
+      get 'sample_inventory_index'
+      get 'sample_inventory_doing_index'
     end
 
     member do 

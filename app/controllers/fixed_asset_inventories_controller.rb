@@ -2,7 +2,7 @@ class FixedAssetInventoriesController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @fixed_asset_inventories = FixedAssetInventory.where(create_user_id: current_user.id)
+    @fixed_asset_inventories = FixedAssetInventory.where(create_user_id: current_user.id, is_sample: false)
     @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
       order_direction: 'desc')
   end
@@ -11,11 +11,32 @@ class FixedAssetInventoriesController < ApplicationController
     if current_user.unit.unit_level == 2
       lv3_unit_ids = current_user.unit.children.select(:id)
       
-      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id in (?)) and fixed_asset_inventories.create_unit_id != ?", ["doing", "canceled", "done"], current_user.unit_id, lv3_unit_ids, current_user.unit_id)
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id in (?)) and fixed_asset_inventories.create_unit_id != ? and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], current_user.unit_id, lv3_unit_ids, current_user.unit_id, false)
     elsif current_user.unit.unit_level == 3
-      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id = ?)", ["doing", "canceled", "done"], current_user.unit.parent_id, current_user.unit.id)
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id = ?) and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], current_user.unit.parent_id, current_user.unit.id, false)
     elsif current_user.unit.unit_level == 4
-      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id = ?)", ["doing", "canceled", "done"], current_user.unit.parent_id, current_user.unit.id, current_user.unit.parent.parent_id)
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id = ?) and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], current_user.unit.parent_id, current_user.unit.id, current_user.unit.parent.parent_id, false)
+    end
+    
+    @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
+      order_direction: 'desc')
+  end
+
+  def sample_inventory_index
+    @fixed_asset_inventories = FixedAssetInventory.where(create_user_id: current_user.id, is_sample: true)
+    @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
+      order_direction: 'desc')
+  end
+
+  def sample_inventory_doing_index
+    if current_user.unit.unit_level == 2
+      lv3_unit_ids = current_user.unit.children.select(:id)
+      
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id in (?) and fixed_asset_inventories.create_unit_id != ? and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], lv3_unit_ids, current_user.unit_id, true)
+    elsif current_user.unit.unit_level == 3
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id = ? and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], current_user.unit.id, true)
+    elsif current_user.unit.unit_level == 4
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id = ? and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], current_user.unit.parent_id, true)
     end
     
     @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
@@ -318,7 +339,9 @@ class FixedAssetInventoriesController < ApplicationController
         redirect_to to_sample_inventory_fixed_asset_inventories_url and return
       end
 
-      @fixed_asset_inventory = FixedAssetInventory.create no: params[:fixed_asset_inventory][:no], name: params[:fixed_asset_inventory][:name], start_time: params[:fixed_asset_inventory][:start_time], end_time: params[:fixed_asset_inventory][:end_time], desc: params[:fixed_asset_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false
+      relevant_unit_ids = fixed_asset_infos.map{|o| o.relevant_unit_id}.compact.join(",")
+
+      @fixed_asset_inventory = FixedAssetInventory.create no: params[:fixed_asset_inventory][:no], name: params[:fixed_asset_inventory][:name], start_time: params[:fixed_asset_inventory][:start_time], end_time: params[:fixed_asset_inventory][:end_time], desc: params[:fixed_asset_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids
       
       if !fixed_asset_infos.blank?
         inventory_unit_id = @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: lv3_unit_id, status: "unfinished")
@@ -329,7 +352,7 @@ class FixedAssetInventoriesController < ApplicationController
       end
 
       respond_to do |format|
-        format.html { redirect_to fixed_asset_inventories_url }
+        format.html { redirect_to sample_inventory_index_fixed_asset_inventories_url }
         format.json { head :no_content }
       end
     end
