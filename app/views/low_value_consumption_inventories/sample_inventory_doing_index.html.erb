@@ -1,6 +1,6 @@
 <%- model_class = LowValueConsumptionInventory -%>
 <div class="page-header">
-  <h1>待处理低值易耗品盘点单</h1>
+  <h1>待处理抽样盘点单</h1>
 </div>
 
 <%= grid(@low_value_consumption_inventories_grid) do |g|
@@ -77,7 +77,6 @@
       end
 
       ActiveSupport::SafeBuffer.new << 
-      (link_to t('.sub_done', :default => t("helpers.links.sub_done")), "/shpost_asset/low_value_consumption_inventories/" + low_value_consumption_inventory.id.to_s + "/sub_done", :data => { :confirm => "#{done_alert}" }, :class => 'btn btn-xs btn-primary' if (can? :sub_done, low_value_consumption_inventory) and (low_value_consumption_inventory.status.eql?"doing") and current_user.unit.unit_level == 2 and !low_value_consumption_inventory.is_sample and (low_value_consumption_inventory.low_value_consumption_inventory_units.find_by(unit_id: current_user.unit_id).status.eql?"unfinished") )<< ' ' <<
       (link_to '盘点单明细',
                 doing_index_low_value_consumption_inventory_low_value_consumption_inventory_details_path(low_value_consumption_inventory), :class => 'btn btn-xs btn-primary' )
     end

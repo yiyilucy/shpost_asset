@@ -131,7 +131,7 @@ class LowValueConsumptionInfosController < ApplicationController
     
     if !params.blank? and !params[:id].blank?
       @low_value_consumption_info = LowValueConsumptionInfo.find(params[:id].to_i)
-      low_value_consumption_inventory_details = LowValueConsumptionInventoryDetail.joins(:low_value_consumption_inventory).where("lvc_inventory_details.low_value_consumption_info_id = ? and lvc_inventories.status = ?", @low_value_consumption_info.id, "doing").order("lvc_inventories.start_time desc")     
+      low_value_consumption_inventory_details = LowValueConsumptionInventoryDetail.joins(:low_value_consumption_inventory).where("lvc_inventory_details.low_value_consumption_info_id = ? and lvc_inventories.status = ? and lvc_inventory_details.inventory_status = ?", @low_value_consumption_info.id, "doing", "waiting").order("lvc_inventories.start_time")     
 
       if !low_value_consumption_inventory_details.blank? && (can? :scan, LowValueConsumptionInventoryDetail)
         @low_value_consumption_inventory_detail = low_value_consumption_inventory_details.first

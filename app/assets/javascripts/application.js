@@ -46,6 +46,18 @@ function ajaxunits() {
     var catalogid = "#"+data.item.obj+"_lvc_catalog_id";
     $(catalogid).val(data.item.id);
   });
+
+  $('#fixed_asset_catalog_name').bind('railsAutocomplete.select', function(event, data){
+    /* Do something here */
+    var catalogid = "#"+data.item.obj+"_fixed_asset_catalog_id";
+    $(catalogid).val(data.item.id);
+  });
+
+  $('#lv3_unit_name').bind('railsAutocomplete.select', function(event, data){
+    /* Do something here */
+    var unitid = "#"+data.item.obj+"_lv3_unit_id";
+    $(unitid).val(data.item.id);
+  });
 }
 
 var ready;

@@ -167,6 +167,7 @@ zh-CN:
       lvc_discard_details: 报废明细
       up_download_import: 模板上传
       up_download_export: 模板下载
+      sample_inventory: 抽样盘点
     titles:
       edit: 编辑%{model}
       new: 新增%{model}
@@ -491,6 +492,7 @@ zh-CN:
         status_canceled: "取消"
         status_done: "完成"
         unit: "单位"
+        is_sample: "是否抽样"
       fixed_asset_inventory_detail:
         sn: "序号"
         asset_name: "资产名称"
@@ -546,6 +548,7 @@ zh-CN:
         status_canceled: "取消"
         status_done: "完成"
         unit: "单位"
+        is_sample: "是否抽样"
       low_value_consumption_inventory_unit:
         unit_id: "单位"
         lvc_inventory_id: "低值易耗品盘点单"
@@ -761,12 +764,26 @@ zh-CN:
           needrole:
             can: :create
             role: :FixedAssetInventory
+        sample_fixed_asset_inventory:
+          name: "创建抽样盘点单"
+          link: "/fixed_asset_inventories/sample_inventory_index"
+          need_count: false
+          needrole:
+            can: :sample_inventory_index
+            role: :FixedAssetInventory
         doing_fixed_asset_inventory:
           name: "待处理固定资产盘点单"
           link: "/fixed_asset_inventories/doing_index"
           need_count: false
           needrole:
             can: :doing_index
+            role: :FixedAssetInventory
+        sample_doing_fixed_asset_inventory:
+          name: "待处理抽样盘点单"
+          link: "/fixed_asset_inventories/sample_inventory_doing_index"
+          need_count: false
+          needrole:
+            can: :sample_inventory_doing_index
             role: :FixedAssetInventory
 
     low_value_consumption_inventory:    
@@ -782,12 +799,26 @@ zh-CN:
           needrole:
             can: :create
             role: :LowValueConsumptionInventory
+        sample_low_value_consumption_inventory:
+          name: "创建抽样盘点单"
+          link: "/low_value_consumption_inventories/sample_inventory_index"
+          need_count: false
+          needrole:
+            can: :sample_inventory_index
+            role: :LowValueConsumptionInventory
         doing_low_value_consumption_inventory:
           name: "待处理低值易耗品盘点单"
           link: "/low_value_consumption_inventories/doing_index"
           need_count: false
           needrole:
             can: :doing_index
+            role: :LowValueConsumptionInventory
+        sample_doing_low_value_consumption_inventory:
+          name: "待处理抽样盘点单"
+          link: "/low_value_consumption_inventories/sample_inventory_doing_index"
+          need_count: false
+          needrole:
+            can: :sample_inventory_doing_index
             role: :LowValueConsumptionInventory
     up_downloads:
       name: "模板管理"

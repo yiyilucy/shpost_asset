@@ -1,6 +1,6 @@
 <%- model_class = FixedAssetInventory -%>
 <div class="page-header">
-  <h1>待处理固定资产盘点单</h1>
+  <h1>待处理抽样盘点单</h1>
 </div>
 
 <%= grid(@fixed_asset_inventories_grid) do |g|
@@ -76,7 +76,6 @@
         done_alert = "还有#{waiting_amount}件资产待扫描，点击完成后所有待扫描资产的盘点状态将变为未扫描，且无法修改，确定完成？"
       end
       ActiveSupport::SafeBuffer.new << 
-      (link_to t('.sub_done', :default => t("helpers.links.sub_done")), "/shpost_asset/fixed_asset_inventories/" + fixed_asset_inventory.id.to_s + "/sub_done", :data => { :confirm => "#{done_alert}" }, :class => 'btn btn-xs btn-primary' if (can? :sub_done, fixed_asset_inventory) and (fixed_asset_inventory.status.eql?"doing") and current_user.unit.unit_level == 2 and !fixed_asset_inventory.is_sample and (fixed_asset_inventory.fixed_asset_inventory_units.find_by(unit_id: current_user.unit_id).status.eql?"unfinished") )<< ' ' <<
       (link_to '盘点单明细',
                 doing_index_fixed_asset_inventory_fixed_asset_inventory_details_path(fixed_asset_inventory), :class => 'btn btn-xs btn-primary' )
     end
