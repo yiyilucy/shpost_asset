@@ -2,7 +2,10 @@
 <div class="page-header">
   <h1>固定资产报表</h1>
 </div> 
+<%= form_tag('', name: 'form1') %>
 <div text-align:center>
+<%= submit_tag "报表导出",:class => 'btn btn-primary', onclick: "form1.action='fixed_asset_report_export.xls';form1.submit();" %>
+
 <table class="table table-striped">
 <thead>
 <tr>

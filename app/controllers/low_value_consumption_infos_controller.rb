@@ -447,6 +447,47 @@ class LowValueConsumptionInfosController < ApplicationController
     end
   end
 
+  def low_value_consumption_report_export
+    if current_user.unit.unit_level == 1
+      @sums = LowValueConsumptionInfo.where(status: "in_use").group(:manage_unit_id).order(:manage_unit_id).sum(:sum)
+      @counts = LowValueConsumptionInfo.where(status: "in_use").group(:manage_unit_id).order(:manage_unit_id).count
+      @total_sum = LowValueConsumptionInfo.where(status: "in_use").sum(:sum)
+      @total_count = LowValueConsumptionInfo.where(status: "in_use").size
+      @units = Unit.where(unit_level: 2).select(:id, :name)
+    elsif current_user.unit.unit_level == 2
+      @sums = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").group(:use_unit_id).order(:use_unit_id).sum(:sum)
+      @counts = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").group(:use_unit_id).order(:use_unit_id).count
+      @total_sum = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").sum(:sum)
+      @total_count = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").size
+      @units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit_id, current_user.unit_id, current_user.unit.children.map{|x| x.id}).select(:id, :name)
+    end
+    send_data(low_value_consumption_report_xls_content_for(@sums,@counts,@total_sum,@total_count,@units), :type => "text/excel;charset=utf-8; header=present", :filename => "low_value_consumption_report_#{Time.now.strftime("%Y%m%d")}.xls")  
+  end
+
+  def low_value_consumption_report_xls_content_for(sums,counts,total_sum,total_count,units)
+    xls_report = StringIO.new  
+    book = Spreadsheet::Workbook.new  
+    sheet1 = book.create_worksheet :name => "low_value_consumption_report"  
+    
+    blue = Spreadsheet::Format.new :color => :blue, :weight => :bold, :size => 10  
+    sheet1.row(0).default_format = blue  
+
+    sheet1.row(0).concat %w{单位名称 数量 总值}
+    count_row = 1
+    @units.each do |x|
+      sheet1[count_row,0]=x.name
+      sheet1[count_row,1]=@counts[x.id].blank? ? 0 : @counts[x.id]
+      sheet1[count_row,2]=@sums[x.id].blank? ? 0 : @sums[x.id]
+      count_row += 1
+    end  
+
+    sheet1[count_row,0]="合计"
+    sheet1[count_row,1]=total_count
+    sheet1[count_row,2]=total_sum
+  
+    book.write xls_report  
+    xls_report.string  
+  end
 
   private
     def set_low_value_consumption_info
