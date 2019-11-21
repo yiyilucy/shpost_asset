@@ -1,0 +1,48 @@
+<div class="page-header">
+  <h1>盘点报表</h1> 
+</div>
+<%= form_tag("", name: 'form1') do -%>
+  <div>
+  	<table class="table table-striped">
+	    <tr>
+	        <td><%= label_tag(:end_date, "截止时间:") %><%= text_field("end_date","end_date", value: @end_date.blank? ? "" : @end_date.strftime("%Y-%m-%d")) %>
+	        </td>
+	    </tr>
+	</table>
+  </div>
+  <%= submit_tag "查询",:class => 'btn btn-primary', onclick: "form1.action='/shpost_asset/fixed_asset_inventories/#{@inventory.id}/sample_report?is_query=true';form1.submit();" %>   
+  <%= submit_tag "报表导出",:class => 'btn btn-primary', onclick: "form1.action='/shpost_asset/fixed_asset_inventories/#{@inventory.id}/sample_report?is_query=false';form1.submit();" %>
+<% end %>
+<br><br>
+<div>
+<% if !@results.blank? %>
+<table border="1" table-layout="fixed">
+    <tr class= 'nowrapb'>
+      <td>单位</td>
+      <td>总数</td>
+      <td>匹配数</td>
+      <td>不匹配数</td>
+      <td>未扫描数</td>
+      <td>待扫描数</td>
+    </tr>
+    <% @results.each do |k,v| %>
+    <tr class= 'nowrap'>
+      <td><%= Unit.find(k).try(:name) %></td>
+      <td><%= v[0] %></td>
+      <td><%= v[1] %></td>
+      <td><%= v[2] %></td>
+      <td><%= v[3] %></td>
+      <td><%= v[4] %></td>
+    </tr>
+    <% end %>
+    <tr class= 'nowrap'>
+      <td>总计</td>
+      <td><%= @totals["total_amount"] %></td>
+      <td><%= @totals["match_amount"] %></td>
+      <td><%= @totals["unmatch_amount"] %></td>
+      <td><%= @totals["no_scan_amount"] %></td>
+      <td><%= @totals["waiting_amount"] %></td>
+    </tr>
+</table>
+<% end %>
+</div>

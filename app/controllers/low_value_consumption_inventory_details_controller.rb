@@ -72,7 +72,7 @@ class LowValueConsumptionInventoryDetailsController < ApplicationController
     if !params.blank? and !params[:id].blank?
       @low_value_consumption_inventory_detail = LowValueConsumptionInventoryDetail.find(params[:id].to_i)
       @low_value_consumption_inventory = @low_value_consumption_inventory_detail.low_value_consumption_inventory if !@low_value_consumption_inventory_detail.blank?
-      @low_value_consumption_inventory_detail.update inventory_status: "match", inventory_user_id: current_user.id
+      @low_value_consumption_inventory_detail.update inventory_status: "match", inventory_user_id: current_user.id, end_date: Time.now
 
     end
     respond_to do |format|
@@ -89,7 +89,7 @@ class LowValueConsumptionInventoryDetailsController < ApplicationController
       if !@low_value_consumption_inventory_detail.blank?
         @low_value_consumption_inventory = @low_value_consumption_inventory_detail.low_value_consumption_inventory 
         # binding.pry
-        @low_value_consumption_inventory_detail.update inventory_status: "unmatch", desc: (params[:desc_content].blank? ? "" : params[:desc_content]), inventory_user_id: current_user.id
+        @low_value_consumption_inventory_detail.update inventory_status: "unmatch", desc: (params[:desc_content].blank? ? "" : params[:desc_content]), inventory_user_id: current_user.id, end_date: Time.now
       end
     end
     respond_to do |format|

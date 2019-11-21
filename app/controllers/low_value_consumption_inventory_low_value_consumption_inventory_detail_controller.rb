@@ -4,6 +4,7 @@ class LowValueConsumptionInventoryLowValueConsumptionInventoryDetailController <
 
   def index
     # binding.pry
+    
     if RailsEnv.is_oracle?
       @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.joins("left join units on lvc_inventory_details.use_unit_id = units.id").order("units.unit_level, lvc_inventory_details.manage_unit_id, lvc_inventory_details.use_unit_id, lvc_inventory_details.asset_no")
     else
@@ -21,6 +22,7 @@ class LowValueConsumptionInventoryLowValueConsumptionInventoryDetailController <
 
   def doing_index
     # binding.pry
+    
     if current_user.unit.unit_level == 2
       if RailsEnv.is_oracle?
         @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id).joins("left join units on lvc_inventory_details.use_unit_id = units.id").order("units.unit_level, lvc_inventory_details.use_unit_id, lvc_inventory_details.asset_no")

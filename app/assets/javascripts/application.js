@@ -112,7 +112,37 @@ ready = function() {
     return;
   });
 
-  
+  $("#all_units_checked_fix").click(function() { 
+    if($(this).is(':checked')){
+      $("#funit input[type=checkbox]").prop("checked",true);
+    }else{
+      $("#funit input[type=checkbox]").prop("checked",false);
+    }
+  });
+
+  $("#all_rels_checked_fix").click(function() { 
+    if($(this).is(':checked')){
+      $("#frel input[type=checkbox]").prop("checked",true);
+    }else{
+      $("#frel input[type=checkbox]").prop("checked",false);
+    }
+  });
+
+  $("#all_units_checked_low").click(function() { 
+    if($(this).is(':checked')){
+      $("#lunit input[type=checkbox]").prop("checked",true);
+    }else{
+      $("#lunit input[type=checkbox]").prop("checked",false);
+    }
+  });
+
+  $("#all_rels_checked_low").click(function() { 
+    if($(this).is(':checked')){
+      $("#lrel input[type=checkbox]").prop("checked",true);
+    }else{
+      $("#lrel input[type=checkbox]").prop("checked",false);
+    }
+  });
 
 }
 

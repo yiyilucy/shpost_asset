@@ -65,7 +65,9 @@
       (link_to t('.cancel', :default => t("helpers.links.cancel")), "/shpost_asset/low_value_consumption_inventories/" + low_value_consumption_inventory.id.to_s + "/cancel", :data => { :confirm => "确定取消?" }, :class => 'btn btn-xs btn-primary' if (can? :cancel, low_value_consumption_inventory) and (["waiting","doing"].include?low_value_consumption_inventory.status and low_value_consumption_inventory.create_user_id == current_user.id ))<< ' ' <<
       (link_to t('.done', :default => t("helpers.links.done")), "/shpost_asset/low_value_consumption_inventories/" + low_value_consumption_inventory.id.to_s + "/done", :data => { :confirm => "#{done_alert}" }, :class => 'btn btn-xs btn-primary' if (can? :done, low_value_consumption_inventory) and low_value_consumption_inventory.create_user_id == current_user.id and (low_value_consumption_inventory.status.eql?"doing") )<< ' ' <<
       (link_to '盘点单明细',
-                low_value_consumption_inventory_low_value_consumption_inventory_details_path(low_value_consumption_inventory), :class => 'btn btn-xs btn-primary' )
+                low_value_consumption_inventory_low_value_consumption_inventory_details_path(low_value_consumption_inventory), :class => 'btn btn-xs btn-primary' )<< ' ' <<
+      (link_to '盘点报表',
+                sample_report_low_value_consumption_inventory_path(low_value_consumption_inventory), :class => 'btn btn-xs btn-primary' )
     end
 
 

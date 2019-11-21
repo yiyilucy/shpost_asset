@@ -208,6 +208,11 @@ ShpostAsset::Application.routes.draw do
       get 'cancel'
       get 'done'
       get 'sub_done'
+      get 'to_report'
+      post 'report'
+      post 'export'
+      get 'sample_report'
+      post 'sample_report'
     end
 
     resources :fixed_asset_inventory_details, :controller => 'fixed_asset_inventory_fixed_asset_inventory_detail' do 
@@ -244,6 +249,11 @@ ShpostAsset::Application.routes.draw do
       get 'cancel'
       get 'done'
       get 'sub_done'
+      get 'to_report'
+      post 'report'
+      post 'export'
+      get 'sample_report'
+      post 'sample_report'
     end
 
     resources :low_value_consumption_inventory_details, :controller => 'low_value_consumption_inventory_low_value_consumption_inventory_detail' do 

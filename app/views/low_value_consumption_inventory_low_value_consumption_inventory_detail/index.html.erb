@@ -3,6 +3,13 @@
   <h1><%=t '.title', :default => model_class.model_name.human%></h1>
   <div style="float:right">
     <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="low_value_consumption_inventory_low_value_consumption_inventory_details">导出</button>
+    <% if @low_value_consumption_inventory.is_sample %>
+    <%= link_to '盘点报表',
+                sample_report_low_value_consumption_inventory_path(@low_value_consumption_inventory), :class => 'btn btn-primary' %>
+    <% else %>
+    <%= link_to '盘点报表',
+                to_report_low_value_consumption_inventory_path(@low_value_consumption_inventory), :class => 'btn btn-primary' %>
+    <% end %>
   </div>
 <%= render :partial => 'low_value_consumption_inventory_low_value_consumption_inventory_details_grid' %>
 </div>
