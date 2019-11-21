@@ -527,6 +527,7 @@ zh-CN:
         desc1: "使用单位"
         belong_unit: "归属管理"
         inventory_user_id: "盘点人"
+        end_date: "截止日期"
       fixed_asset_inventory_unit:
         unit_id: "单位"
         fixed_asset_inventory_id: "固定资产盘点单"
@@ -589,6 +590,7 @@ zh-CN:
         use_years: "使用年限"
         desc1: "使用单位"
         inventory_user_id: "盘点人"
+        end_date: "截止日期"
       lvc_discard:
         name: "报废单名称"
         status: "状态"

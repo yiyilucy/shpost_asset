@@ -1,0 +1,60 @@
+<div class="page-header">
+  <h1>盘点报表</h1> 
+  <div style="float:right">
+    <%= link_to "报表导出",
+                  "/shpost_asset/low_value_consumption_inventories/#{@inventory_id}/export?edate=#{@return_datas["edate"]}&&uids=#{@return_datas["unit_ids"]}&&rids=#{@return_datas["relevant_unit_ids"]}",
+                  :class => 'btn btn-primary', :method => 'post' %>
+  </div>
+</div>
+<div>
+  	<table>
+	    <tr>
+	        <td width="10%"><b>截止时间:</b></td>
+	        <td width="90%"><%= @return_datas["edate"] %>
+	        </td>
+	    </tr>
+	    <tr>
+	        <td width="10%"><b>盘点单位:</b></td>
+	        <td width="90%"><%= @return_datas["unit_names"] %>
+	        </td>
+	    </tr>
+	    <tr>
+	        <td width="10%"><b>资产归口单位:</b></td>
+	        <td width="90%"><%= @return_datas["relevant_unit_names"] %>
+	        </td>
+	    </tr>
+	</table>
+</div>
+<br><br>
+<div>
+	<table border="1" table-layout="fixed">
+		<tr class= 'nowrapb'>
+			<td>单位</td>
+			<td>总数</td>
+			<td>匹配数</td>
+			<td>不匹配数</td>
+			<td>未扫描数</td>
+			<td>待扫描数</td>
+		</tr>
+		<% if !@results.blank? %>
+		<% @results.each do |k,v| %>
+		<tr class= 'nowrap'>
+			<td><%= Unit.find(k).try(:name) %></td>
+			<td><%= v[0] %></td>
+			<td><%= v[1] %></td>
+			<td><%= v[2] %></td>
+			<td><%= v[3] %></td>
+			<td><%= v[4] %></td>
+		</tr>
+		<% end %>
+		<tr class= 'nowrap'>
+			<td>总计</td>
+			<td><%= @return_datas["total_amount"] %></td>
+			<td><%= @return_datas["match_amount"] %></td>
+			<td><%= @return_datas["unmatch_amount"] %></td>
+			<td><%= @return_datas["no_scan_amount"] %></td>
+			<td><%= @return_datas["waiting_amount"] %></td>
+		</tr>
+		<% end %>
+	</table>
+</div>

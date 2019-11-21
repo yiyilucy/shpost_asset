@@ -59,9 +59,6 @@ class FixedAssetInventoriesController < ApplicationController
       @units_grid = initialize_grid(Unit.where("parent_id = ? or id = ? or parent_id in (?)", current_user.unit_id, current_user.unit_id, lv3units).order(:unit_level, :no), per_page: 1000,:name => 'g1')
       @relevant_departments_grid = initialize_grid(Unit.where(is_facility_management_unit: true).order(:no), per_page: 1000,:name => 'g2')
     end
-
-
-        
   end
 
   def edit
@@ -100,7 +97,7 @@ class FixedAssetInventoriesController < ApplicationController
       # elsif current_user.unit.unit_level == 2
       #   fixed_asset_infos = FixedAssetInfo.where(relevant_department: relevant_departments, unit_id: units)
       # end
-# binding.pry
+
       if current_user.unit.unit_level == 2
         if @end_sum.blank?
           fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id in (?) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? ", relevant_departments, units, "in_use", @start_sum)
@@ -235,7 +232,7 @@ class FixedAssetInventoriesController < ApplicationController
       @fixed_asset_inventory.fixed_asset_inventory_details.each do |x|
         if x.inventory_status.eql?"waiting"
           # all_finished = false
-          x.update inventory_status: "no_scan"
+          x.update inventory_status: "no_scan", end_date: Time.now
         end
       end
     elsif current_user.unit.is_facility_management_unit or current_user.unit.unit_level == 1
@@ -268,7 +265,7 @@ class FixedAssetInventoriesController < ApplicationController
       fixed_asset_inventory_details.each do |x|
         if x.inventory_status.eql?"waiting"
           # all_scanned = false
-          x.update inventory_status: "no_scan"
+          x.update inventory_status: "no_scan", end_date: Time.now
         end
       end
 
@@ -333,13 +330,14 @@ class FixedAssetInventoriesController < ApplicationController
       else
         fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.fixed_asset_catalog_id = ? and (fixed_asset_infos.unit_id =? or fixed_asset_infos.unit_id in (?)) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? and fixed_asset_infos.sum <= ?", fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum, @end_sum)
       end
-# binding.pry      
+    
       if fixed_asset_infos.blank?
         flash[:alert] = "没有符合条件的固定资产"
         redirect_to to_sample_inventory_fixed_asset_inventories_url and return
       end
 
-      relevant_unit_ids = fixed_asset_infos.map{|o| o.relevant_unit_id}.compact.join(",")
+      relevant_unit_ids = fixed_asset_infos.select(:relevant_unit_id).distinct.map{|o| o.relevant_unit_id}.compact.join(",")
+
 
       @fixed_asset_inventory = FixedAssetInventory.create no: params[:fixed_asset_inventory][:no], name: params[:fixed_asset_inventory][:name], start_time: params[:fixed_asset_inventory][:start_time], end_time: params[:fixed_asset_inventory][:end_time], desc: params[:fixed_asset_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids
       
@@ -358,6 +356,313 @@ class FixedAssetInventoriesController < ApplicationController
     end
   end
 
+  def to_report
+    @units = nil
+    @relevant_units = nil
+    @inventory = FixedAssetInventory.find(params[:id].to_i)
+
+    
+    if !@inventory.blank?
+      if (current_user.unit.unit_level == 1) || (current_user.unit.is_facility_management_unit)
+        unit_ids = @inventory.fixed_asset_inventory_units.select(:unit_id)
+      elsif current_user.unit.unit_level == 2
+        unit_ids = @inventory.fixed_asset_inventory_details.where(manage_unit_id: current_user.unit_id).select(:unit_id).distinct
+      elsif current_user.unit.unit_level == 3 && !current_user.unit.is_facility_management_unit
+        unit_ids = @inventory.fixed_asset_inventory_details.joins(:unit).where("units.id = ? or units.parent_id = ?", current_user.unit_id, current_user.unit_id).select("units.id").distinct
+      elsif current_user.unit.unit_level == 4
+        unit_ids = current_user.unit_id
+      end
+
+      @units = Unit.where(id: unit_ids).order(:unit_level, :no)
+
+      if @inventory.relevant_unit_ids.blank? 
+        @relevant_units = Unit.where(is_facility_management_unit: true).order(:no)
+      else
+        @relevant_units = Unit.where(id: @inventory.relevant_unit_ids.split(",").map(&:to_i))
+      end
+    end
+  end
+
+  def report
+    @return_datas = Hash.new
+    @results = Hash.new
+
+    @inventory_id = params[:id]
+    
+    @return_datas = process_params(params)
+
+    @results = get_results(params, @return_datas)
+  end
+
+  def process_params(params)
+    end_date = DateTime
+    unit_ids = []
+    relevant_unit_ids = []
+    unit_names = []
+    relevant_unit_names = []
+    return_datas = Hash.new
+    total_amount = 0
+    match_amount = 0
+    unmatch_amount = 0
+    no_scan_amount = 0
+    waiting_amount = 0
+
+    # 查询页面过来
+    if !params[:end_date].blank? && !params[:end_date]["end_date"].blank?
+      end_date = to_date(params[:end_date]["end_date"])+1
+    # 报表页面过来
+    elsif !params[:edate].blank?
+      end_date = to_date(params[:edate])+1
+    else
+      end_date = Time.now
+    end
+    return_datas["end_date"] = end_date
+    return_datas["edate"] = (end_date-1).strftime("%Y-%m-%d")
+    
+    if !params[:checkbox_unit].blank?
+      params[:checkbox_unit].each do |x|     
+        if x[1].eql?"1"   
+          unit_ids << x[0].to_i 
+          unit_names << Unit.find(x[0].to_i).name
+        end
+      end
+    elsif !params[:uids].blank?
+        unit_ids = eval(params[:uids])
+        unit_ids.each do |x|
+          unit_names << Unit.find(x).name
+        end
+    end
+    return_datas["unit_ids"] = unit_ids
+    return_datas["unit_names"] = unit_names.compact.join(",")
+
+    if !params[:checkbox_relevant].blank?
+      params[:checkbox_relevant].each do |x|     
+        if x[1].eql?"1"   
+          relevant_unit_ids << x[0].to_i 
+          relevant_unit_names << Unit.find(x[0].to_i).name
+        end
+      end
+    elsif !params[:rids].blank?
+      relevant_unit_ids = eval(params[:rids])
+      relevant_unit_ids.each do |x|
+        relevant_unit_names << Unit.find(x).name
+      end  
+    end
+    return_datas["relevant_unit_ids"] = relevant_unit_ids
+    return_datas["relevant_unit_names"] = relevant_unit_names.compact.join(",")
+
+    total_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and unit_id in (?) and relevant_unit_id in (?)", params[:id].to_i, unit_ids, relevant_unit_ids).count
+    return_datas["total_amount"] = total_amount
+
+    match_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and unit_id in (?) and relevant_unit_id in (?) and end_date <= ? and inventory_status = ?", params[:id].to_i, unit_ids, relevant_unit_ids, end_date, "match").count
+    return_datas["match_amount"] = match_amount
+
+    unmatch_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and unit_id in (?) and relevant_unit_id in (?) and end_date <= ? and inventory_status = ?", params[:id].to_i, unit_ids, relevant_unit_ids, end_date, "unmatch").count
+    return_datas["unmatch_amount"] = unmatch_amount
+
+    no_scan_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and unit_id in (?) and relevant_unit_id in (?) and end_date <= ? and inventory_status = ?", params[:id].to_i, unit_ids, relevant_unit_ids, end_date, "no_scan").count
+    return_datas["no_scan_amount"] = no_scan_amount
+
+    waiting_amount = total_amount-match_amount-unmatch_amount-no_scan_amount
+    return_datas["waiting_amount"] = waiting_amount
+
+    return  return_datas   
+  end
+
+  def get_results(params, return_datas)
+    sum_amount = Hash.new
+    status_amount = Hash.new
+    results = Hash.new
+
+    if (current_user.unit.unit_level == 1) || (current_user.unit.is_facility_management_unit)
+      sum_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and manage_unit_id in (?) and relevant_unit_id in (?)", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"]).group(:manage_unit_id).order(:manage_unit_id).count
+      status_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and manage_unit_id in (?) and relevant_unit_id in (?) and end_date <= ?", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"], return_datas["end_date"]).group(:manage_unit_id).group(:inventory_status).order(:manage_unit_id, :inventory_status).count
+    else 
+      sum_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and unit_id in (?) and relevant_unit_id in (?)", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"]).group(:unit_id).order(:unit_id).count
+      status_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and unit_id in (?) and relevant_unit_id in (?) and end_date <= ?", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"], return_datas["end_date"]).group(:unit_id).group(:inventory_status).order(:unit_id, :inventory_status).count
+    end
+      
+    sum_amount.each do |k,v|
+      match_am = status_amount[[k, "match"]].blank? ? 0 : status_amount[[k, "match"]]
+      unmatch_am = status_amount[[k, "unmatch"]].blank? ? 0 : status_amount[[k, "unmatch"]]
+      no_scan_am = status_amount[[k, "no_scan"]].blank? ? 0 : status_amount[[k, "no_scan"]]
+      waiting_am = v-match_am-unmatch_am-no_scan_am
+      results[k]=[v, match_am, unmatch_am, no_scan_am, waiting_am]
+    end
+
+    return results
+  end
+
+  def export
+    return_datas = Hash.new
+    results = Hash.new
+   
+    return_datas = process_params(params)
+
+    results = get_results(params, return_datas)
+
+    send_data(report_xls_content_for(return_datas, results), :type => "text/excel;charset=utf-8; header=present", :filename => "报表_#{Time.now.strftime("%Y%m%d")}.xls")  
+  end
+
+  def report_xls_content_for(return_datas, results)  
+    xls_report = StringIO.new  
+    book = Spreadsheet::Workbook.new  
+    sheet1 = book.create_worksheet :name => "报表"  
+  
+    filter = Spreadsheet::Format.new :size => 10
+    title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :weight => :bold
+    body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center
+
+    sheet1.column(0).width = 60
+    1.upto(5) do |i|
+      sheet1.column(i).width = 20
+    end
+
+    sheet1[0,0] = "截止时间: #{return_datas["edate"]}"
+    sheet1.row(0).default_format = filter 
+    sheet1[1,0] = "盘点单位: #{return_datas["unit_names"]}"
+    sheet1.row(1).default_format = filter 
+    sheet1[2,0] = "资产归口单位: #{return_datas["relevant_unit_names"]}"
+    sheet1.row(2).default_format = filter 
+    
+    sheet1.row(4).concat %w{单位 总数 匹配数 不匹配数 未扫描数 待扫描数}  
+    0.upto(5) do |i|
+      sheet1.row(4).set_format(i, title)
+    end
+    count_row = 5
+    results.each do |k,v|   
+      sheet1[count_row,0]=Unit.find(k).try(:name)
+      sheet1[count_row,1]=v[0]
+      sheet1[count_row,2]=v[1]
+      sheet1[count_row,3]=v[2]
+      sheet1[count_row,4]=v[3]
+      sheet1[count_row,5]=v[4]
+      0.upto(5) do |i|
+        sheet1.row(count_row).set_format(i, body)
+      end
+
+      count_row += 1
+    end 
+
+    sheet1[count_row,0]="总计"
+    sheet1[count_row,1]=return_datas["total_amount"]
+    sheet1[count_row,2]=return_datas["match_amount"]
+    sheet1[count_row,3]=return_datas["unmatch_amount"]
+    sheet1[count_row,4]=return_datas["no_scan_amount"]
+    sheet1[count_row,5]=return_datas["waiting_amount"]
+
+    0.upto(5) do |i|
+      sheet1.row(count_row).set_format(i, body)
+    end
+
+    book.write xls_report  
+    xls_report.string  
+  end
+
+  def sample_report
+    @end_date = nil
+    sum_amount = Hash.new
+    status_amount = Hash.new
+    @results = Hash.new
+    @totals = Hash.new
+
+    @inventory = FixedAssetInventory.find(params[:id].to_i)
+
+    unless request.get?
+      if !params[:end_date].blank? && !params[:end_date]["end_date"].blank?
+        @end_date = to_date(params[:end_date]["end_date"])
+      end
+      
+      sum_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ?", params[:id].to_i).group(:unit_id).order(:unit_id).count
+      status_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and end_date <= ?", params[:id].to_i, @end_date.blank? ? nil : (@end_date+1)).group(:unit_id).group(:inventory_status).order(:unit_id, :inventory_status).count
+
+      sum_amount.each do |k,v|
+        match_am = status_amount[[k, "match"]].blank? ? 0 : status_amount[[k, "match"]]
+        unmatch_am = status_amount[[k, "unmatch"]].blank? ? 0 : status_amount[[k, "unmatch"]]
+        no_scan_am = status_amount[[k, "no_scan"]].blank? ? 0 : status_amount[[k, "no_scan"]]
+        waiting_am = v-match_am-unmatch_am-no_scan_am
+        @results[k]=[v, match_am, unmatch_am, no_scan_am, waiting_am]
+      end
+      total_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ?", params[:id].to_i).count
+      @totals["total_amount"] = total_amount
+      match_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and end_date <= ? and inventory_status = ?", params[:id].to_i, @end_date.blank? ? nil : (@end_date+1), "match").count
+      @totals["match_amount"] = match_amount
+      unmatch_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and end_date <= ? and inventory_status = ?", params[:id].to_i, @end_date.blank? ? nil : (@end_date+1), "unmatch").count
+      @totals["unmatch_amount"] = unmatch_amount
+      no_scan_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and end_date <= ? and inventory_status = ?", params[:id].to_i, @end_date.blank? ? nil : (@end_date+1), "no_scan").count
+      @totals["no_scan_amount"] = no_scan_amount
+      waiting_amount = total_amount - match_amount - unmatch_amount - no_scan_amount
+      @totals["waiting_amount"] = waiting_amount
+
+      if !params[:is_query].blank? and params[:is_query].eql?"true"
+        if @results.blank?
+          flash[:alert] = "无数据"
+        end
+        render '/fixed_asset_inventories/sample_report'
+      elsif !params[:is_query].blank? and params[:is_query].eql?"false"
+        if @results.blank?
+          flash[:alert] = "无数据"
+          redirect_to :action => 'sample_report'
+        else
+          send_data(sample_report_xls_content_for(@end_date, @results, @totals),:type => "text/excel;charset=utf-8; header=present",:filename => "报表_#{Time.now.strftime("%Y%m%d")}.xls")  
+        end
+      end
+    end  
+
+  end
+
+  def sample_report_xls_content_for(end_date, results, totals)  
+    xls_report = StringIO.new  
+    book = Spreadsheet::Workbook.new  
+    sheet1 = book.create_worksheet :name => "报表"  
+  
+    filter = Spreadsheet::Format.new :size => 10
+    title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :weight => :bold
+    body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center
+
+    sheet1.column(0).width = 60
+    1.upto(5) do |i|
+      sheet1.column(i).width = 20
+    end
+
+    sheet1[0,0] = "截止时间: #{end_date.strftime("%Y-%m-%d")}"
+    sheet1.row(0).default_format = filter 
+    
+    sheet1.row(2).concat %w{单位 总数 匹配数 不匹配数 未扫描数 待扫描数}  
+    0.upto(5) do |i|
+      sheet1.row(2).set_format(i, title)
+    end
+    count_row = 3
+    results.each do |k,v|   
+      sheet1[count_row,0]=Unit.find(k).try(:name)
+      sheet1[count_row,1]=v[0]
+      sheet1[count_row,2]=v[1]
+      sheet1[count_row,3]=v[2]
+      sheet1[count_row,4]=v[3]
+      sheet1[count_row,5]=v[4]
+      0.upto(5) do |i|
+        sheet1.row(count_row).set_format(i, body)
+      end
+
+      count_row += 1
+    end 
+
+    sheet1[count_row,0]="总计"
+    sheet1[count_row,1]=totals["total_amount"]
+    sheet1[count_row,2]=totals["match_amount"]
+    sheet1[count_row,3]=totals["unmatch_amount"]
+    sheet1[count_row,4]=totals["no_scan_amount"]
+    sheet1[count_row,5]=totals["waiting_amount"]
+
+    0.upto(5) do |i|
+      sheet1.row(count_row).set_format(i, body)
+    end
+
+    book.write xls_report  
+    xls_report.string  
+  end
+
+
   private
     def set_fixed_asset_inventory
       @fixed_asset_inventory = FixedAssetInventory.find(params[:id])
@@ -365,5 +670,10 @@ class FixedAssetInventoriesController < ApplicationController
 
     def fixed_asset_inventory_params
       params[:fixed_asset_inventory].permit(:no, :name, :desc, :start_time, :end_time)
+    end
+
+    def to_date(time)
+      date = Date.civil(time.split(/-|\//)[0].to_i,time.split(/-|\//)[1].to_i,time.split(/-|\//)[2].to_i)
+      return date
     end
 end

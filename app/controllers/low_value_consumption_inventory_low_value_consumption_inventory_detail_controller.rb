@@ -4,6 +4,8 @@ class LowValueConsumptionInventoryLowValueConsumptionInventoryDetailController <
 
   def index
     # binding.pry
+    @from_sample = false
+
     if RailsEnv.is_oracle?
       @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.joins("left join units on lvc_inventory_details.use_unit_id = units.id").order("units.unit_level, lvc_inventory_details.manage_unit_id, lvc_inventory_details.use_unit_id, lvc_inventory_details.asset_no")
     else
@@ -15,12 +17,18 @@ class LowValueConsumptionInventoryLowValueConsumptionInventoryDetailController <
       :enable_export_to_csv => true,
       :csv_file_name => 'low_value_consumption_inventory_details')
 
+    if !request.referer.blank? && (request.referer.include?"sample")
+      @from_sample = true
+    end
+
     export_grid_if_requested
 
   end
 
   def doing_index
     # binding.pry
+    @from_sample = false
+
     if current_user.unit.unit_level == 2
       if RailsEnv.is_oracle?
         @low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id).joins("left join units on lvc_inventory_details.use_unit_id = units.id").order("units.unit_level, lvc_inventory_details.use_unit_id, lvc_inventory_details.asset_no")
@@ -43,6 +51,10 @@ class LowValueConsumptionInventoryLowValueConsumptionInventoryDetailController <
       :name => 'low_value_consumption_inventory_low_value_consumption_inventory_details_doing',
       :enable_export_to_csv => true,
       :csv_file_name => 'low_value_consumption_inventory_details')
+
+    if !request.referer.blank? && (request.referer.include?"sample")
+      @from_sample = true
+    end
 
     export_grid_if_requested
 

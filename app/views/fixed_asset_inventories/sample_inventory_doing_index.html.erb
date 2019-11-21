@@ -77,7 +77,9 @@
       end
       ActiveSupport::SafeBuffer.new << 
       (link_to '盘点单明细',
-                doing_index_fixed_asset_inventory_fixed_asset_inventory_details_path(fixed_asset_inventory), :class => 'btn btn-xs btn-primary' )
+                doing_index_fixed_asset_inventory_fixed_asset_inventory_details_path(fixed_asset_inventory), :class => 'btn btn-xs btn-primary' )<< ' ' <<
+      (link_to '盘点报表',
+                sample_report_fixed_asset_inventory_path(fixed_asset_inventory), :class => 'btn btn-xs btn-primary' )
     end
 
 

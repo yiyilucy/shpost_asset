@@ -1,0 +1,22 @@
+.nowrap td{
+   white-space:nowrap;
+   padding-left: 5px;
+   padding-right: 5px;
+   text-align: center;
+   font-size: medium;
+   /*width:100px;*/
+   /*overflow:hidden;*/
+   /*text-overflow: ellipsis;*/
+}
+
+.nowrapb td{
+   white-space:nowrap;
+   padding-left: 5px;
+   padding-right: 5px;
+   text-align: center;
+   font-weight: bold;
+   font-size: medium;
+   /*width:100px;*/
+   /*overflow:hidden;*/
+   /*text-overflow: ellipsis;*/
+}

@@ -138,10 +138,10 @@ class Ability
     end
     
     if user.inventoryadmin?
-        can [:read, :doing_index, :sample_inventory_doing_index], FixedAssetInventory
+        can [:read, :doing_index, :sample_inventory_doing_index, :to_report, :report, :export, :sample_report], FixedAssetInventory
         can :manage, FixedAssetInventoryDetail
         can :to_scan, FixedAssetInfo
-        can [:read, :doing_index, :sample_inventory_doing_index], LowValueConsumptionInventory
+        can [:read, :doing_index, :sample_inventory_doing_index, :to_report, :report, :export, :sample_report], LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
         can :to_scan, LowValueConsumptionInfo
         can [:read, :up_download_export], UpDownload
