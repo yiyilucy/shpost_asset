@@ -3,7 +3,7 @@
   <h1><%=t '.title', :default => model_class.model_name.human%></h1>
   <div style="float:right">
     <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="fixed_asset_inventory_fixed_asset_inventory_details_doing">导出</button>
-    <% if @from_sample %>
+    <% if @fixed_asset_inventory.is_sample %>
     <%= link_to '盘点报表',
                 sample_report_fixed_asset_inventory_path(@fixed_asset_inventory), :class => 'btn btn-primary' %>
     <% else %>

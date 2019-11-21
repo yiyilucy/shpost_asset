@@ -4,8 +4,7 @@ class FixedAssetInventoryFixedAssetInventoryDetailController < ApplicationContro
 
   def index
     # binding.pry
-    @from_sample = false
-
+    
     if RailsEnv.is_oracle?
       @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.joins("left join units on fixed_asset_inventory_details.unit_id = units.id").order("units.unit_level, fixed_asset_inventory_details.manage_unit_id, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
     else
@@ -16,18 +15,13 @@ class FixedAssetInventoryFixedAssetInventoryDetailController < ApplicationContro
       :enable_export_to_csv => true,
       :csv_file_name => 'fixed_asset_inventory_details')
 
-    if !request.referer.blank? && (request.referer.include?"sample")
-      @from_sample = true
-    end
-
     export_grid_if_requested
 
   end
 
   def doing_index
     # binding.pry
-    @from_sample = false
-
+    
     if current_user.unit.unit_level == 2
       if RailsEnv.is_oracle?
         @fixed_asset_inventory_details = @fixed_asset_inventory.fixed_asset_inventory_details.where(manage_unit_id: current_user.unit_id).joins("left join units on fixed_asset_inventory_details.unit_id = units.id").order("units.unit_level, fixed_asset_inventory_details.unit_id, fixed_asset_inventory_details.asset_no")
@@ -49,10 +43,6 @@ class FixedAssetInventoryFixedAssetInventoryDetailController < ApplicationContro
       :name => 'fixed_asset_inventory_fixed_asset_inventory_details_doing',
       :enable_export_to_csv => true,
       :csv_file_name => 'fixed_asset_inventory_details')
-
-    if !request.referer.blank? && (request.referer.include?"sample")
-      @from_sample = true
-    end
 
     export_grid_if_requested
 
