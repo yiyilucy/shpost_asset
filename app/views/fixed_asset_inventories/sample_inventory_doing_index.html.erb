@@ -12,6 +12,12 @@
       fixed_asset_inventory.status_name
     end
 
+    g.column name: model_class.human_attribute_name(:fixed_asset_catalog_id), attribute: 'name', assoc: :fixed_asset_catalog do |fixed_asset_inventory|
+      fixed_asset_inventory.fixed_asset_catalog.try :name
+    end
+
+    g.column name: model_class.human_attribute_name(:sample_unit_id), assoc: :sample_unit, attribute: 'name'
+
     g.column name: model_class.human_attribute_name(:create_user_id), assoc: :create_user, attribute: 'name'
 
     g.column name: model_class.human_attribute_name(:create_unit_id), assoc: :create_unit, attribute: 'name'

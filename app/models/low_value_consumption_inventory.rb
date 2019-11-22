@@ -4,6 +4,8 @@ class LowValueConsumptionInventory < ActiveRecord::Base
 	has_many :low_value_consumption_inventory_details, dependent: :destroy, inverse_of: :low_value_consumption_inventory, foreign_key: 'lvc_inventory_id'
 	belongs_to :create_user, class_name: 'User'
 	belongs_to :create_unit, class_name: 'Unit'
+	belongs_to :low_value_consumption_catalog, class_name: 'LowValueConsumptionCatalog', foreign_key: "lvc_catalog_id"
+	belongs_to :sample_unit, class_name: 'Unit'
 
 
 	STATUS = { waiting: '待处理', doing: '盘点中', canceled: '取消', done: '完成'}
