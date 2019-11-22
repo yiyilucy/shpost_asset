@@ -206,40 +206,47 @@ class LowValueConsumptionInventoriesController < ApplicationController
   def cancel
     @low_value_consumption_inventory.update status: "canceled"
 
-    respond_to do |format|
-      format.html { redirect_to low_value_consumption_inventories_url }
-      format.json { head :no_content }
-    end
+    redirect_to request.referer
   end
 
   def done
-    all_finished = true
+    # all_finished = true
 
-    if current_user.unit.unit_level == 2 
-      @low_value_consumption_inventory.low_value_consumption_inventory_details.each do |x|
-        if x.inventory_status.eql?"waiting"
-          # all_finished = false
-          x.update inventory_status: "no_scan", end_date: Time.now
-        end
+    # if current_user.unit.unit_level == 2 
+    #   @low_value_consumption_inventory.low_value_consumption_inventory_details.each do |x|
+    #     if x.inventory_status.eql?"waiting"
+    #       x.update inventory_status: "no_scan", end_date: Time.now
+    #     end
+    #   end
+    # elsif current_user.unit.is_facility_management_unit or current_user.unit.unit_level == 1
+    #   @low_value_consumption_inventory.low_value_consumption_inventory_units.each do |x|
+    #     if x.status.eql?"unfinished"
+    #       all_finished = false
+    #     end
+    #   end
+    # end
+
+    # if all_finished
+    #   @low_value_consumption_inventory.update status: "done"
+    # else
+    #   flash[:alert] = "请等待所有参与单位都完成后再点击"
+    # end
+
+    @low_value_consumption_inventory.low_value_consumption_inventory_details.each do |x|
+      if x.inventory_status.eql?"waiting"
+        x.update inventory_status: "no_scan", end_date: Time.now
       end
-    elsif current_user.unit.is_facility_management_unit or current_user.unit.unit_level == 1
-      @low_value_consumption_inventory.low_value_consumption_inventory_units.each do |x|
-        if x.status.eql?"unfinished"
-          all_finished = false
-        end
+    end
+
+    @low_value_consumption_inventory.low_value_consumption_inventory_units.each do |u|
+      if u.status.eql?"unfinished"
+        u.update status: "finished"
       end
     end
 
-    if all_finished
-      @low_value_consumption_inventory.update status: "done"
-    else
-      flash[:alert] = "请等待所有参与单位都完成后再点击"
-    end
-
-    respond_to do |format|
-      format.html { redirect_to low_value_consumption_inventories_url }
-      format.json { head :no_content }
-    end
+    @low_value_consumption_inventory.update status: "done"
+  
+    redirect_to request.referer
   end
 
   def sub_done
@@ -326,7 +333,7 @@ class LowValueConsumptionInventoriesController < ApplicationController
       relevant_unit_ids = low_value_consumption_infos.select(:relevant_unit_id).distinct.map{|o| o.relevant_unit_id}.compact.join(",")
 
 
-      @low_value_consumption_inventory = LowValueConsumptionInventory.create no: params[:low_value_consumption_inventory][:no], name: params[:low_value_consumption_inventory][:name], start_time: params[:low_value_consumption_inventory][:start_time], end_time: params[:low_value_consumption_inventory][:end_time], desc: params[:low_value_consumption_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids
+      @low_value_consumption_inventory = LowValueConsumptionInventory.create no: params[:low_value_consumption_inventory][:no], name: params[:low_value_consumption_inventory][:name], start_time: params[:low_value_consumption_inventory][:start_time], end_time: params[:low_value_consumption_inventory][:end_time], desc: params[:low_value_consumption_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids, lvc_catalog_id: lvc_catalog_id, sample_unit_id: lv3_unit_id
       
       if !low_value_consumption_infos.blank?
         inventory_unit_id = @low_value_consumption_inventory.low_value_consumption_inventory_units.create(unit_id: lv3_unit_id, status: "unfinished")

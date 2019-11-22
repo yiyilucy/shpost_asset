@@ -3,6 +3,8 @@ class FixedAssetInventory < ActiveRecord::Base
 	has_many :fixed_asset_inventory_details, dependent: :destroy
 	belongs_to :create_user, class_name: 'User'
 	belongs_to :create_unit, class_name: 'Unit'
+	belongs_to :fixed_asset_catalog
+	belongs_to :sample_unit, class_name: 'Unit'
 
 
 	STATUS = { waiting: '待处理', doing: '盘点中', canceled: '取消', done: '完成'}

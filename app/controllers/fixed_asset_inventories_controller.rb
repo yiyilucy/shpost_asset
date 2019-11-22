@@ -225,40 +225,52 @@ class FixedAssetInventoriesController < ApplicationController
   def cancel
     @fixed_asset_inventory.update status: "canceled"
 
-    respond_to do |format|
-      format.html { redirect_to fixed_asset_inventories_url }
-      format.json { head :no_content }
-    end
+    redirect_to request.referer
   end
 
   def done
-    all_finished = true
+    # all_finished = true
 
-    if current_user.unit.unit_level == 2
-      @fixed_asset_inventory.fixed_asset_inventory_details.each do |x|
-        if x.inventory_status.eql?"waiting"
-          # all_finished = false
-          x.update inventory_status: "no_scan", end_date: Time.now
-        end
+    # if current_user.unit.unit_level == 2
+    #   @fixed_asset_inventory.fixed_asset_inventory_details.each do |x|
+    #     if x.inventory_status.eql?"waiting"
+    #       x.update inventory_status: "no_scan", end_date: Time.now
+    #     end
+    #   end
+    # elsif current_user.unit.is_facility_management_unit or current_user.unit.unit_level == 1
+    #   @fixed_asset_inventory.fixed_asset_inventory_units.each do |x|
+    #     if x.status.eql?"unfinished"
+    #       all_finished = false
+    #     end
+    #   end
+    # end
+
+    # if all_finished
+    #   @fixed_asset_inventory.update status: "done"
+    # else
+    #   flash[:alert] = "请等待所有参与单位都完成后再点击"
+    # end
+
+    # respond_to do |format|
+    #   format.html { redirect_to fixed_asset_inventories_url }
+    #   format.json { head :no_content }
+    # end
+
+    @fixed_asset_inventory.fixed_asset_inventory_details.each do |x|
+      if x.inventory_status.eql?"waiting"
+        x.update inventory_status: "no_scan", end_date: Time.now
       end
-    elsif current_user.unit.is_facility_management_unit or current_user.unit.unit_level == 1
-      @fixed_asset_inventory.fixed_asset_inventory_units.each do |x|
-        if x.status.eql?"unfinished"
-          all_finished = false
-        end
+    end
+
+    @fixed_asset_inventory.fixed_asset_inventory_units.each do |u|
+      if u.status.eql?"unfinished"
+        u.update status: "finished"
       end
     end
 
-    if all_finished
-      @fixed_asset_inventory.update status: "done"
-    else
-      flash[:alert] = "请等待所有参与单位都完成后再点击"
-    end
-
-    respond_to do |format|
-      format.html { redirect_to fixed_asset_inventories_url }
-      format.json { head :no_content }
-    end
+    @fixed_asset_inventory.update status: "done"
+  
+    redirect_to request.referer
   end
 
   def sub_done
@@ -345,7 +357,7 @@ class FixedAssetInventoriesController < ApplicationController
       relevant_unit_ids = fixed_asset_infos.select(:relevant_unit_id).distinct.map{|o| o.relevant_unit_id}.compact.join(",")
 
 
-      @fixed_asset_inventory = FixedAssetInventory.create no: params[:fixed_asset_inventory][:no], name: params[:fixed_asset_inventory][:name], start_time: params[:fixed_asset_inventory][:start_time], end_time: params[:fixed_asset_inventory][:end_time], desc: params[:fixed_asset_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids
+      @fixed_asset_inventory = FixedAssetInventory.create no: params[:fixed_asset_inventory][:no], name: params[:fixed_asset_inventory][:name], start_time: params[:fixed_asset_inventory][:start_time], end_time: params[:fixed_asset_inventory][:end_time], desc: params[:fixed_asset_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids, fixed_asset_catalog_id: fixed_asset_catalog_id, sample_unit_id: lv3_unit_id
       
       if !fixed_asset_infos.blank?
         inventory_unit_id = @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: lv3_unit_id, status: "unfinished")
