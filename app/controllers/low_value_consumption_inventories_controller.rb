@@ -7,9 +7,15 @@ class LowValueConsumptionInventoriesController < ApplicationController
       order_direction: 'desc')
   end
 
+  def level2_index
+    @low_value_consumption_inventories = LowValueConsumptionInventory.where(is_lv2_unit: true, is_sample: false)
+    @low_value_consumption_inventories_grid = initialize_grid(@low_value_consumption_inventories, order: 'lvc_inventories.created_at',
+      order_direction: 'desc')
+  end
+
   def doing_index
     lv3_unit_ids = current_user.unit.children.select(:id)
-
+    
     if current_user.unit.unit_level == 2
       @low_value_consumption_inventories = LowValueConsumptionInventory.includes(:low_value_consumption_inventory_units).where("lvc_inventories.status in (?) and (lvc_inventory_units.unit_id = ? or lvc_inventory_units.unit_id in (?)) and lvc_inventories.create_unit_id != ? and lvc_inventories.is_sample = ?", ["doing", "canceled", "done"], current_user.unit_id, lv3_unit_ids, current_user.unit_id, false)
     elsif current_user.unit.unit_level == 3

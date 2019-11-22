@@ -197,6 +197,7 @@ ShpostAsset::Application.routes.draw do
 
   resources :fixed_asset_inventories do 
     collection do
+      get 'level2_index'
       get 'doing_index'
       get 'to_sample_inventory'
       post 'sample_inventory'
@@ -238,6 +239,7 @@ ShpostAsset::Application.routes.draw do
 
   resources :low_value_consumption_inventories do 
     collection do
+      get 'level2_index'
       get 'doing_index'
       get 'to_sample_inventory'
       post 'sample_inventory'

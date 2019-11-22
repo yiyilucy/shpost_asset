@@ -773,6 +773,13 @@ zh-CN:
           needrole:
             can: :sample_inventory_index
             role: :FixedAssetInventory
+        level2_fixed_asset_inventory:
+          name: "二级单位创建盘点单"
+          link: "/fixed_asset_inventories/level2_index"
+          need_count: false
+          needrole:
+            can: :level2_index
+            role: :FixedAssetInventory
         doing_fixed_asset_inventory:
           name: "待处理固定资产盘点单"
           link: "/fixed_asset_inventories/doing_index"
@@ -807,6 +814,13 @@ zh-CN:
           need_count: false
           needrole:
             can: :sample_inventory_index
+            role: :LowValueConsumptionInventory
+        level2_low_value_consumption_inventory:
+          name: "二级单位创建盘点单"
+          link: "/low_value_consumption_inventories/level2_index"
+          need_count: false
+          needrole:
+            can: :level2_index
             role: :LowValueConsumptionInventory
         doing_low_value_consumption_inventory:
           name: "待处理低值易耗品盘点单"

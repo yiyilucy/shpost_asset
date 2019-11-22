@@ -49,11 +49,11 @@ class Ability
         # can [:new, :read], Purchase
         can :manage, Sequence
         can :manage, FixedAssetInventory
-        cannot [:doing_index, :sample_inventory_doing_index], FixedAssetInventory
+        cannot [:level2_index, :doing_index, :sample_inventory_doing_index], FixedAssetInventory
         can :manage, FixedAssetInventoryDetail
         cannot :scan, FixedAssetInventoryDetail
         can :manage, LowValueConsumptionInventory
-        cannot [:doing_index, :sample_inventory_doing_index], LowValueConsumptionInventory
+        cannot [:level2_index, :doing_index, :sample_inventory_doing_index], LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
         cannot :scan, LowValueConsumptionInventoryDetail
         can :manage, UpDownload
@@ -109,13 +109,13 @@ class Ability
         if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
             cannot :create, FixedAssetInventory
         end
-        cannot [:to_sample_inventory, :sample_inventory, :sample_inventory_index], FixedAssetInventory
+        cannot [:level2_index, :to_sample_inventory, :sample_inventory, :sample_inventory_index], FixedAssetInventory
         can :manage, FixedAssetInventoryDetail
         can :manage, LowValueConsumptionInventory
         if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
             cannot :create, LowValueConsumptionInventory
         end
-        cannot [:to_sample_inventory, :sample_inventory, :sample_inventory_index], LowValueConsumptionInventory
+        cannot [:level2_index, :to_sample_inventory, :sample_inventory, :sample_inventory_index], LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
         can :update, User, id: user.id
         can [:read, :up_download_export], UpDownload
@@ -123,6 +123,15 @@ class Ability
     end
 
     if user.accountant?
+        if user.unit.unit_level == 1
+            can [:read, :to_report, :report, :export, :level2_index], LowValueConsumptionInventory
+            cannot [:doing_index, :sample_inventory_doing_index], LowValueConsumptionInventory
+            can :read, LowValueConsumptionInventoryDetail
+            can [:read, :to_report, :report, :export, :level2_index], FixedAssetInventory
+            cannot [:doing_index, :sample_inventory_doing_index], FixedAssetInventory
+            can :read,  FixedAssetInventoryDetail
+            
+        end
         can :read, FixedAssetCatalog
         can :read, LowValueConsumptionCatalog
         can :read, FixedAssetInfo, unit_id: user.unit_id

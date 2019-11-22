@@ -7,6 +7,12 @@ class FixedAssetInventoriesController < ApplicationController
       order_direction: 'desc')
   end
 
+  def level2_index
+    @fixed_asset_inventories = FixedAssetInventory.where(is_lv2_unit: true, is_sample: false)
+    @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
+      order_direction: 'desc')
+  end
+  
   def doing_index
     if current_user.unit.unit_level == 2
       lv3_unit_ids = current_user.unit.children.select(:id)
