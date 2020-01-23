@@ -139,6 +139,7 @@ ShpostAsset::Application.routes.draw do
       get 'revoke'
       get 'cancel'
       get 'print'
+      get 'print_certificate'
     end
 
     resources :low_value_consumption_infos, :controller => 'purchase_low_value_consumption_info' do

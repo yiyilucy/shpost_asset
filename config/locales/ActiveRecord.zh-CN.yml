@@ -162,12 +162,13 @@ zh-CN:
       scan: 查看
       match: 匹配
       unmatch: 不匹配
-      print: 打印
+      print: 打印二维码
       discard: 报废
       lvc_discard_details: 报废明细
       up_download_import: 模板上传
       up_download_export: 模板下载
       sample_inventory: 抽样盘点
+      print_certificate: 打印单据
     titles:
       edit: 编辑%{model}
       new: 新增%{model}
@@ -458,6 +459,7 @@ zh-CN:
         discard_at: "报废日期"
         use_years: "使用年限"
         desc1: "使用单位"
+        is_rent: "是否租赁"
       purchase:
         no: "采购单号"
         name: "采购单名称"

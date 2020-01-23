@@ -30,6 +30,12 @@
       <%= use_unit_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
     </div>
   </div>
+  <div class="control-group">
+    <div class="controls">
+      <%=f.check_box :is_rent,:class =>'check_box', :id =>"isrent"%>
+      <%= f.label :is_rent, :class => 'control-label' %> 
+    </div>
+  </div>
 
   <%= f.submit nil, :class => 'btn btn-primary' %>
   <%= link_to t('.cancel', :default => t("helpers.links.cancel")),

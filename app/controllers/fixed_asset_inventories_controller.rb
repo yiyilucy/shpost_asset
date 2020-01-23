@@ -342,11 +342,21 @@ class FixedAssetInventoriesController < ApplicationController
       end
 
       lv4_unit_ids = Unit.where(parent_id: lv3_unit_id).select(:id)
+
+      query_string = "fixed_asset_infos.fixed_asset_catalog_id = ? and (fixed_asset_infos.unit_id =? or fixed_asset_infos.unit_id in (?)) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? "
       
       if @end_sum.blank?
-        fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.fixed_asset_catalog_id = ? and (fixed_asset_infos.unit_id =? or fixed_asset_infos.unit_id in (?)) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? ", fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum)
+        if current_user.unit.unit_level == 3 && current_user.unit.is_facility_management_unit
+          fixed_asset_infos = FixedAssetInfo.where(query_string, fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum).where(relevant_unit_id: current_user.unit.id)
+        else
+          fixed_asset_infos = FixedAssetInfo.where(query_string, fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum)
+        end
       else
-        fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.fixed_asset_catalog_id = ? and (fixed_asset_infos.unit_id =? or fixed_asset_infos.unit_id in (?)) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? and fixed_asset_infos.sum <= ?", fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum, @end_sum)
+        if current_user.unit.unit_level == 3 && current_user.unit.is_facility_management_unit
+          fixed_asset_infos = FixedAssetInfo.where(query_string, fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum).where("fixed_asset_infos.sum <= ?", @end_sum).where(relevant_unit_id: current_user.unit.id)
+        else
+          fixed_asset_infos = FixedAssetInfo.where(query_string, fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum).where("fixed_asset_infos.sum <= ?", @end_sum)
+        end
       end
     
       if fixed_asset_infos.blank?
@@ -354,8 +364,11 @@ class FixedAssetInventoriesController < ApplicationController
         redirect_to to_sample_inventory_fixed_asset_inventories_url and return
       end
 
-      relevant_unit_ids = fixed_asset_infos.select(:relevant_unit_id).distinct.map{|o| o.relevant_unit_id}.compact.join(",")
-
+      if current_user.unit.unit_level == 3 && current_user.unit.is_facility_management_unit
+        relevant_unit_ids = current_user.unit.id
+      else
+        relevant_unit_ids = fixed_asset_infos.select(:relevant_unit_id).distinct.map{|o| o.relevant_unit_id}.compact.join(",")
+      end
 
       @fixed_asset_inventory = FixedAssetInventory.create no: params[:fixed_asset_inventory][:no], name: params[:fixed_asset_inventory][:name], start_time: params[:fixed_asset_inventory][:start_time], end_time: params[:fixed_asset_inventory][:end_time], desc: params[:fixed_asset_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids, fixed_asset_catalog_id: fixed_asset_catalog_id, sample_unit_id: lv3_unit_id
       
@@ -419,11 +432,6 @@ class FixedAssetInventoriesController < ApplicationController
     unit_names = []
     relevant_unit_names = []
     return_datas = Hash.new
-    total_amount = 0
-    match_amount = 0
-    unmatch_amount = 0
-    no_scan_amount = 0
-    waiting_amount = 0
 
     # 查询页面过来
     if !params[:end_date].blank? && !params[:end_date]["end_date"].blank?
@@ -469,21 +477,6 @@ class FixedAssetInventoriesController < ApplicationController
     return_datas["relevant_unit_ids"] = relevant_unit_ids
     return_datas["relevant_unit_names"] = relevant_unit_names.compact.join(",")
 
-    total_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and unit_id in (?) and relevant_unit_id in (?)", params[:id].to_i, unit_ids, relevant_unit_ids).count
-    return_datas["total_amount"] = total_amount
-
-    match_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and unit_id in (?) and relevant_unit_id in (?) and end_date <= ? and inventory_status = ?", params[:id].to_i, unit_ids, relevant_unit_ids, end_date, "match").count
-    return_datas["match_amount"] = match_amount
-
-    unmatch_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and unit_id in (?) and relevant_unit_id in (?) and end_date <= ? and inventory_status = ?", params[:id].to_i, unit_ids, relevant_unit_ids, end_date, "unmatch").count
-    return_datas["unmatch_amount"] = unmatch_amount
-
-    no_scan_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and unit_id in (?) and relevant_unit_id in (?) and end_date <= ? and inventory_status = ?", params[:id].to_i, unit_ids, relevant_unit_ids, end_date, "no_scan").count
-    return_datas["no_scan_amount"] = no_scan_amount
-
-    waiting_amount = total_amount-match_amount-unmatch_amount-no_scan_amount
-    return_datas["waiting_amount"] = waiting_amount
-
     return  return_datas   
   end
 
@@ -491,6 +484,11 @@ class FixedAssetInventoriesController < ApplicationController
     sum_amount = Hash.new
     status_amount = Hash.new
     results = Hash.new
+    total_amount = 0
+    match_amount = 0
+    unmatch_amount = 0
+    no_scan_amount = 0
+    waiting_amount = 0
 
     if (current_user.unit.unit_level == 1) || (current_user.unit.is_facility_management_unit)
       sum_amount = FixedAssetInventoryDetail.where("fixed_asset_inventory_id = ? and manage_unit_id in (?) and relevant_unit_id in (?)", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"]).group(:manage_unit_id).order(:manage_unit_id).count
@@ -502,10 +500,21 @@ class FixedAssetInventoriesController < ApplicationController
       
     sum_amount.each do |k,v|
       match_am = status_amount[[k, "match"]].blank? ? 0 : status_amount[[k, "match"]]
+      match_amount += match_am
       unmatch_am = status_amount[[k, "unmatch"]].blank? ? 0 : status_amount[[k, "unmatch"]]
+      unmatch_amount += unmatch_am
       no_scan_am = status_amount[[k, "no_scan"]].blank? ? 0 : status_amount[[k, "no_scan"]]
+      no_scan_amount += no_scan_am
       waiting_am = v-match_am-unmatch_am-no_scan_am
+      waiting_amount += waiting_am
+      total_amount += v
+
       results[k]=[v, match_am, unmatch_am, no_scan_am, waiting_am]
+      return_datas["total_amount"] = total_amount
+      return_datas["match_amount"] = match_amount
+      return_datas["unmatch_amount"] = unmatch_amount
+      return_datas["no_scan_amount"] = no_scan_amount
+      return_datas["waiting_amount"] = waiting_amount
     end
 
     return results
@@ -538,16 +547,16 @@ class FixedAssetInventoriesController < ApplicationController
 
     sheet1[0,0] = "截止时间: #{return_datas["edate"]}"
     sheet1.row(0).default_format = filter 
-    sheet1[1,0] = "盘点单位: #{return_datas["unit_names"]}"
-    sheet1.row(1).default_format = filter 
-    sheet1[2,0] = "资产归口单位: #{return_datas["relevant_unit_names"]}"
-    sheet1.row(2).default_format = filter 
+    # sheet1[1,0] = "盘点单位: #{return_datas["unit_names"]}"
+    # sheet1.row(1).default_format = filter 
+    # sheet1[2,0] = "资产归口单位: #{return_datas["relevant_unit_names"]}"
+    # sheet1.row(2).default_format = filter 
     
-    sheet1.row(4).concat %w{单位 总数 匹配数 不匹配数 未扫描数 待扫描数}  
+    sheet1.row(2).concat %w{单位 总数 匹配数 不匹配数 未扫描数 待扫描数}  
     0.upto(5) do |i|
-      sheet1.row(4).set_format(i, title)
+      sheet1.row(2).set_format(i, title)
     end
-    count_row = 5
+    count_row = 3
     results.each do |k,v|   
       sheet1[count_row,0]=Unit.find(k).try(:name)
       sheet1[count_row,1]=v[0]

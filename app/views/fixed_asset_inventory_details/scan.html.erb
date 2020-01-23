@@ -74,7 +74,7 @@ onclick: "form1.action='/shpost_asset/fixed_asset_inventory_details/#{@fixed_ass
 <br><br>
 <table>
 <tr>
-  <td><%= button_tag "匹配", onclick: "if(!confirm('确定匹配?')){return false;} form1.action='/shpost_asset/fixed_asset_inventory_details/#{@fixed_asset_inventory_detail.id}/match';form1.submit();", :class => 'btn btn-primary' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  <td><%= button_tag "匹配", onclick: "if(!confirm('确定匹配?')){return false;} form1.action='/shpost_asset/fixed_asset_inventory_details/#{@fixed_asset_inventory_detail.id}/match';form1.submit();", :class => 'btn btn-primary' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
   <td>
   <%= button_tag "不匹配",:class => 'btn btn-primary', :id => "unmatch", :type => "button" %></td>
 </tr>

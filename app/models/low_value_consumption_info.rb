@@ -15,5 +15,11 @@ class LowValueConsumptionInfo < ActiveRecord::Base
 		status.blank? ? "" : LowValueConsumptionInfo::STATUS["#{status}".to_sym]
 	end
 
-
+	def is_rent_name
+	  if is_rent
+	    name = "是"
+	  else
+	    name = "否"
+	  end
+	end
 end

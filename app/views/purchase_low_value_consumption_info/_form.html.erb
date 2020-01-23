@@ -101,6 +101,12 @@
     </div>  
   </div>
 <% end %>
+  <div class="control-group">
+    <div class="controls">
+      <%=f.check_box :is_rent,:class =>'check_box', :id =>"isrent"%>
+      <%= f.label :is_rent, :class => 'control-label' %> 
+    </div>
+  </div>
 <% end %>
   <%= f.submit nil, :class => 'btn btn-primary' %>
   <%= link_to t('.cancel', :default => t("helpers.links.cancel")),

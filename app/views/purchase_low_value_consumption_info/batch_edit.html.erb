@@ -7,13 +7,13 @@
    <%= hidden_field_tag('lvcids',@lvcids)%>
    <% if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked" %>
       <div class="control-group">
-	      <%= label_tag(:lvc_catalog_id, "类别目录") %>
+	      <%= label_tag(:lvc_catalog_id, "类别目录") %><font color="#FF0000">  *</font>
 	      <div class="controls">
 	      <%= low_value_consumption_catalog_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
 		  </div>
       </div>
       <div class="control-group">
-	      <%= label_tag(:asset_name, "资产名称") %>
+	      <%= label_tag(:asset_name, "资产名称") %><font color="#FF0000">  *</font>
 	      <div class="controls">
 	      <%= text_field_tag(:asset_name,@low_value_consumption_info.asset_name) %>
 		  </div>
@@ -25,7 +25,7 @@
 		  </div>
       </div>
       <div class="control-group">
-	      <%= label_tag(:brand_model, "品牌型号") %>
+	      <%= label_tag(:brand_model, "品牌型号") %><font color="#FF0000">  *</font>
 	      <div class="controls">
 	      <%= text_field_tag(:brand_model,@low_value_consumption_info.brand_model) %>
 		  </div>
@@ -37,7 +37,7 @@
 		  </div>
       </div>
       <div class="control-group">
-	      <%= label_tag(:sum, "金额") %>
+	      <%= label_tag(:sum, "金额") %><font color="#FF0000">  *</font>
 	      <div class="controls">
 	      <%= text_field_tag(:sum,@low_value_consumption_info.sum) %>
 		  </div>
@@ -50,13 +50,13 @@
       </div>
       <% end %>
       <div class="control-group">
-	      <%= label_tag(:branch, "所在网点") %>
+	      <%= label_tag(:branch, "所在网点") %><font color="#FF0000">  *</font>
 	      <div class="controls">
 	      <%= text_field_tag(:branch,@low_value_consumption_info.branch) %>
 		  </div>
       </div>  
       <div class="control-group">
-	      <%= label_tag(:location, "所在地点") %>
+	      <%= label_tag(:location, "所在地点") %><font color="#FF0000">  *</font>
 	      <div class="controls">
 	      <%= text_field_tag(:location,@low_value_consumption_info.location) %>
 		  </div>
@@ -68,13 +68,13 @@
 		  </div>
       </div>
       <div class="control-group">
-	      <%= label_tag(:relevant_unit_id, "归口管理部门") %>
+	      <%= label_tag(:relevant_unit_id, "归口管理部门") %><font color="#FF0000">  *</font>
 	      <div class="controls">
 	      <%= relevant_department_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
 		  </div>
       </div>
       <div class="control-group">
-	      <%= label_tag(:use_unit_id, "使用部门") %>
+	      <%= label_tag(:use_unit_id, "使用部门") %><font color="#FF0000">  *</font>
 	      <div class="controls">
 	      <%= use_unit_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
 		  </div>
@@ -91,6 +91,9 @@
 	      <div class="controls">
 	      <%= text_field_tag(:change_log,@low_value_consumption_info.change_log) %>
 		  </div>
+      </div>
+      <div class="control-group">
+      	<%= check_box("checkbox","is_rent")%>是否租赁
       </div>
    <% end %>
 

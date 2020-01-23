@@ -183,6 +183,7 @@ class LowValueConsumptionInfosController < ApplicationController
           @low_value_consumption_info.relevant_unit_id = params[:low_value_consumption_info][:relevant_unit_id]
           @low_value_consumption_info.use_unit_id = params[:low_value_consumption_info][:use_unit_id]
           @low_value_consumption_info.update log: (@low_value_consumption_info.log.blank? ? "" : @low_value_consumption_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"低值易耗品信息批量修改" + ","
+          @low_value_consumption_info.is_rent = params[:checkbox][:is_rent].eql?"1"
           @low_value_consumption_info.save
         end
         flash[:notice] = "批量修改成功"
@@ -257,6 +258,7 @@ class LowValueConsumptionInfosController < ApplicationController
             desc1_index = title_row.index("使用单位")
             use_years_index = title_row.index("使用年限")
             brand_model_index = title_row.index("结构/型号")
+            is_rent_index = title_row.index("是否租赁")
             
             
             8.upto(instance.last_row) do |line|
@@ -283,6 +285,7 @@ class LowValueConsumptionInfosController < ApplicationController
               desc1 = rowarr[desc1_index].blank? ? "" : to_string(rowarr[desc1_index])
               use_years = rowarr[use_years_index].blank? ? "" : rowarr[use_years_index].to_s.split(".0")[0]
               brand_model = rowarr[brand_model_index].blank? ? "" : to_string(rowarr[brand_model_index])
+              is_rent = rowarr[is_rent_index].blank? ? false : ((to_string(rowarr[is_rent_index]).eql?"是") ? true : false)
               
               if asset_name.blank?
                 txt = "缺少资产名称_"
@@ -340,7 +343,7 @@ class LowValueConsumptionInfosController < ApplicationController
               end
               
               while amount>0
-                lvc_info = LowValueConsumptionInfo.create!(asset_name: asset_name, lvc_catalog_id: catalogs[catalog_name], relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department], use_at:use_at, sum:sum, use_unit_id: use_departments[unit_name], location: location, user: user, status: "in_use", print_times: 0, manage_unit_id: current_user.unit_id, desc1: desc1, use_years: use_years, brand_model: brand_model)
+                lvc_info = LowValueConsumptionInfo.create!(asset_name: asset_name, lvc_catalog_id: catalogs[catalog_name], relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department], use_at:use_at, sum:sum, use_unit_id: use_departments[unit_name], location: location, user: user, status: "in_use", print_times: 0, manage_unit_id: current_user.unit_id, desc1: desc1, use_years: use_years, brand_model: brand_model, is_rent: is_rent)
                 lvc_info.update asset_no: Sequence.generate_asset_no(lvc_info,lvc_info.use_at)
 
                 amount = amount - 1
@@ -495,7 +498,7 @@ class LowValueConsumptionInfosController < ApplicationController
     end
 
     def low_value_consumption_info_params
-      params.require(:low_value_consumption_info).permit(:asset_name, :asset_no, :fixed_asset_catalog_id, :relevant_unit_id, :buy_at, :use_at, :measurement_unit, :sum, :use_unit_id, :branch, :location, :user, :brand_model, :batch_no, :manage_unit_id, :use_years, :desc1)
+      params.require(:low_value_consumption_info).permit(:asset_name, :asset_no, :fixed_asset_catalog_id, :relevant_unit_id, :buy_at, :use_at, :measurement_unit, :sum, :use_unit_id, :branch, :location, :user, :brand_model, :batch_no, :manage_unit_id, :use_years, :desc1, :is_rent)
     end
 
     def upload_low_value_consumption_info(file)

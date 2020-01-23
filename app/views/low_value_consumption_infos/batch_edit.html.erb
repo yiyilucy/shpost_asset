@@ -5,40 +5,44 @@
 <div>
    <%= form_tag(batch_update_low_value_consumption_infos_path, method: "post")%>
    <%= hidden_field_tag('lvcids',@lvcids)%>
-      <div class="control-group">
-        <%= label_tag(:branch, "所在网点") %>
-        <div class="controls">
-        <%= text_field_tag(:branch,@low_value_consumption_info.branch) %>
+    <div class="control-group">
+      <%= label_tag(:branch, "所在网点") %>
+      <div class="controls">
+      <%= text_field_tag(:branch,@low_value_consumption_info.branch) %>
       </div>
-      <div class="control-group">
-	      <%= label_tag(:location, "所在地点") %>
-	      <div class="controls">
-	      <%= text_field_tag(:location,@low_value_consumption_info.location) %>
-		  </div>
-      </div>
-      <div class="control-group">
-	      <%= label_tag(:user, "使用人") %>
-	      <div class="controls">
-	      <%= text_field_tag(:user,@low_value_consumption_info.user) %>
-		  </div>
-      </div>
-      <div class="control-group">
-	      <%= label_tag(:relevant_unit_id, "归口管理部门") %>
-	      <div class="controls">
-	      <%= relevant_department_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
-		  </div>
-      </div>
-      <div class="control-group">
-	      <%= label_tag(:use_unit_id, "使用部门") %>
-	      <div class="controls">
-	      <%= use_unit_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
-		  </div>
-      </div>
-   
-  <div>
-    <%= submit_tag "批量更新",:class => 'btn btn-primary' %>
-    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
-            low_value_consumption_infos_path, :class => 'btn btn-default' %>
-  </div>
+    </div>
+    <div class="control-group">
+      <%= label_tag(:location, "所在地点") %>
+      <div class="controls">
+      <%= text_field_tag(:location,@low_value_consumption_info.location) %>
+	    </div>
+    </div>
+    <div class="control-group">
+      <%= label_tag(:user, "使用人") %>
+      <div class="controls">
+      <%= text_field_tag(:user,@low_value_consumption_info.user) %>
+	    </div>
+    </div>
+    <div class="control-group">
+      <%= label_tag(:relevant_unit_id, "归口管理部门") %>
+      <div class="controls">
+      <%= relevant_department_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
+	    </div>
+    </div>
+    <div class="control-group">
+      <%= label_tag(:use_unit_id, "使用部门") %>
+      <div class="controls">
+      <%= use_unit_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
+	    </div>
+    </div>
+    <div class="control-group">
+      <%= check_box("checkbox","is_rent")%>是否租赁
+    </div>
+    <p><p><p>
+    <div>
+      <%= submit_tag "批量更新",:class => 'btn btn-primary' %>
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+              low_value_consumption_infos_path, :class => 'btn btn-default' %>
+    </div>
   </form>
 </div>

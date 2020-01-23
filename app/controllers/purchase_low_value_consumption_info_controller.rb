@@ -104,7 +104,8 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
             print_times: 0, 
             manage_unit_id: @purchase.manage_unit_id,
             use_years: params[:low_value_consumption_info][:use_years],
-            desc1: params[:low_value_consumption_info][:desc1])
+            desc1: params[:low_value_consumption_info][:desc1],
+            is_rent: (params[:low_value_consumption_info][:is_rent].eql?"1"))
           
           amount = amount-1
         end
@@ -177,6 +178,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
             @low_value_consumption_info.sum = params[:sum]           
             @low_value_consumption_info.change_log = params[:change_log]
             @low_value_consumption_info.use_years = params[:use_years]
+            @low_value_consumption_info.is_rent = params[:checkbox][:is_rent].eql?"1"
           end
           @low_value_consumption_info.branch = params[:branch]
           @low_value_consumption_info.location = params[:location]
@@ -216,7 +218,6 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
     # binding.pry
   end
 
-
   private
 
   def set_relationship
@@ -224,7 +225,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
   end
 
   def low_value_consumption_info_params
-    params.require(:low_value_consumption_info).permit(:asset_name, :lvc_catalog_id, :relevant_unit_id, :buy_at, :measurement_unit, :sum, :use_unit_id, :branch, :location, :user, :brand_model, :batch_no, :manage_unit_id, :use_years, :desc1)
+    params.require(:low_value_consumption_info).permit(:asset_name, :lvc_catalog_id, :relevant_unit_id, :buy_at, :measurement_unit, :sum, :use_unit_id, :branch, :location, :user, :brand_model, :batch_no, :manage_unit_id, :use_years, :desc1, :is_rent)
   end
 
 end

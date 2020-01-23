@@ -1,13 +1,13 @@
 <%- model_class = LowValueConsumptionInventory -%>
 <div class="page-header">
   <h1>二级单位创建低值易耗品盘点单</h1>
-  <div style="float:right">
+  <!-- <div style="float:right">
     <% if can? :new, LowValueConsumptionInventory %>
       <%= link_to t('.new', :default => t("helpers.links.new")),
                   new_low_value_consumption_inventory_path,
                   :class => 'btn btn-primary' %>
     <% end %>
-  </div>
+  </div> -->
 </div>
 
 <%= grid(@low_value_consumption_inventories_grid) do |g|
