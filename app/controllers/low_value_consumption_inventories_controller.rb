@@ -9,9 +9,11 @@ class LowValueConsumptionInventoriesController < ApplicationController
 
   def level2_index
     if current_user.unit.unit_level == 1
-      @low_value_consumption_inventories = LowValueConsumptionInventory.joins("left join units as uunits on lvc_inventories.create_unit_id = uunits.id").where("(lvc_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and lvc_inventories.is_sample=?", true, true, false)
+      # @low_value_consumption_inventories = LowValueConsumptionInventory.joins("left join units as uunits on lvc_inventories.create_unit_id = uunits.id").where("(lvc_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and lvc_inventories.is_sample=?", true, true, false)
+      @low_value_consumption_inventories = @low_value_consumption_inventories.where("(lvc_inventories.is_lv2_unit=? or units.is_facility_management_unit = ?) and lvc_inventories.is_sample=?", true, true, false)
     elsif current_user.unit.is_facility_management_unit
-      @low_value_consumption_inventories = LowValueConsumptionInventory.joins("left join units as uunits on lvc_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and lvc_inventories.is_sample=?", 1, false)
+      # @low_value_consumption_inventories = LowValueConsumptionInventory.joins("left join units as uunits on lvc_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and lvc_inventories.is_sample=?", 1, false)
+      @low_value_consumption_inventories = @low_value_consumption_inventories.where("units.unit_level = ? and lvc_inventories.is_sample=?", 1, false)
     end
     
     @low_value_consumption_inventories_grid = initialize_grid(@low_value_consumption_inventories, order: 'lvc_inventories.created_at',
@@ -20,9 +22,11 @@ class LowValueConsumptionInventoriesController < ApplicationController
 
   def sample_level2_index
     if current_user.unit.unit_level == 1
-      @low_value_consumption_inventories = LowValueConsumptionInventory.joins("left join units as uunits on lvc_inventories.create_unit_id = uunits.id").where("(lvc_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and lvc_inventories.is_sample=?", true, true, true)
+      # @low_value_consumption_inventories = LowValueConsumptionInventory.joins("left join units as uunits on lvc_inventories.create_unit_id = uunits.id").where("(lvc_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and lvc_inventories.is_sample=?", true, true, true)
+      @low_value_consumption_inventories = @low_value_consumption_inventories.where("(lvc_inventories.is_lv2_unit=? or units.is_facility_management_unit = ?) and lvc_inventories.is_sample=?", true, true, true)
     elsif current_user.unit.is_facility_management_unit
-      @low_value_consumption_inventories = LowValueConsumptionInventory.joins("left join units as uunits on lvc_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and lvc_inventories.is_sample=?", 1, true)
+      # @low_value_consumption_inventories = LowValueConsumptionInventory.joins("left join units as uunits on lvc_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and lvc_inventories.is_sample=?", 1, true)
+      @low_value_consumption_inventories = @low_value_consumption_inventories.where("units.unit_level = ? and lvc_inventories.is_sample=?", 1, true)
     end
     
     @low_value_consumption_inventories_grid = initialize_grid(@low_value_consumption_inventories, order: 'lvc_inventories.created_at',

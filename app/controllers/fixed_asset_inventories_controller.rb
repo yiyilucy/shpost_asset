@@ -9,9 +9,11 @@ class FixedAssetInventoriesController < ApplicationController
 
   def level2_index
     if current_user.unit.unit_level == 1
-      @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("(fixed_asset_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, false)
+      # @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("(fixed_asset_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, false)
+      @fixed_asset_inventories = @fixed_asset_inventories.where("(fixed_asset_inventories.is_lv2_unit=? or units.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, false)
     elsif current_user.unit.is_facility_management_unit
-      @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, false)
+      # @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, false)
+      @fixed_asset_inventories = @fixed_asset_inventories.where("units.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, false)
     end
         
     @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
@@ -20,9 +22,11 @@ class FixedAssetInventoriesController < ApplicationController
 
   def sample_level2_index
     if current_user.unit.unit_level == 1
-      @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("(fixed_asset_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, true)
+      # @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("(fixed_asset_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, true)
+      @fixed_asset_inventories = @fixed_asset_inventories.where("(fixed_asset_inventories.is_lv2_unit=? or units.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, true)
     elsif current_user.unit.is_facility_management_unit
-      @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, true)
+      # @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, true)
+      @fixed_asset_inventories = @fixed_asset_inventories.where("units.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, true)
     end
         
     @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
