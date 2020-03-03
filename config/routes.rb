@@ -148,7 +148,6 @@ ShpostAsset::Application.routes.draw do
         post 'batch_edit'
         post 'batch_update'
         post 'print'
-
       end
     end
       
@@ -166,6 +165,14 @@ ShpostAsset::Application.routes.draw do
       post 'discard'
       get 'low_value_consumption_report'
       post 'low_value_consumption_report_export'
+      get 'lvc_report'
+      post 'lvc_report_export'
+      get 'select_catalog2'
+      post 'select_catalog2'
+      get 'select_catalog3'
+      post 'select_catalog3'
+      get 'select_catalog4'
+      post 'select_catalog4'
     end
     member do 
       get 'to_scan'
@@ -204,6 +211,7 @@ ShpostAsset::Application.routes.draw do
       post 'sample_inventory'
       get 'sample_inventory_index'
       get 'sample_inventory_doing_index'
+      get 'sample_level2_index'
     end
 
     member do 
@@ -246,6 +254,7 @@ ShpostAsset::Application.routes.draw do
       post 'sample_inventory'
       get 'sample_inventory_index'
       get 'sample_inventory_doing_index'
+      get 'sample_level2_index'
     end
 
     member do 

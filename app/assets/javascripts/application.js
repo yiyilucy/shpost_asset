@@ -144,6 +144,33 @@ ready = function() {
     }
   });
 
+  $('#catalog_catalog1').click(function(){
+    $.ajax({
+      type : 'GET',
+      url : '/shpost_asset/low_value_consumption_infos/select_catalog2/',
+      data: { catalog1: $('#catalog_catalog1').val()},
+      dataType : 'script'
+    });
+   return false;
+  }); 
+  $('#catalog2').click(function(){
+    $.ajax({
+      type : 'GET',
+      url : '/shpost_asset/low_value_consumption_infos/select_catalog3/',
+      data: { catalog2: $('#catalog2').val()},
+      dataType : 'script'
+    });
+   return false;
+  }); 
+  $('#catalog3').click(function(){
+    $.ajax({
+      type : 'GET',
+      url : '/shpost_asset/low_value_consumption_infos/select_catalog4/',
+      data: { catalog3: $('#catalog3').val()},
+      dataType : 'script'
+    });
+   return false;
+  }); 
 }
 
 

@@ -18,12 +18,12 @@
 		    }
 			LODOP.SET_LICENSES("上海市邮政公司信息技术局","452677782688188907989821905623","","");
 			LODOP.PRINT_INIT("打印采购单");
-			LODOP.SET_PRINT_PAGESIZE(2,"297mm","210mm","");
-		    LODOP.SET_PRINT_STYLE("FontSize",10);
+			LODOP.SET_PRINT_PAGESIZE(2,"210mm","297mm","");
+		    LODOP.SET_PRINT_STYLE("FontSize",14);
 		    LODOP.SET_PRINT_STYLE("Bold",1);
 		    LODOP.SET_PRINT_STYLE("ItemType",1);
 		    LODOP.ADD_PRINT_TEXT("1%","40%",260,39,"低值易耗品采购单");
-		    LODOP.SET_PRINT_STYLE("FontSize",8);
+		    LODOP.SET_PRINT_STYLE("FontSize",10);
 		    LODOP.SET_PRINT_STYLE("Bold",0);  
 		    LODOP.SET_PRINT_STYLE("ItemType",1);
 		    LODOP.ADD_PRINT_TEXT("5%","3%",500,30,"报账单位：<%= current_user.unit.name %>");
@@ -31,25 +31,25 @@
 			<% i = 1 %>
 			<% lvcinfos = @lvc_infos.to_a %>
 			<% until lvcinfos.blank? do  %>
-			LODOP.SET_PRINT_STYLE("FontSize",4);
+			LODOP.SET_PRINT_STYLE("FontSize",10);
 		    LODOP.SET_PRINT_STYLE("Bold",0);  
 		    LODOP.SET_PRINT_STYLE("ItemType",4);
-		    tableHtml = "<table border='1' width='100%' style='border-collapse:collapse;font-size:9px;' bordercolor='#000000'>";
+		    tableHtml = "<table border='1' width='100%' style='border-collapse:collapse;font-size:14px;' bordercolor='#000000'>";
 		    tableHtml = tableHtml + "<thead>";
 		    tableHtml = tableHtml + "<tr>";
 		    tableHtml = tableHtml + "<th style='width:5%'>序号</th>";
 		    tableHtml = tableHtml + "<th style='width:20%'>资产名称</th>";
 		    tableHtml = tableHtml + "<th style='width:20%'>资产类别</th>";
-		    tableHtml = tableHtml + "<th style='width:10%'>型号</th>";
+		    tableHtml = tableHtml + "<th style='width:20%'>型号</th>";
 		    tableHtml = tableHtml + "<th style='width:8%'>购买日期</th>";
-		    tableHtml = tableHtml + "<th style='width:10%'>数量</th>";
-		    tableHtml = tableHtml + "<th style='width:12%'>原值</th>";
-		    tableHtml = tableHtml + "<th style='width:15%'>归口管理部门</th>";
+		    tableHtml = tableHtml + "<th style='width:6%'>数量</th>";
+		    tableHtml = tableHtml + "<th style='width:8%'>原值</th>";
+		    tableHtml = tableHtml + "<th style='width:13%'>归口管理部门</th>";
 		    tableHtml = tableHtml + "</tr>";
 		    tableHtml = tableHtml + "</thead>";
 		    
 		    tableHtml = tableHtml + "<tbody>";
-			<% infos = lvcinfos.pop(20) %>
+			<% infos = lvcinfos.pop(25) %>
 			<% infos.each do |info| %>
 				tableHtml = tableHtml + "<tr>";
 		      	tableHtml = tableHtml + "<td>" + "<%= i %>" + "</td>";
@@ -82,15 +82,15 @@
 
 
 		    LODOP.SET_PRINT_STYLE("ItemType",1);
-		    LODOP.SET_PRINT_STYLE("FontSize",8);
+		    LODOP.SET_PRINT_STYLE("FontSize",10);
 		    LODOP.SET_PRINT_STYLE("Bold",0);  
 		    LODOP.ADD_PRINT_TEXT("89%","3%",300,30,"制单人：<%= current_user.name %>");
 		    LODOP.SET_PRINT_STYLE("ItemType",1);
-		    LODOP.SET_PRINT_STYLE("FontSize",8);
+		    LODOP.SET_PRINT_STYLE("FontSize",10);
 		    LODOP.SET_PRINT_STYLE("Bold",0);  
 		    LODOP.ADD_PRINT_TEXT("92%","3%",300,30,"审核人：<%= @purchase.checked_user.name %>");
 		    LODOP.SET_PRINT_STYLE("ItemType",1);
-		    LODOP.SET_PRINT_STYLE("FontSize",8);
+		    LODOP.SET_PRINT_STYLE("FontSize",10);
 		    LODOP.SET_PRINT_STYLE("Bold",0);  
 		    LODOP.ADD_PRINT_TEXT("95%","3%",300,30,"制表日期：<%= Time.now.strftime('%Y-%m-%d') %>");
 		    LODOP.SET_PRINT_STYLE("ItemType",2);

@@ -45,15 +45,15 @@ class Ability
         can :manage, FixedAssetCatalog
         can :manage, LowValueConsumptionCatalog
         can [:read, :print, :fixed_asset_report, :to_scan], FixedAssetInfo
-        can [:read, :discard_index, :print, :low_value_consumption_report, :to_scan], LowValueConsumptionInfo
+        can [:read, :discard_index, :print, :low_value_consumption_report, :low_value_consumption_report_export, :to_scan, :lvc_report, :lvc_report_export, :select_catalog2, :select_catalog3, :select_catalog4], LowValueConsumptionInfo
         # can [:new, :read], Purchase
         can :manage, Sequence
         can :manage, FixedAssetInventory
-        cannot [:level2_index, :doing_index, :sample_inventory_doing_index], FixedAssetInventory
+        cannot [:doing_index, :sample_inventory_doing_index], FixedAssetInventory
         can :manage, FixedAssetInventoryDetail
         # cannot :scan, FixedAssetInventoryDetail
         can :manage, LowValueConsumptionInventory
-        cannot [:level2_index, :doing_index, :sample_inventory_doing_index], LowValueConsumptionInventory
+        cannot [:doing_index, :sample_inventory_doing_index], LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
         # cannot :scan, LowValueConsumptionInventoryDetail
         can :manage, UpDownload
@@ -87,12 +87,12 @@ class Ability
         can :read, FixedAssetCatalog
         can :read, LowValueConsumptionCatalog
         can :manage, FixedAssetInfo
-        if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
+        if (user.unit.unit_level == 3 && !user.unit.is_facility_management_unit) || (user.unit.unit_level == 4)
             cannot [:fixed_asset_info_import, :fixed_asset_report], FixedAssetInfo
         end
         can :manage, LowValueConsumptionInfo
-        if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
-            cannot [:low_value_consumption_info_import, :batch_destroy, :discard, :low_value_consumption_report], LowValueConsumptionInfo
+        if (user.unit.unit_level == 3 && !user.unit.is_facility_management_unit) || (user.unit.unit_level == 4)
+            cannot [:low_value_consumption_info_import, :batch_destroy, :discard, :low_value_consumption_report, :lvc_report, :lvc_report_export, :select_catalog2, :select_catalog3, :select_catalog4], LowValueConsumptionInfo
         end
         can :manage, Purchase
         if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
@@ -106,26 +106,32 @@ class Ability
             cannot :read, LvcDiscard
         end
         can :manage, FixedAssetInventory
-        if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
+        if (user.unit.unit_level == 3 && !user.unit.is_facility_management_unit) || (user.unit.unit_level == 4)
             cannot :create, FixedAssetInventory
         end
+
+        if !user.unit.is_facility_management_unit && !(user.unit.unit_level == 1)
+            cannot [:level2_index, :sample_level2_index], FixedAssetInventory
+        end
+
         if user.unit.unit_level == 3 && user.unit.is_facility_management_unit   
             cannot :sample_inventory_doing_index, FixedAssetInventory  
         else    
             cannot [:to_sample_inventory, :sample_inventory, :sample_inventory_index], FixedAssetInventory
         end
-        cannot :level2_index, FixedAssetInventory
         can :manage, FixedAssetInventoryDetail
         can :manage, LowValueConsumptionInventory
-        if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
+        if (user.unit.unit_level == 3 && !user.unit.is_facility_management_unit) || (user.unit.unit_level == 4)
             cannot :create, LowValueConsumptionInventory
+        end
+        if !user.unit.is_facility_management_unit && !(user.unit.unit_level == 1)
+            cannot [:level2_index, :sample_level2_index], LowValueConsumptionInventory
         end
         if user.unit.unit_level == 3 && user.unit.is_facility_management_unit
             cannot :sample_inventory_doing_index, LowValueConsumptionInventory
         else           
             cannot [:to_sample_inventory, :sample_inventory, :sample_inventory_index], LowValueConsumptionInventory
         end
-        cannot :level2_index, LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
         can :update, User, id: user.id
         can [:read, :up_download_export], UpDownload
@@ -145,7 +151,7 @@ class Ability
         can :read, FixedAssetCatalog
         can :read, LowValueConsumptionCatalog
         can :read, FixedAssetInfo, unit_id: user.unit_id
-        can [:read, :discard_index], LowValueConsumptionInfo
+        can [:read, :discard_index, :select_catalog2, :select_catalog3, :select_catalog4], LowValueConsumptionInfo
         can [:to_do_index, :doing_index, :done_index, :read, :approve, :decline, :print_certificate], Purchase
         can :manage, LvcDiscard
         can :manage, LvcDiscardDetail

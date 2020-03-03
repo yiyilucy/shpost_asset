@@ -1,6 +1,6 @@
 <%- model_class = FixedAssetInventory -%>
 <div class="page-header">
-  <h1>其他单位创建固定资产盘点单</h1>
+  <h1>其他单位创建固定资产抽样盘点单</h1>
   <!-- <div style="float:right">
     <% if can? :new, FixedAssetInventory %>
       <%= link_to t('.new', :default => t("helpers.links.new")),
@@ -65,7 +65,7 @@
       ActiveSupport::SafeBuffer.new << 
       # (link_to t('.destroy', :default => t("helpers.links.destroy")), fixed_asset_inventory_path(fixed_asset_inventory), :method => :delete, :data => { :confirm => t('wice_grid.saved_query_deletion_confirmation', :default => t("helpers.links.confirm", :default =>"确定删除?" )) }, :class => 'btn btn-xs btn-danger' if (can? :destroy, fixed_asset_inventory) and (fixed_asset_inventory.status.eql?"waiting" and fixed_asset_inventory.create_user_id == current_user.id ))<< ' ' <<
       # (link_to t('.cancel', :default => t("helpers.links.cancel")), "/shpost_asset/fixed_asset_inventories/" + fixed_asset_inventory.id.to_s + "/cancel", :data => { :confirm => "确定取消?" }, :class => 'btn btn-xs btn-primary' if (can? :cancel, fixed_asset_inventory) and (["waiting","doing"].include?fixed_asset_inventory.status and fixed_asset_inventory.create_user_id == current_user.id ))<< ' ' <<
-      (link_to t('.done', :default => t("helpers.links.done")), "/shpost_asset/fixed_asset_inventories/" + fixed_asset_inventory.id.to_s + "/done", :data => { :confirm => "#{done_alert}" }, :class => 'btn btn-xs btn-primary' if (can? :done, fixed_asset_inventory) and (fixed_asset_inventory.status.eql?"doing") and (current_user.unit.unit_level == 1) )<< ' ' <<
+      (link_to t('.done', :default => t("helpers.links.done")), "/shpost_asset/fixed_asset_inventories/" + fixed_asset_inventory.id.to_s + "/done", :data => { :confirm => "#{done_alert}" }, :class => 'btn btn-xs btn-primary' if (can? :done, fixed_asset_inventory) and (fixed_asset_inventory.status.eql?"doing") and (!current_user.unit.blank?) and (current_user.unit.unit_level == 1) )<< ' ' <<
       (link_to '盘点单明细',
                 fixed_asset_inventory_fixed_asset_inventory_details_path(fixed_asset_inventory), :class => 'btn btn-xs btn-primary' )<< ' ' <<
       (link_to '盘点报表',

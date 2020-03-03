@@ -22,9 +22,32 @@
   </div>
   </h1>
 </div>
-
-<%= form_tag('', :method => "post", name: 'form1') do %>
+<div>
+  <%= form_tag('', :method => "get", name: 'form1') do %>
+  <b>一级类别:</b><%= select("catalog","catalog1", LowValueConsumptionCatalog.where("length(code)=2").order(:code).map{|c| [c.name,c.id]}.insert(0,""),class: 'control-label') %>
+  <b>二级类别:</b>
+  <% if !@catalog2s.blank? %>
+  <%= select("catalog","catalog2", @catalog2s,class: 'control-label') %>    
+  <% else %>
+    <%= select_tag "catalog2", options_for_select("") %>
+  <% end %>
+  <b>三级类别:</b>
+  <% if !@catalog3s.blank? %>
+  <%= select("catalog","catalog3", @catalog3s,class: 'control-label') %>    
+  <% else %>
+    <%= select_tag "catalog3", options_for_select("") %>
+  <% end %>
+  <b>四级类别:</b>
+  <% if !@catalog4s.blank? %>
+  <%= select("catalog","catalog4", @catalog4s,class: 'control-label') %>    
+  <% else %>
+    <%= select_tag "catalog4", options_for_select("") %>
+  <% end %>
+  <%= submit_tag "查询", :class => 'btn btn-primary', :method => "get", onclick: "form1.action='/shpost_asset/low_value_consumption_infos';form1.submit();" %>
+  
   
 <%= render :partial => 'low_value_consumption_infos_grid' %>
 
 <%end %>
+</div>
+

@@ -2,13 +2,29 @@ class FixedAssetInventoriesController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @fixed_asset_inventories = FixedAssetInventory.where(create_user_id: current_user.id, is_sample: false)
+    @fixed_asset_inventories = FixedAssetInventory.where(create_unit_id: current_user.unit_id, is_sample: false)
     @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
       order_direction: 'desc')
   end
 
   def level2_index
-    @fixed_asset_inventories = FixedAssetInventory.where(is_lv2_unit: true, is_sample: false)
+    if current_user.unit.unit_level == 1
+      @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("(fixed_asset_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, false)
+    elsif current_user.unit.is_facility_management_unit
+      @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, false)
+    end
+        
+    @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
+      order_direction: 'desc')
+  end
+
+  def sample_level2_index
+    if current_user.unit.unit_level == 1
+      @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("(fixed_asset_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, true)
+    elsif current_user.unit.is_facility_management_unit
+      @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, true)
+    end
+        
     @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
       order_direction: 'desc')
   end
@@ -29,7 +45,7 @@ class FixedAssetInventoriesController < ApplicationController
   end
 
   def sample_inventory_index
-    @fixed_asset_inventories = FixedAssetInventory.where(create_user_id: current_user.id, is_sample: true)
+    @fixed_asset_inventories = FixedAssetInventory.where(create_unit_id: current_user.unit_id, is_sample: true)
     @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
       order_direction: 'desc')
   end
@@ -38,11 +54,11 @@ class FixedAssetInventoriesController < ApplicationController
     if current_user.unit.unit_level == 2
       lv3_unit_ids = current_user.unit.children.select(:id)
       
-      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id in (?) and fixed_asset_inventories.create_unit_id != ? and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], lv3_unit_ids, current_user.unit_id, true)
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id in (?)) and fixed_asset_inventories.create_unit_id != ? and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], current_user.unit_id, lv3_unit_ids, current_user.unit_id, true)
     elsif current_user.unit.unit_level == 3
-      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id = ? and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], current_user.unit.id, true)
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id = ?) and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], current_user.unit.parent_id, current_user.unit.id, true)
     elsif current_user.unit.unit_level == 4
-      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and fixed_asset_inventory_units.unit_id = ? and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], current_user.unit.parent_id, true)
+      @fixed_asset_inventories = FixedAssetInventory.includes(:fixed_asset_inventory_units).where("fixed_asset_inventories.status in (?) and (fixed_asset_inventory_units.unit_id = ? or fixed_asset_inventory_units.unit_id = ?) and fixed_asset_inventories.is_sample = ?", ["doing", "canceled", "done"], current_user.unit.parent_id, current_user.unit.parent.parent_id, true)
     end
     
     @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
@@ -141,6 +157,14 @@ class FixedAssetInventoriesController < ApplicationController
         #   flash[:alert] = "同一时间同一单位不可重叠盘点"
         #   redirect_to fixed_asset_inventories_url and return
         # end
+
+        units.each do |x|
+          if !FixedAssetInventoryUnit.joins("left join fixed_asset_inventories on fixed_asset_inventory_units.fixed_asset_inventory_id=fixed_asset_inventories.id").where("fixed_asset_inventory_units.unit_id=? and (fixed_asset_inventories.status=? or fixed_asset_inventories.status=?)", x.to_i, "waiting", "doing").blank?
+            uname = Unit.find(x.to_i).name
+            flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+            redirect_to fixed_asset_inventories_url and return
+          end
+        end
         
         @fixed_asset_inventory.no = params[:fixed_asset_inventory][:no]
         @fixed_asset_inventory.name = params[:fixed_asset_inventory][:name]
@@ -308,24 +332,25 @@ class FixedAssetInventoriesController < ApplicationController
     @start_sum = 0
     @end_sum = nil
     fixed_asset_catalog_id = nil
-    lv3_unit_id = nil
+    pd_unit_id = nil
     fixed_asset_infos = nil
     inventory_unit_id = nil
+    pd_unit = nil
+    lv4_unit_ids = nil
 
     ActiveRecord::Base.transaction do
       if !params[:fixed_asset_info].blank?
-        if !params[:fixed_asset_info][:fixed_asset_catalog_id].blank?
-          fixed_asset_catalog_id = params[:fixed_asset_info][:fixed_asset_catalog_id].to_i
-        else
-          flash[:alert] = "请先选择资产类别目录"
+        if params[:fixed_asset_info][:fixed_asset_catalog_id].blank? && params[:fixed_asset_info][:lv3_unit_id].blank?
+          flash[:alert] = "请选择资产类别目录或盘点单位"
           redirect_to to_sample_inventory_fixed_asset_inventories_url and return
-        end
-        if !params[:fixed_asset_info][:lv3_unit_id].blank?
-          lv3_unit_id = params[:fixed_asset_info][:lv3_unit_id].to_i
         else
-          flash[:alert] = "请先选择三级单位"
-          redirect_to to_sample_inventory_fixed_asset_inventories_url and return
-        end
+          if !params[:fixed_asset_info][:fixed_asset_catalog_id].blank?
+            fixed_asset_catalog_id = params[:fixed_asset_info][:fixed_asset_catalog_id].to_i
+          end
+          if !params[:fixed_asset_info][:lv3_unit_id].blank?
+            pd_unit_id = params[:fixed_asset_info][:lv3_unit_id].to_i
+          end
+        end         
       end
 
       if params[:fixed_asset_inventory].blank? or params[:fixed_asset_inventory][:start_time].blank? or params[:fixed_asset_inventory][:end_time].blank?
@@ -341,42 +366,85 @@ class FixedAssetInventoriesController < ApplicationController
         @end_sum = params[:end_sum]["end_sum"].to_i
       end
 
-      lv4_unit_ids = Unit.where(parent_id: lv3_unit_id).select(:id)
+      fixed_asset_infos = FixedAssetInfo.joins(:fixed_asset_catalog).where("fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ?", "in_use", @start_sum)
 
-      query_string = "fixed_asset_infos.fixed_asset_catalog_id = ? and (fixed_asset_infos.unit_id =? or fixed_asset_infos.unit_id in (?)) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? "
-      
-      if @end_sum.blank?
-        if current_user.unit.unit_level == 3 && current_user.unit.is_facility_management_unit
-          fixed_asset_infos = FixedAssetInfo.where(query_string, fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum).where(relevant_unit_id: current_user.unit.id)
-        else
-          fixed_asset_infos = FixedAssetInfo.where(query_string, fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum)
-        end
-      else
-        if current_user.unit.unit_level == 3 && current_user.unit.is_facility_management_unit
-          fixed_asset_infos = FixedAssetInfo.where(query_string, fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum).where("fixed_asset_infos.sum <= ?", @end_sum).where(relevant_unit_id: current_user.unit.id)
-        else
-          fixed_asset_infos = FixedAssetInfo.where(query_string, fixed_asset_catalog_id, lv3_unit_id, lv4_unit_ids, "in_use", @start_sum).where("fixed_asset_infos.sum <= ?", @end_sum)
+      if !@end_sum.blank?
+        fixed_asset_infos = fixed_asset_infos.where("fixed_asset_infos.sum <= ?", @end_sum)
+      end
+
+      if !fixed_asset_catalog_id.blank?
+        code = FixedAssetCatalog.find(fixed_asset_catalog_id).code
+        fixed_asset_infos = fixed_asset_infos.where("fixed_asset_catalogs.code like ?", "#{code}%")
+      end
+ 
+      if !pd_unit_id.blank?
+        pd_unit = Unit.find(pd_unit_id)
+        if pd_unit.unit_level == 2
+          fixed_asset_infos = fixed_asset_infos.where("(fixed_asset_infos.unit_id = ? or fixed_asset_infos.manage_unit_id = ?)", pd_unit_id, pd_unit_id)
+        elsif pd_unit.unit_level == 3
+          lv4_unit_ids = Unit.where(parent_id: pd_unit_id).select(:id)
+          fixed_asset_infos = fixed_asset_infos.where("(fixed_asset_infos.unit_id = ? or fixed_asset_infos.unit_id in (?))", pd_unit_id, lv4_unit_ids)
         end
       end
-    
+
+      if current_user.unit.unit_level == 3 && current_user.unit.is_facility_management_unit
+        fixed_asset_infos = fixed_asset_infos.where("fixed_asset_infos.relevant_unit_id = ?", current_user.unit.id)
+      end
+
       if fixed_asset_infos.blank?
         flash[:alert] = "没有符合条件的固定资产"
         redirect_to to_sample_inventory_fixed_asset_inventories_url and return
       end
 
+      if pd_unit_id.blank? || (!pd_unit.blank? && pd_unit.unit_level == 2)
+        fixed_asset_infos.select(:manage_unit_id).distinct.each do |x|
+          if !FixedAssetInventoryUnit.joins("left join fixed_asset_inventories on fixed_asset_inventory_units.fixed_asset_inventory_id=fixed_asset_inventories.id").where("fixed_asset_inventory_units.unit_id=? and (fixed_asset_inventories.status=? or fixed_asset_inventories.status=?)", x.manage_unit_id, "waiting", "doing").blank?
+            uname = Unit.find(x.manage_unit_id).name
+            flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+            redirect_to to_sample_inventory_fixed_asset_inventories_url and return
+          end
+        end
+      elsif !pd_unit.blank? && pd_unit.unit_level == 3
+        fixed_asset_infos.select(:unit_id).distinct.each do |x|
+          if !FixedAssetInventoryUnit.joins("left join fixed_asset_inventories on fixed_asset_inventory_units.fixed_asset_inventory_id=fixed_asset_inventories.id").where("fixed_asset_inventory_units.unit_id=? and (fixed_asset_inventories.status=? or fixed_asset_inventories.status=?)", x.unit_id, "waiting", "doing").blank?
+            uname = Unit.find(x.unit_id).name
+            flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+            redirect_to to_sample_inventory_fixed_asset_inventories_url and return
+          end
+        end
+      end
+          
       if current_user.unit.unit_level == 3 && current_user.unit.is_facility_management_unit
         relevant_unit_ids = current_user.unit.id
       else
         relevant_unit_ids = fixed_asset_infos.select(:relevant_unit_id).distinct.map{|o| o.relevant_unit_id}.compact.join(",")
       end
 
-      @fixed_asset_inventory = FixedAssetInventory.create no: params[:fixed_asset_inventory][:no], name: params[:fixed_asset_inventory][:name], start_time: params[:fixed_asset_inventory][:start_time], end_time: params[:fixed_asset_inventory][:end_time], desc: params[:fixed_asset_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids, fixed_asset_catalog_id: fixed_asset_catalog_id, sample_unit_id: lv3_unit_id
-      
-      if !fixed_asset_infos.blank?
-        inventory_unit_id = @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: lv3_unit_id, status: "unfinished")
+      @fixed_asset_inventory = FixedAssetInventory.create no: params[:fixed_asset_inventory][:no], name: params[:fixed_asset_inventory][:name], start_time: params[:fixed_asset_inventory][:start_time], end_time: params[:fixed_asset_inventory][:end_time], desc: params[:fixed_asset_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids, fixed_asset_catalog_id: fixed_asset_catalog_id, sample_unit_id: pd_unit_id
+
+      if pd_unit_id.blank?
+        fixed_asset_infos.select(:manage_unit_id).distinct.each do |x|
+          @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: x.manage_unit_id, status: "unfinished")  
+        end
+      elsif pd_unit.unit_level == 2
+        @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: pd_unit_id, status: "unfinished")
+      elsif pd_unit.unit_level == 3
+        Unit.where("id = ? or id in (?)", pd_unit_id, lv4_unit_ids).each do |x|
+          if !fixed_asset_infos.where(unit_id: x.id).blank?
+            @fixed_asset_inventory.fixed_asset_inventory_units.create(unit_id: x.id, status: "unfinished")
+          end
+        end
       end
-        
+ 
       fixed_asset_infos.each do |x|
+        if pd_unit_id.blank?
+          inventory_unit_id = FixedAssetInventoryUnit.find_by(fixed_asset_inventory_id: @fixed_asset_inventory.id, unit_id: x.manage_unit_id).try :id
+        elsif pd_unit.unit_level == 2
+          inventory_unit_id = FixedAssetInventoryUnit.find_by(fixed_asset_inventory_id: @fixed_asset_inventory.id, unit_id: pd_unit_id).try :id
+        elsif pd_unit.unit_level == 3
+          inventory_unit_id = FixedAssetInventoryUnit.find_by(fixed_asset_inventory_id: @fixed_asset_inventory.id, unit_id: x.unit_id).try :id
+        end
+            
         @fixed_asset_inventory.fixed_asset_inventory_details.create(sn: x.sn, asset_name: x.asset_name, asset_no: x.asset_no, fixed_asset_catalog_id: x.fixed_asset_catalog_id, relevant_unit_id: x.relevant_unit_id, buy_at: x.buy_at, use_at: x.use_at, measurement_unit: x.measurement_unit, amount: x.amount, sum: x.sum, unit_id: x.unit_id, branch: x.branch, location: x.location, user: x.user, change_log: x.change_log, accounting_department: x.accounting_department, asset_status: x.status, print_times: x.print_times, manage_unit_id: x.manage_unit_id, inventory_status: "waiting", fixed_asset_inventory_unit_id: inventory_unit_id, fixed_asset_info_id: x.id, brand_model: x.brand_model, use_years: x.use_years, desc1: x.desc1, belong_unit: x.belong_unit)
       end
 

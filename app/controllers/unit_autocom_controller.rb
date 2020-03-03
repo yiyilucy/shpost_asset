@@ -74,7 +74,7 @@ class UnitAutocomController < ApplicationController
 	    obj_id = params[:objid]
 	    obj = params[:obj]
 
-	    lve_units = Unit.where("(units.name like ? or units.no like ?) and units.unit_level = 3", "%#{term}%", "%#{term}%").order(:no).all
+	    lve_units = Unit.where("(units.name like ? or units.no like ?) and units.unit_level in (2,3)", "%#{term}%", "%#{term}%").order(:no).all
 
 	    render :json => lve_units.map { |unit| {:id => unit.id, :label => unit.name, :value => unit.name, :obj => obj_id} }
     end

@@ -712,6 +712,13 @@ zh-CN:
           needrole:
             can: :low_value_consumption_report
             role: :LowValueConsumptionInfo
+        lvc_report:
+          name: "资产汇总报表"
+          link: "/low_value_consumption_infos/lvc_report"
+          need_count: false
+          needrole:
+            can: :lvc_report
+            role: :LowValueConsumptionInfo
     purchases:
       name: "采购单"  
       needrole:
@@ -772,15 +779,8 @@ zh-CN:
           needrole:
             can: :create
             role: :FixedAssetInventory
-        sample_fixed_asset_inventory:
-          name: "创建抽样盘点单"
-          link: "/fixed_asset_inventories/sample_inventory_index"
-          need_count: false
-          needrole:
-            can: :sample_inventory_index
-            role: :FixedAssetInventory
         level2_fixed_asset_inventory:
-          name: "二级单位创建盘点单"
+          name: "其他单位创建盘点单"
           link: "/fixed_asset_inventories/level2_index"
           need_count: false
           needrole:
@@ -792,6 +792,20 @@ zh-CN:
           need_count: false
           needrole:
             can: :doing_index
+            role: :FixedAssetInventory
+        sample_fixed_asset_inventory:
+          name: "创建抽样盘点单"
+          link: "/fixed_asset_inventories/sample_inventory_index"
+          need_count: false
+          needrole:
+            can: :sample_inventory_index
+            role: :FixedAssetInventory
+        level2_sample_fixed_asset_inventory:
+          name: "其他创建抽样盘点单"
+          link: "/fixed_asset_inventories/sample_level2_index"
+          need_count: false
+          needrole:
+            can: :sample_level2_index
             role: :FixedAssetInventory
         sample_doing_fixed_asset_inventory:
           name: "待处理抽样盘点单"
@@ -814,15 +828,8 @@ zh-CN:
           needrole:
             can: :create
             role: :LowValueConsumptionInventory
-        sample_low_value_consumption_inventory:
-          name: "创建抽样盘点单"
-          link: "/low_value_consumption_inventories/sample_inventory_index"
-          need_count: false
-          needrole:
-            can: :sample_inventory_index
-            role: :LowValueConsumptionInventory
         level2_low_value_consumption_inventory:
-          name: "二级单位创建盘点单"
+          name: "其他单位创建盘点单"
           link: "/low_value_consumption_inventories/level2_index"
           need_count: false
           needrole:
@@ -834,6 +841,20 @@ zh-CN:
           need_count: false
           needrole:
             can: :doing_index
+            role: :LowValueConsumptionInventory
+        sample_low_value_consumption_inventory:
+          name: "创建抽样盘点单"
+          link: "/low_value_consumption_inventories/sample_inventory_index"
+          need_count: false
+          needrole:
+            can: :sample_inventory_index
+            role: :LowValueConsumptionInventory
+        level2_sample_low_value_consumption_inventory:
+          name: "其他创建抽样盘点单"
+          link: "/low_value_consumption_inventories/sample_level2_index"
+          need_count: false
+          needrole:
+            can: :sample_level2_index
             role: :LowValueConsumptionInventory
         sample_doing_low_value_consumption_inventory:
           name: "待处理抽样盘点单"

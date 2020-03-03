@@ -1,0 +1,52 @@
+<%- model_class = LowValueConsumptionInfo -%>
+<div class="page-header">
+  <h1>资产汇总报表</h1>
+</div> 
+<%= form_tag('', name: 'form1') %>
+<div text-align:center>
+<%= submit_tag "报表导出",:class => 'btn btn-primary', onclick: "form1.action='lvc_report_export.xls';form1.submit();" %>
+
+<table class="table table-striped">
+<thead>
+<tr>
+	<th>会计期间</th>
+	<th>资产类别</th>
+	<th>资产一级类别</th>
+	<th>资产二级类别</th>
+	<th>资产三级类别</th>
+	<th>资产四级类别</th>
+	<th>公司</th>
+	<th>资产数量</th>
+	<th>原值</th>
+</tr>
+</thead>
+<tbody>
+  <% @sums.each do |k, v| %>
+  <% code = LowValueConsumptionCatalog.find(k[0]).code %>
+<tr>
+	<td><%= Time.now.strftime("%m-%d") %></td>
+	<td><%= code[0,2]+"."+code[0,4]+"."+code[0,6]+"."+code[0,8] %></td>
+	<td><%= LowValueConsumptionCatalog.find_by(code: code[0,2]).try :name %></td>
+	<td><%= LowValueConsumptionCatalog.find_by(code: code[0,4]).try :name %></td>
+	<td><%= LowValueConsumptionCatalog.find_by(code: code[0,6]).try :name %></td>
+	<td><%= LowValueConsumptionCatalog.find_by(code: code[0,8]).try :name %></td>
+	<td><%= Unit.find(k[1]).name %>
+	<td><%= @counts[k].blank? ? 0 : @counts[k] %></td>
+	<td><%= number_with_precision(v, precision: 2) %></td>
+</tr>
+<% end %>
+<tr>
+	<td>合计</td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td><%= @total_count.blank? ? 0 : @total_count %></td>
+	<td><%= @total_sum.blank? ? number_with_precision(0, precision: 2) : number_with_precision(@total_sum, precision: 2) %></td>
+</tr>
+</tbody>
+</table>
+</div>
+
