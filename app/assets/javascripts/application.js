@@ -58,6 +58,12 @@ function ajaxunits() {
     var unitid = "#"+data.item.obj+"_lv3_unit_id";
     $(unitid).val(data.item.id);
   });
+
+  $('#manage_unit_name').bind('railsAutocomplete.select', function(event, data){
+    /* Do something here */
+    var unitid = "#"+data.item.obj+"_manage_unit_id";
+    $(unitid).val(data.item.id);
+  });
 }
 
 var ready;

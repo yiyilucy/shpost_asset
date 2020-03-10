@@ -512,40 +512,74 @@ class LowValueConsumptionInfosController < ApplicationController
   end
 
   def lvc_report
+    @manage_unit_id = nil
+    if !params[:lvc_report].blank? && !params[:lvc_report][:manage_unit_id].blank?
+      @manage_unit_id = params[:lvc_report][:manage_unit_id].to_i
+    end
+
     if current_user.unit.unit_level == 1
-      @sums = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use").where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).sum(:sum)
-      @counts = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use").where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).count
-      @total_sum = LowValueConsumptionInfo.where(status: "in_use").sum(:sum)
-      @total_count = LowValueConsumptionInfo.where(status: "in_use").count
+      if @manage_unit_id.blank?
+        results = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use").where("length(low_value_consumption_catalogs.code)=8")
+      else
+        results = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use").where("length(low_value_consumption_catalogs.code)=8").where(manage_unit_id: @manage_unit_id)
+      end
+      @sums = results.group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).sum(:sum)
+      @counts = results.group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).count
+      @total_sum = results.sum(:sum)
+      @total_count = results.count
     elsif (current_user.unit.unit_level == 3) && current_user.unit.is_facility_management_unit
-      @sums = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use", relevant_unit_id: current_user.unit_id).where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).sum(:sum)
-      @counts = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use", relevant_unit_id: current_user.unit_id).where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).count
-      @total_sum = LowValueConsumptionInfo.where(status: "in_use", relevant_unit_id: current_user.unit_id).sum(:sum)
-      @total_count = LowValueConsumptionInfo.where(status: "in_use", relevant_unit_id: current_user.unit_id).count  
+      if @manage_unit_id.blank?
+        results = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use", relevant_unit_id: current_user.unit_id).where("length(low_value_consumption_catalogs.code)=8")
+      else
+        results = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use", relevant_unit_id: current_user.unit_id).where("length(low_value_consumption_catalogs.code)=8").where(manage_unit_id: @manage_unit_id)
+      end
+      @sums = results.group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).sum(:sum)
+      @counts = results.group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).count
+      @total_sum = results.sum(:sum)
+      @total_count = results.count  
     elsif current_user.unit.unit_level == 2
-      @sums = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(manage_unit_id: current_user.unit_id, status: "in_use").where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :use_unit_id).order(:lvc_catalog_id, :use_unit_id).sum(:sum)
-      @counts = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(manage_unit_id: current_user.unit_id, status: "in_use").where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :use_unit_id).order(:lvc_catalog_id, :use_unit_id).count
-      @total_sum = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").sum(:sum)
-      @total_count = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").count
+      results = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(manage_unit_id: current_user.unit_id, status: "in_use").where("length(low_value_consumption_catalogs.code)=8")
+      @sums = results.group(:lvc_catalog_id, :use_unit_id).order(:lvc_catalog_id, :use_unit_id).sum(:sum)
+      @counts =results.group(:lvc_catalog_id, :use_unit_id).order(:lvc_catalog_id, :use_unit_id).count
+      @total_sum = results.sum(:sum)
+      @total_count = results.count
     end
   end
 
   def lvc_report_export
+    @manage_unit_id = nil
+    if !params[:lvc_report].blank? && !params[:lvc_report][:manage_unit_id].blank?
+      @manage_unit_id = params[:lvc_report][:manage_unit_id].to_i
+    elsif !params[:munit_id].blank?
+      @manage_unit_id = params[:munit_id].to_i
+    end
+
     if current_user.unit.unit_level == 1
-      @sums = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use").where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).sum(:sum)
-      @counts = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use").where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).count
-      @total_sum = LowValueConsumptionInfo.where(status: "in_use").sum(:sum)
-      @total_count = LowValueConsumptionInfo.where(status: "in_use").count
+      if @manage_unit_id.blank?
+        results = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use").where("length(low_value_consumption_catalogs.code)=8")
+      else
+        results = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use").where("length(low_value_consumption_catalogs.code)=8").where(manage_unit_id: @manage_unit_id)
+      end
+      @sums = results.group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).sum(:sum)
+      @counts = results.group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).count
+      @total_sum = results.sum(:sum)
+      @total_count = results.count
     elsif (current_user.unit.unit_level == 3) && current_user.unit.is_facility_management_unit
-      @sums = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use", relevant_unit_id: current_user.unit_id).where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).sum(:sum)
-      @counts = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use", relevant_unit_id: current_user.unit_id).where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).count
-      @total_sum = LowValueConsumptionInfo.where(status: "in_use", relevant_unit_id: current_user.unit_id).sum(:sum)
-      @total_count = LowValueConsumptionInfo.where(status: "in_use", relevant_unit_id: current_user.unit_id).count  
+      if @manage_unit_id.blank?
+        results = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use", relevant_unit_id: current_user.unit_id).where("length(low_value_consumption_catalogs.code)=8")
+      else
+        results = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(status: "in_use", relevant_unit_id: current_user.unit_id).where("length(low_value_consumption_catalogs.code)=8").where(manage_unit_id: @manage_unit_id)
+      end
+      @sums = results.group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).sum(:sum)
+      @counts = results.group(:lvc_catalog_id, :manage_unit_id).order(:lvc_catalog_id, :manage_unit_id).count
+      @total_sum = results.sum(:sum)
+      @total_count = results.count  
     elsif current_user.unit.unit_level == 2
-      @sums = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(manage_unit_id: current_user.unit_id, status: "in_use").where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :use_unit_id).order(:lvc_catalog_id, :use_unit_id).sum(:sum)
-      @counts = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(manage_unit_id: current_user.unit_id, status: "in_use").where("length(low_value_consumption_catalogs.code)=8").group(:lvc_catalog_id, :use_unit_id).order(:lvc_catalog_id, :use_unit_id).count
-      @total_sum = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").sum(:sum)
-      @total_count = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use").count
+      results = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where(manage_unit_id: current_user.unit_id, status: "in_use").where("length(low_value_consumption_catalogs.code)=8")
+      @sums = results.group(:lvc_catalog_id, :use_unit_id).order(:lvc_catalog_id, :use_unit_id).sum(:sum)
+      @counts = results.group(:lvc_catalog_id, :use_unit_id).order(:lvc_catalog_id, :use_unit_id).count
+      @total_sum = results.sum(:sum)
+      @total_count = results.count
     end
     send_data(lvc_report_xls_content_for(@sums,@counts,@total_sum,@total_count), :type => "text/excel;charset=utf-8; header=present", :filename => "lvc_report_#{Time.now.strftime("%Y%m%d")}.xls")  
   end

@@ -1,16 +1,19 @@
 <%- model_class = LowValueConsumptionInfo -%>
 <div class="page-header">
-  <h1>资产汇总报表
-	<div style="float:right">
-	<%= submit_tag "报表导出",:class => 'btn btn-primary', onclick: "form1.action='lvc_report_export.xls';form1.submit();" %>
-	</div>
-  </h1>
+  <h1>资产汇总报表</h1>
 </div> 
-<div>
+
 <%= form_tag('', name: 'form1') do %>
-<table class="table table-striped">
-<thead>
-<tr>
+<%= hidden_field_tag('munit_id',@manage_unit_id)%>
+<%= label_tag(:unit, "公司:") %>
+<%= manage_unit_select_autocom("lvc_report",nil) %>
+<%= submit_tag "查询",:class => 'btn btn-primary', onclick: "form1.action='/shpost_asset/low_value_consumption_infos/lvc_report';form1.submit();" %>   
+<%= submit_tag "报表导出",:class => 'btn btn-primary', onclick: "form1.action='lvc_report_export.xls';form1.submit();" %>
+<% end %>
+<br><br>
+<div>
+<table border="1" table-layout="fixed">
+<tr class= 'nowrapb'>
 	<th>会计期间</th>
 	<th>资产类别</th>
 	<th>资产一级类别</th>
@@ -21,11 +24,9 @@
 	<th>资产数量</th>
 	<th>原值</th>
 </tr>
-</thead>
-<tbody>
-  <% @sums.each do |k, v| %>
+<% @sums.each do |k, v| %>
   <% code = LowValueConsumptionCatalog.find(k[0]).code %>
-<tr>
+<tr class= 'nowrap'>
 	<td><%= Time.now.strftime("%m-%d") %></td>
 	<td><%= code[0,2]+"."+code[0,4]+"."+code[0,6]+"."+code[0,8] %></td>
 	<td><%= LowValueConsumptionCatalog.find_by(code: code[0,2]).try :name %></td>
@@ -37,7 +38,7 @@
 	<td><%= number_with_precision(v, precision: 2) %></td>
 </tr>
 <% end %>
-<tr>
+<tr class= 'nowrap'>
 	<td>合计</td>
 	<td></td>
 	<td></td>
@@ -48,8 +49,6 @@
 	<td><%= @total_count.blank? ? 0 : @total_count %></td>
 	<td><%= @total_sum.blank? ? number_with_precision(0, precision: 2) : number_with_precision(@total_sum, precision: 2) %></td>
 </tr>
-</tbody>
 </table>
-<% end %>
 </div>
 

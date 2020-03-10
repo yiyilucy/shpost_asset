@@ -78,4 +78,19 @@ class UnitAutocomController < ApplicationController
 
 	    render :json => lve_units.map { |unit| {:id => unit.id, :label => unit.name, :value => unit.name, :obj => obj_id} }
     end
+
+    def lvc_report_autocomplete_manage_unit
+    	# binding.pry
+    	term = params[:term]
+	    obj_id = params[:objid]
+	    obj = params[:obj]
+
+	    if current_user.unit.unit_level == 2
+	    	manage_units = current_user.unit
+	    else
+	    	manage_units = Unit.where("(units.name like ? or units.no like ?) and units.unit_level =2", "%#{term}%", "%#{term}%").order(:no).all
+	    end
+
+	    render :json => manage_units.map { |unit| {:id => unit.id, :label => unit.name, :value => unit.name, :obj => obj_id} }
+    end
 end

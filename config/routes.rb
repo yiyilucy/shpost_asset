@@ -166,6 +166,7 @@ ShpostAsset::Application.routes.draw do
       get 'low_value_consumption_report'
       post 'low_value_consumption_report_export'
       get 'lvc_report'
+      post 'lvc_report'
       post 'lvc_report_export'
       get 'select_catalog2'
       post 'select_catalog2'
@@ -188,6 +189,7 @@ ShpostAsset::Application.routes.draw do
       get 'p_autocomplete_low_value_consumption_catalog'
       get 'si_autocomplete_fixed_asset_catalog'
       get 'si_autocomplete_lv3_unit'
+      get 'lvc_report_autocomplete_manage_unit'
     end
   end
 

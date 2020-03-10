@@ -28,4 +28,9 @@ module ApplicationHelper
     concat text_field_tag('lv3_unit_name', nil, 'data-autocomplete' => "/shpost_asset/unit_autocom/si_autocomplete_lv3_unit?objid=#{obj_id}&obj=#{obj}")
     hidden_field(obj_id.to_sym,"lv3_unit_id");
   end
+
+  def manage_unit_select_autocom(obj_id,obj)
+    concat text_field_tag('manage_unit_name', nil, 'data-autocomplete' => "/shpost_asset/unit_autocom/lvc_report_autocomplete_manage_unit?objid=#{obj_id}&obj=#{obj}")
+    hidden_field(obj_id.to_sym,"manage_unit_id");
+  end
 end
