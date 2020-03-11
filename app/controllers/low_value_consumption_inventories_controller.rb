@@ -23,10 +23,10 @@ class LowValueConsumptionInventoriesController < ApplicationController
   def sample_level2_index
     if current_user.unit.unit_level == 1
       # @low_value_consumption_inventories = LowValueConsumptionInventory.joins("left join units as uunits on lvc_inventories.create_unit_id = uunits.id").where("(lvc_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and lvc_inventories.is_sample=?", true, true, true)
-      @low_value_consumption_inventories = @low_value_consumption_inventories.where("(lvc_inventories.is_lv2_unit=? or units.is_facility_management_unit = ?) and lvc_inventories.is_sample=?", true, true, true)
+      @low_value_consumption_inventories = @low_value_consumption_inventories.where("(lvc_inventories.is_lv2_unit=? or create_units_lvc_inventories.is_facility_management_unit = ?) and lvc_inventories.is_sample=?", true, true, true)
     elsif current_user.unit.is_facility_management_unit
       # @low_value_consumption_inventories = LowValueConsumptionInventory.joins("left join units as uunits on lvc_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and lvc_inventories.is_sample=?", 1, true)
-      @low_value_consumption_inventories = @low_value_consumption_inventories.where("units.unit_level = ? and lvc_inventories.is_sample=?", 1, true)
+      @low_value_consumption_inventories = @low_value_consumption_inventories.where("create_units_lvc_inventories.unit_level = ? and lvc_inventories.is_sample=?", 1, true)
     end
     
     @low_value_consumption_inventories_grid = initialize_grid(@low_value_consumption_inventories, order: 'lvc_inventories.created_at',
@@ -122,12 +122,36 @@ class LowValueConsumptionInventoriesController < ApplicationController
       
 # binding.pry
       if current_user.unit.unit_level == 2
+        units.each do |x|
+          if !LowValueConsumptionInventoryUnit.joins("left join lvc_inventories on lvc_inventory_units.lvc_inventory_id=lvc_inventories.id").where("lvc_inventory_units.unit_id=? and (lvc_inventories.status=? or lvc_inventories.status=?)", x.to_i, "waiting", "doing").blank?
+            uname = Unit.find(x.to_i).name
+            flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+            redirect_to low_value_consumption_inventories_url and return
+          end
+        end
+
+        if !LowValueConsumptionInventoryUnit.joins("left join lvc_inventories on lvc_inventory_units.lvc_inventory_id=lvc_inventories.id").where("lvc_inventory_units.unit_id=? and (lvc_inventories.status=? or lvc_inventories.status=?)", current_user.unit_id, "waiting", "doing").blank?
+          flash[:alert] = "#{current_user.unit.name}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+          redirect_to low_value_consumption_inventories_url and return
+        end
+
         if @end_sum.blank?
           low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id in (?) and low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ? ", relevant_departments, units, "in_use", @start_sum)
         else
           low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and low_value_consumption_infos.use_unit_id in (?) and low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ? and low_value_consumption_infos.sum <= ?", relevant_departments, units, "in_use", @start_sum, @end_sum)
         end
       else
+        units.each do |x|
+          lv3_unit_ids = Unit.find(x.to_i).children.select(:id)
+          lv4_unit_ids = Unit.where("parent_id in (?)", lv3_unit_ids).select(:id)
+        
+          if !LowValueConsumptionInventoryUnit.joins("left join lvc_inventories on lvc_inventory_units.lvc_inventory_id=lvc_inventories.id").where("(lvc_inventory_units.unit_id=? or lvc_inventory_units.unit_id in (?) or lvc_inventory_units.unit_id in (?)) and (lvc_inventories.status=? or lvc_inventories.status=?)", x.to_i, lv3_unit_ids, lv4_unit_ids, "waiting", "doing").blank?
+            uname = Unit.find(x.to_i).name
+            flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+            redirect_to low_value_consumption_inventories_url and return
+          end
+        end
+
         if @end_sum.blank?
           low_value_consumption_infos = LowValueConsumptionInfo.where("low_value_consumption_infos.relevant_unit_id in (?) and (low_value_consumption_infos.use_unit_id in (?) or low_value_consumption_infos.manage_unit_id in (?)) and low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ?", relevant_departments, units, units, "in_use", @start_sum)
         else
@@ -152,13 +176,13 @@ class LowValueConsumptionInventoriesController < ApplicationController
         #   redirect_to low_value_consumption_inventories_url and return
         # end
 
-        units.each do |x|
-          if !LowValueConsumptionInventoryUnit.joins("left join lvc_inventories on lvc_inventory_units.lvc_inventory_id=lvc_inventories.id").where("lvc_inventory_units.unit_id=? and (lvc_inventories.status=? or lvc_inventories.status=?)", x.to_i, "waiting", "doing").blank?
-            uname = Unit.find(x.to_i).name
-            flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
-            redirect_to low_value_consumption_inventories_url and return
-          end
-        end
+        # units.each do |x|
+        #   if !LowValueConsumptionInventoryUnit.joins("left join lvc_inventories on lvc_inventory_units.lvc_inventory_id=lvc_inventories.id").where("lvc_inventory_units.unit_id=? and (lvc_inventories.status=? or lvc_inventories.status=?)", x.to_i, "waiting", "doing").blank?
+        #     uname = Unit.find(x.to_i).name
+        #     flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+        #     redirect_to low_value_consumption_inventories_url and return
+        #   end
+        # end
         
         @low_value_consumption_inventory.no = params[:low_value_consumption_inventory][:no]
         @low_value_consumption_inventory.name = params[:low_value_consumption_inventory][:name]
@@ -377,7 +401,9 @@ class LowValueConsumptionInventoriesController < ApplicationController
 
       if pd_unit_id.blank? || (!pd_unit.blank? && pd_unit.unit_level == 2)
         low_value_consumption_infos.select(:manage_unit_id).distinct.each do |x|
-          if !LowValueConsumptionInventoryUnit.joins("left join lvc_inventories on lvc_inventory_units.lvc_inventory_id=lvc_inventories.id").where("lvc_inventory_units.unit_id=? and (lvc_inventories.status=? or lvc_inventories.status=?)", x.manage_unit_id, "waiting", "doing").blank?
+          lv3_unit_ids = Unit.find(x.manage_unit_id).children.select(:id)
+          lv4_unit_ids = Unit.where("parent_id in (?)", lv3_unit_ids).select(:id)
+          if !LowValueConsumptionInventoryUnit.joins("left join lvc_inventories on lvc_inventory_units.lvc_inventory_id=lvc_inventories.id").where("(lvc_inventory_units.unit_id=? or lvc_inventory_units.unit_id in (?) or lvc_inventory_units.unit_id in (?)) and (lvc_inventories.status=? or lvc_inventories.status=?)", x.manage_unit_id, lv3_unit_ids, lv4_unit_ids, "waiting", "doing").blank?
             uname = Unit.find(x.manage_unit_id).name
             flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
             redirect_to to_sample_inventory_low_value_consumption_inventories_url and return
@@ -390,6 +416,11 @@ class LowValueConsumptionInventoriesController < ApplicationController
             flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
             redirect_to to_sample_inventory_low_value_consumption_inventories_url and return
           end
+        end
+        if !LowValueConsumptionInventoryUnit.joins("left join lvc_inventories on lvc_inventory_units.lvc_inventory_id=lvc_inventories.id").where("lvc_inventory_units.unit_id=? and (lvc_inventories.status=? or lvc_inventories.status=?)", pd_unit.parent_id, "waiting", "doing").blank?
+          uname = Unit.find(pd_unit.parent_id).name
+          flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+          redirect_to to_sample_inventory_low_value_consumption_inventories_url and return
         end
       end
 

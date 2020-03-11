@@ -23,10 +23,18 @@ class FixedAssetInventoriesController < ApplicationController
   def sample_level2_index
     if current_user.unit.unit_level == 1
       # @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("(fixed_asset_inventories.is_lv2_unit=? or uunits.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, true)
-      @fixed_asset_inventories = @fixed_asset_inventories.where("(fixed_asset_inventories.is_lv2_unit=? or units.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, true)
+      if RailsEnv.is_oracle?
+        @fixed_asset_inventories = @fixed_asset_inventories.where("(fixed_asset_inventories.is_lv2_unit=? or create_units_fixed_asset_inven.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, true)
+      else
+        @fixed_asset_inventories = @fixed_asset_inventories.where("(fixed_asset_inventories.is_lv2_unit=? or create_units_fixed_asset_inventories.is_facility_management_unit = ?) and fixed_asset_inventories.is_sample=?", true, true, true)
+      end
     elsif current_user.unit.is_facility_management_unit
       # @fixed_asset_inventories = FixedAssetInventory.joins("left join units as uunits on fixed_asset_inventories.create_unit_id = uunits.id").where("uunits.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, true)
-      @fixed_asset_inventories = @fixed_asset_inventories.where("units.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, true)
+      if RailsEnv.is_oracle?
+        @fixed_asset_inventories = @fixed_asset_inventories.where("create_units_fixed_asset_inven.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, true)
+      else
+        @fixed_asset_inventories = @fixed_asset_inventories.where("create_units_fixed_asset_inventories.unit_level = ? and fixed_asset_inventories.is_sample=?", 1, true)
+      end
     end
         
     @fixed_asset_inventories_grid = initialize_grid(@fixed_asset_inventories, order: 'fixed_asset_inventories.created_at',
@@ -125,12 +133,36 @@ class FixedAssetInventoriesController < ApplicationController
       # end
 
       if current_user.unit.unit_level == 2
+        units.each do |x|
+          if !FixedAssetInventoryUnit.joins("left join fixed_asset_inventories on fixed_asset_inventory_units.fixed_asset_inventory_id=fixed_asset_inventories.id").where("fixed_asset_inventory_units.unit_id=? and (fixed_asset_inventories.status=? or fixed_asset_inventories.status=?)", x.to_i, "waiting", "doing").blank?
+            uname = Unit.find(x.to_i).name
+            flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+            redirect_to fixed_asset_inventories_url and return
+          end
+        end
+
+        if !FixedAssetInventoryUnit.joins("left join fixed_asset_inventories on fixed_asset_inventory_units.fixed_asset_inventory_id=fixed_asset_inventories.id").where("fixed_asset_inventory_units.unit_id=? and (fixed_asset_inventories.status=? or fixed_asset_inventories.status=?)", current_user.unit_id, "waiting", "doing").blank?
+          flash[:alert] = "#{current_user.unit.name}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+          redirect_to fixed_asset_inventories_url and return
+        end
+
         if @end_sum.blank?
           fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id in (?) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? ", relevant_departments, units, "in_use", @start_sum)
         else
           fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and fixed_asset_infos.unit_id in (?) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? and fixed_asset_infos.sum <= ?", relevant_departments, units, "in_use", @start_sum, @end_sum)
         end
       else
+        units.each do |x|
+          lv3_unit_ids = Unit.find(x.to_i).children.select(:id)
+          lv4_unit_ids = Unit.where("parent_id in (?)", lv3_unit_ids).select(:id)
+        
+          if !FixedAssetInventoryUnit.joins("left join fixed_asset_inventories on fixed_asset_inventory_units.fixed_asset_inventory_id=fixed_asset_inventories.id").where("(fixed_asset_inventory_units.unit_id=? or fixed_asset_inventory_units.unit_id in (?) or fixed_asset_inventory_units.unit_id in (?)) and (fixed_asset_inventories.status=? or fixed_asset_inventories.status=?)", x.to_i, lv3_unit_ids, lv4_unit_ids, "waiting", "doing").blank?
+            uname = Unit.find(x.to_i).name
+            flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+            redirect_to fixed_asset_inventories_url and return
+          end
+        end
+
         if @end_sum.blank?
           fixed_asset_infos = FixedAssetInfo.where("fixed_asset_infos.relevant_unit_id in (?) and (fixed_asset_infos.unit_id in (?) or fixed_asset_infos.manage_unit_id in (?)) and fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ? ", relevant_departments, units, units, "in_use", @start_sum)
         else
@@ -162,13 +194,13 @@ class FixedAssetInventoriesController < ApplicationController
         #   redirect_to fixed_asset_inventories_url and return
         # end
 
-        units.each do |x|
-          if !FixedAssetInventoryUnit.joins("left join fixed_asset_inventories on fixed_asset_inventory_units.fixed_asset_inventory_id=fixed_asset_inventories.id").where("fixed_asset_inventory_units.unit_id=? and (fixed_asset_inventories.status=? or fixed_asset_inventories.status=?)", x.to_i, "waiting", "doing").blank?
-            uname = Unit.find(x.to_i).name
-            flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
-            redirect_to fixed_asset_inventories_url and return
-          end
-        end
+        # units.each do |x|
+        #   if !FixedAssetInventoryUnit.joins("left join fixed_asset_inventories on fixed_asset_inventory_units.fixed_asset_inventory_id=fixed_asset_inventories.id").where("fixed_asset_inventory_units.unit_id=? and (fixed_asset_inventories.status=? or fixed_asset_inventories.status=?)", x.to_i, "waiting", "doing").blank?
+        #     uname = Unit.find(x.to_i).name
+        #     flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+        #     redirect_to fixed_asset_inventories_url and return
+        #   end
+        # end
         
         @fixed_asset_inventory.no = params[:fixed_asset_inventory][:no]
         @fixed_asset_inventory.name = params[:fixed_asset_inventory][:name]
@@ -402,7 +434,9 @@ class FixedAssetInventoriesController < ApplicationController
 
       if pd_unit_id.blank? || (!pd_unit.blank? && pd_unit.unit_level == 2)
         fixed_asset_infos.select(:manage_unit_id).distinct.each do |x|
-          if !FixedAssetInventoryUnit.joins("left join fixed_asset_inventories on fixed_asset_inventory_units.fixed_asset_inventory_id=fixed_asset_inventories.id").where("fixed_asset_inventory_units.unit_id=? and (fixed_asset_inventories.status=? or fixed_asset_inventories.status=?)", x.manage_unit_id, "waiting", "doing").blank?
+          lv3_unit_ids = Unit.find(x.manage_unit_id).children.select(:id)
+          lv4_unit_ids = Unit.where("parent_id in (?)", lv3_unit_ids).select(:id)
+          if !FixedAssetInventoryUnit.joins("left join fixed_asset_inventories on fixed_asset_inventory_units.fixed_asset_inventory_id=fixed_asset_inventories.id").where("(fixed_asset_inventory_units.unit_id=? or fixed_asset_inventory_units.unit_id in (?) or fixed_asset_inventory_units.unit_id in (?)) and (fixed_asset_inventories.status=? or fixed_asset_inventories.status=?)", x.manage_unit_id, lv3_unit_ids, lv4_unit_ids, "waiting", "doing").blank?
             uname = Unit.find(x.manage_unit_id).name
             flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
             redirect_to to_sample_inventory_fixed_asset_inventories_url and return
@@ -415,6 +449,11 @@ class FixedAssetInventoriesController < ApplicationController
             flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
             redirect_to to_sample_inventory_fixed_asset_inventories_url and return
           end
+        end
+        if !FixedAssetInventoryUnit.joins("left join fixed_asset_inventories on fixed_asset_inventory_units.fixed_asset_inventory_id=fixed_asset_inventories.id").where("fixed_asset_inventory_units.unit_id=? and (fixed_asset_inventories.status=? or fixed_asset_inventories.status=?)", pd_unit.parent_id, "waiting", "doing").blank?
+          uname = Unit.find(pd_unit.parent_id).name
+          flash[:alert] = "#{uname}存在未完成盘点单或抽样盘点单，请完成后再新开!"
+          redirect_to to_sample_inventory_fixed_asset_inventories_url and return
         end
       end
           

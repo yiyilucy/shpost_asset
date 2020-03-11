@@ -3,7 +3,12 @@
     g.action_column select_all_buttons: true
     
     g.column name: model_class.human_attribute_name(:lvc_catalog_id), attribute: 'name', assoc: :low_value_consumption_catalog do |low_value_consumption_info|
-        low_value_consumption_info.low_value_consumption_catalog.try :name
+        code = low_value_consumption_info.low_value_consumption_catalog.code
+        code1 = LowValueConsumptionCatalog.find_by(code: code[0,2]).try :name
+        code2 = LowValueConsumptionCatalog.find_by(code: code[0,4]).try :name
+        code3 = LowValueConsumptionCatalog.find_by(code: code[0,6]).try :name
+        code4 = LowValueConsumptionCatalog.find_by(code: code[0,8]).try :name
+        (code1.blank? ? "" : code1)+"."+(code2.blank? ? "" : code2)+"."+(code3.blank? ? "" : code3)+"."+(code4.blank? ? "" : code4)
     end
     
     g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name'
