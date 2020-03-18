@@ -26,6 +26,7 @@ class Ability
         can :manage, Sequence
         # can :manage, FixedAssetInventory
         # can :manage, FixedAssetInventoryDetail
+        can :manage, UpDownload
     end
 
     if user.sgsadmin?

@@ -56,10 +56,10 @@
 		      	tableHtml = tableHtml + "<td>" + "<%= info[0][0] %>" + "</td>";
 		      	tableHtml = tableHtml + "<td>" + "<%= LowValueConsumptionCatalog.find(info[0][1]).name %>" + "</td>";
 			    tableHtml = tableHtml + "<td>" + "<%= info[0][2] %>" + "</td>";
-			    tableHtml = tableHtml + "<td>" + "<%= info[0][3].strftime('%Y-%m-%d') %>" + "</td>";
+			    tableHtml = tableHtml + "<td>" + "<%= info[0][3].blank? ? "" : info[0][3].strftime('%Y-%m-%d') %>" + "</td>";
 			    tableHtml = tableHtml + "<td>" + "<%= info[1] %>" + "</td>";
 			    tableHtml = tableHtml + "<td>" + "<%= info[0][4] %>" + "</td>";
-			    tableHtml = tableHtml + "<td>" + "<%= Unit.find(info[0][5]).print_unit_name %>" + "</td>";
+			    tableHtml = tableHtml + "<td>" + "<%= info[0][5].blank? ? "" : Unit.find(info[0][5]).print_unit_name %>" + "</td>";
 			    tableHtml = tableHtml + "</tr>";
 			    <% i += 1 %>
 			<% end %>
