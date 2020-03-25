@@ -238,6 +238,10 @@ zh-CN:
 
     # fixed_asset_info: "http://222.66.108.206:5500/fixed_asset_infos"
     # low_value_consumption: "http://222.66.108.206:5500/low_value_consumption_infos"
+
+    # production environment
+    # fixed_asset_info: "https://sc.shpost.com.cn/shpost_asset/fixed_asset_infos"
+    # low_value_consumption: "https://sc.shpost.com.cn/shpost_asset/low_value_consumption_infos"
     
   wice_grid:
     show_filter_tooltip: 显示过滤
