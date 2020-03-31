@@ -36,6 +36,12 @@
 	    </div>
     </div>
     <div class="control-group">
+      <%= label_tag(:desc1, "备注") %>
+      <div class="controls">
+        <%= text_field_tag(:desc1,@low_value_consumption_info.desc1) %>
+      </div>
+    </div>
+    <div class="control-group">
       <%= check_box("checkbox","is_rent")%>是否租赁
     </div>
     <p><p><p>

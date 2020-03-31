@@ -197,6 +197,7 @@ class LowValueConsumptionInfosController < ApplicationController
           @low_value_consumption_info.use_unit_id = params[:low_value_consumption_info][:use_unit_id]
           @low_value_consumption_info.update log: (@low_value_consumption_info.log.blank? ? "" : @low_value_consumption_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"低值易耗品信息批量修改" + ","
           @low_value_consumption_info.is_rent = params[:checkbox][:is_rent].eql?"1"
+          @low_value_consumption_info.desc1 = params[:desc1]
           @low_value_consumption_info.save
         end
         flash[:notice] = "批量修改成功"

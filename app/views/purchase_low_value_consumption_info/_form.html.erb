@@ -80,13 +80,14 @@
       <%= use_unit_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
     </div>
   </div>
+  
+<% if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked" %>
   <div class="control-group">
     <%= f.label :desc1, :class => 'control-label' %>
     <div class="controls">
       <%= f.text_field :desc1, :class => 'text_field' %>
     </div>
   </div>
-<% if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked" %>
   <div class="control-group">
     <%= f.label :change_log, :class => 'control-label' %>
     <div class="controls">
