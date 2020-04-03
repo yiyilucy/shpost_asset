@@ -47,14 +47,30 @@ class UnitAutocomController < ApplicationController
 
     end
 
-    def p_autocomplete_low_value_consumption_catalog
+    def p_autocomplete_low_value_consumption_parent_catalog
     	term = params[:term]
 	    obj_id = params[:objid]
 	    obj = params[:obj]
 
-	    low_value_consumption_catalogs = LowValueConsumptionCatalog.where("low_value_consumption_catalogs.name like ? or low_value_consumption_catalogs.code like ?", "%#{term}%", "%#{term}%").order(:code).all
+	    low_value_consumption_catalogs = LowValueConsumptionCatalog.where("(length(low_value_consumption_catalogs.code)<=6) and (low_value_consumption_catalogs.name like ? or low_value_consumption_catalogs.code like ?)", "%#{term}%", "%#{term}%").order(:code).all
 
-	    render :json => low_value_consumption_catalogs.map { |low_value_consumption_catalog| {:id => low_value_consumption_catalog.id, :label => low_value_consumption_catalog.name, :value => low_value_consumption_catalog.name, :obj => obj_id} }
+	    render :json => low_value_consumption_catalogs.map { |low_value_consumption_catalog| {:id => low_value_consumption_catalog.id, :label => low_value_consumption_catalog.code+"_"+low_value_consumption_catalog.name, :value => low_value_consumption_catalog.code+"_"+low_value_consumption_catalog.name, :obj => obj_id} }
+    end
+
+    def p_autocomplete_low_value_consumption_catalog4
+    	term = params[:term]
+	    obj_id = params[:objid]
+	    obj = params[:obj]
+	    pid = params[:pid]
+
+	    if !pid.blank?
+			pcode = LowValueConsumptionCatalog.find(pid.to_i).code
+	    	low_value_consumption_catalogs = LowValueConsumptionCatalog.where("(length(low_value_consumption_catalogs.code)=8) and (low_value_consumption_catalogs.name like ? or low_value_consumption_catalogs.code like ?) and low_value_consumption_catalogs.code like ?", "%#{term}%", "%#{term}%", "#{pcode}%").order(:code).all
+	    else
+	    	low_value_consumption_catalogs = LowValueConsumptionCatalog.where("(length(low_value_consumption_catalogs.code)=8) and (low_value_consumption_catalogs.name like ? or low_value_consumption_catalogs.code like ?)", "%#{term}%", "%#{term}%").order(:code).all
+	    end
+
+	    render :json => low_value_consumption_catalogs.map { |low_value_consumption_catalog| {:id => low_value_consumption_catalog.id, :label => low_value_consumption_catalog.code+"_"+low_value_consumption_catalog.name, :value => low_value_consumption_catalog.code+"_"+low_value_consumption_catalog.name, :obj => obj_id} }
     end
 
     def si_autocomplete_fixed_asset_catalog

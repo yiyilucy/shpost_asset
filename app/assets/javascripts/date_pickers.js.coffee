@@ -37,5 +37,9 @@ ready = ->
     changeMonth:true,
     changeYear:true
   });
+  $('#lvc_report_date').datepicker({
+    changeMonth:true,
+    changeYear:true
+  });
 $(document).ready(ready)
 $(document).on('page:load', ready)

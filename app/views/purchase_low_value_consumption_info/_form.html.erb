@@ -1,9 +1,15 @@
 <%= form_for ([ @purchase, @low_value_consumption_info]), :html => { :class => 'form-horizontal' } do |f| %>
 <% if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked" %>
   <div class="control-group">
-    <%= f.label :lvc_catalog_id, :class => 'control-label' %><font color="#FF0000">  *</font>
+    <%= f.label "一到三级类别目录", :class => 'control-label' %>
     <div class="controls">
-      <%= low_value_consumption_catalog_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
+      <%= low_value_consumption_parent_catalog_select_autocom("lvc_info",@low_value_consumption_info.id) %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label "四级类别目录", :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= low_value_consumption_catalog4_select_autocom("low_value_consumption_info", @low_value_consumption_info.id, nil) %>
     </div>
   </div>
   <div class="control-group">

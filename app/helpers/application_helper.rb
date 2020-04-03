@@ -14,8 +14,13 @@ module ApplicationHelper
     hidden_field(obj_id.to_sym,"use_unit_id");
   end
 
-  def low_value_consumption_catalog_select_autocom(obj_id,obj)
-    concat text_field_tag('low_value_consumption_catalog_name',@low_value_consumption_catalog, 'data-autocomplete' => "/shpost_asset/unit_autocom/p_autocomplete_low_value_consumption_catalog?objid=#{obj_id}&obj=#{obj}")
+  def low_value_consumption_parent_catalog_select_autocom(obj_id,obj)
+    concat text_field_tag('lvc_catalog_name',@low_value_consumption_catalog, 'data-autocomplete' => "/shpost_asset/unit_autocom/p_autocomplete_low_value_consumption_parent_catalog?objid=#{obj_id}&obj=#{obj}")
+    hidden_field(obj_id.to_sym,"lvc_catalog_id");
+  end
+
+  def low_value_consumption_catalog4_select_autocom(obj_id,obj,pid)
+    concat text_field_tag('low_value_consumption_catalog_name',@low_value_consumption_catalog, 'data-autocomplete' => "/shpost_asset/unit_autocom/p_autocomplete_low_value_consumption_catalog4?objid=#{obj_id}&obj=#{obj}&pid=#{pid}")
     hidden_field(obj_id.to_sym,"lvc_catalog_id");
   end
 

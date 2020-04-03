@@ -7,11 +7,17 @@
    <%= hidden_field_tag('lvcids',@lvcids)%>
    <% if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked" %>
       <div class="control-group">
-	      <%= label_tag(:lvc_catalog_id, "类别目录") %><font color="#FF0000">  *</font>
+	      <%= label_tag(:lvc_catalog_id, "一到三级类别目录") %>
 	      <div class="controls">
-	      <%= low_value_consumption_catalog_select_autocom("low_value_consumption_info",@low_value_consumption_info.id) %>
-		  </div>
-      </div>
+	        <%= low_value_consumption_parent_catalog_select_autocom("lvc_info",@low_value_consumption_info.id) %>
+	      </div>
+	  </div>
+	  <div class="control-group">
+	      <%= label_tag(:lvc_catalog_id, "四级类别目录") %><font color="#FF0000">  *</font>
+	      <div class="controls">
+	        <%= low_value_consumption_catalog4_select_autocom("low_value_consumption_info", @low_value_consumption_info.id, nil) %>
+	      </div>
+	  </div>  
       <div class="control-group">
 	      <%= label_tag(:asset_name, "资产名称") %><font color="#FF0000">  *</font>
 	      <div class="controls">

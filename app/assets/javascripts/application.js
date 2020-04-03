@@ -41,6 +41,14 @@ function ajaxunits() {
     $(sendid).val(data.item.id);
   });
 
+  $('#lvc_catalog_name').bind('railsAutocomplete.select', function(event, data){
+    /* Do something here */
+    var catalogid = "#"+data.item.obj+"_lvc_catalog_id";
+    $(catalogid).val(data.item.id);
+    // alert(data.item.id);
+    $("#low_value_consumption_catalog_name").attr("data-autocomplete", "/shpost_asset/unit_autocom/p_autocomplete_low_value_consumption_catalog4?objid=low_value_consumption_info&obj=obj&pid="+data.item.id)
+  });
+
   $('#low_value_consumption_catalog_name').bind('railsAutocomplete.select', function(event, data){
     /* Do something here */
     var catalogid = "#"+data.item.obj+"_lvc_catalog_id";
@@ -177,6 +185,8 @@ ready = function() {
     });
    return false;
   }); 
+
+  $('#lvc_catalog_name').val(' ');
 }
 
 

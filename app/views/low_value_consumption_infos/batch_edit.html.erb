@@ -6,6 +6,18 @@
    <%= form_tag(batch_update_low_value_consumption_infos_path, method: "post")%>
    <%= hidden_field_tag('lvcids',@lvcids)%>
     <div class="control-group">
+      <%= label_tag(:lvc_catalog_id, "一到三级类别目录") %>
+      <div class="controls">
+        <%= low_value_consumption_parent_catalog_select_autocom("lvc_info",@low_value_consumption_info.id) %>
+      </div>
+    </div>
+    <div class="control-group">
+      <%= label_tag(:lvc_catalog_id, "四级类别目录") %><font color="#FF0000">  *</font>
+      <div class="controls">
+        <%= low_value_consumption_catalog4_select_autocom("low_value_consumption_info", @low_value_consumption_info.id, nil) %>
+      </div>
+    </div>  
+    <div class="control-group">
       <%= label_tag(:branch, "所在网点") %>
       <div class="controls">
       <%= text_field_tag(:branch,@low_value_consumption_info.branch) %>

@@ -22,4 +22,21 @@ class LowValueConsumptionInfo < ActiveRecord::Base
 	    name = "否"
 	  end
 	end
+
+	def self.select_years
+	  years = [""]
+	  i=2018
+
+	  current_year = Time.now.year
+	  while i<=(current_year+5)
+	  	years << i
+	  	i +=1
+	  end
+	  
+	  return years
+	end
+
+	def self.select_months
+	  ["","1","2","3","4","5","6","7","8","9","10","11","12"]
+	end
 end
