@@ -23,10 +23,14 @@ class Purchase < ActiveRecord::Base
 	end
 
 	def can_to_check?
-	  self.low_value_consumption_infos.each do |x|
-	  	if x.branch.blank? or x.location.blank? or x.use_unit_id.blank?
-	  		return false
-	  	end
+	  if self.low_value_consumption_infos.blank?
+	  	return false
+  	  else
+		self.low_value_consumption_infos.each do |x|
+		  if x.branch.blank? or x.location.blank? or x.use_unit_id.blank?
+		    return false
+		  end
+		end
 	  end
 	  return true
 	end
