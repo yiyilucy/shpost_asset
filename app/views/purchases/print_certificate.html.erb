@@ -22,7 +22,7 @@
 		    LODOP.SET_PRINT_STYLE("FontSize",14);
 		    LODOP.SET_PRINT_STYLE("Bold",1);
 		    LODOP.SET_PRINT_STYLE("ItemType",1);
-		    LODOP.ADD_PRINT_TEXT("1%","40%",260,39,"低值易耗品采购单");
+		    LODOP.ADD_PRINT_TEXT("1%","40%",500,39,"低值易耗品采购单(<%= @purchase.no%>)");
 		    LODOP.SET_PRINT_STYLE("FontSize",10);
 		    LODOP.SET_PRINT_STYLE("Bold",0);  
 		    LODOP.SET_PRINT_STYLE("ItemType",1);
@@ -37,29 +37,51 @@
 		    tableHtml = "<table border='1' width='100%' style='border-collapse:collapse;font-size:14px;' bordercolor='#000000'>";
 		    tableHtml = tableHtml + "<thead>";
 		    tableHtml = tableHtml + "<tr>";
-		    tableHtml = tableHtml + "<th style='width:5%'>序号</th>";
-		    tableHtml = tableHtml + "<th style='width:20%'>资产名称</th>";
-		    tableHtml = tableHtml + "<th style='width:20%'>资产类别</th>";
-		    tableHtml = tableHtml + "<th style='width:20%'>型号</th>";
+		    tableHtml = tableHtml + "<th style='width:4%'>序号</th>";
+		    tableHtml = tableHtml + "<th style='width:14%'>资产名称</th>";
+		    tableHtml = tableHtml + "<th style='width:22%'>资产类别</th>";
+		    tableHtml = tableHtml + "<th style='width:10%'>型号</th>";
 		    tableHtml = tableHtml + "<th style='width:8%'>购买日期</th>";
 		    tableHtml = tableHtml + "<th style='width:6%'>数量</th>";
 		    tableHtml = tableHtml + "<th style='width:8%'>原值</th>";
+		    tableHtml = tableHtml + "<th style='width:15%'>使用部门</th>";
 		    tableHtml = tableHtml + "<th style='width:13%'>归口管理部门</th>";
 		    tableHtml = tableHtml + "</tr>";
 		    tableHtml = tableHtml + "</thead>";
 		    
 		    tableHtml = tableHtml + "<tbody>";
-			<% infos = lvcinfos.pop(25) %>
+			<% infos = lvcinfos.pop(11) %>
 			<% infos.each do |info| %>
 				tableHtml = tableHtml + "<tr>";
 		      	tableHtml = tableHtml + "<td>" + "<%= i %>" + "</td>";
 		      	tableHtml = tableHtml + "<td>" + "<%= info[0][0] %>" + "</td>";
-		      	tableHtml = tableHtml + "<td>" + "<%= LowValueConsumptionCatalog.find(info[0][1]).name %>" + "</td>";
+		      	<%
+			      	code = LowValueConsumptionCatalog.find(info[0][1]).code
+			        code1 = LowValueConsumptionCatalog.find_by(code: code[0,2]).try :name
+			        if code.length>=4
+			            code2 = LowValueConsumptionCatalog.find_by(code: code[0,4]).try :name
+			        else
+			            code2 = ""
+			        end
+			        if code.length>=6
+			            code3 = LowValueConsumptionCatalog.find_by(code: code[0,6]).try :name
+			        else
+			            code3 = ""
+			        end
+			        if code.length>=8
+			            code4 = LowValueConsumptionCatalog.find_by(code: code[0,8]).try :name
+			        else
+			            code4 = ""
+			        end
+			        print_code = (code1.blank? ? "" : code1)+"."+(code2.blank? ? "" : code2)+"."+(code3.blank? ? "" : code3)+"."+(code4.blank? ? "" : code4)
+		      	%>
+		      	tableHtml = tableHtml + "<td>" + "<%= print_code %>" + "</td>";
 			    tableHtml = tableHtml + "<td>" + "<%= info[0][2] %>" + "</td>";
 			    tableHtml = tableHtml + "<td>" + "<%= info[0][3].blank? ? "" : info[0][3].strftime('%Y-%m-%d') %>" + "</td>";
 			    tableHtml = tableHtml + "<td>" + "<%= info[1] %>" + "</td>";
 			    tableHtml = tableHtml + "<td>" + "<%= info[0][4] %>" + "</td>";
 			    tableHtml = tableHtml + "<td>" + "<%= info[0][5].blank? ? "" : Unit.find(info[0][5]).print_unit_name %>" + "</td>";
+			    tableHtml = tableHtml + "<td>" + "<%= info[0][6].blank? ? "" : Unit.find(info[0][6]).print_unit_name %>" + "</td>";
 			    tableHtml = tableHtml + "</tr>";
 			    <% i += 1 %>
 			<% end %>

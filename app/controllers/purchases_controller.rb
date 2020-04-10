@@ -276,7 +276,7 @@ class PurchasesController < ApplicationController
 
   def print_certificate
     @purchase
-    @lvc_infos = @purchase.low_value_consumption_infos.group(:asset_name, :lvc_catalog_id, :brand_model, :buy_at, :sum, :relevant_unit_id).order(:lvc_catalog_id, :asset_name, :buy_at).count
+    @lvc_infos = @purchase.low_value_consumption_infos.group(:asset_name, :lvc_catalog_id, :brand_model, :buy_at, :sum, :use_unit_id, :relevant_unit_id).order(:lvc_catalog_id, :asset_name, :buy_at).count
     @sum = @purchase.low_value_consumption_infos.sum(:sum)
     @count = @purchase.low_value_consumption_infos.count
   end
