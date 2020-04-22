@@ -22,8 +22,8 @@
   <dd><%= @low_value_consumption_info.branch %></dd>
   <dt><strong><%= model_class.human_attribute_name(:location) %>:</strong></dt>
   <dd><%= @low_value_consumption_info.location %></dd>
-  <dt><strong><%= model_class.human_attribute_name(:user) %>:</strong></dt>
-  <dd><%= @low_value_consumption_info.user %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:use_user) %>:</strong></dt>
+  <dd><%= @low_value_consumption_info.use_user %></dd>
   <dt><strong><%= model_class.human_attribute_name(:relevant_unit_id) %>:</strong></dt>
   <dd><%= Unit.find_by(id:@low_value_consumption_info.relevant_unit_id).try(:name) %></dd>
   <dt><strong><%= model_class.human_attribute_name(:use_unit_id) %>:</strong></dt>

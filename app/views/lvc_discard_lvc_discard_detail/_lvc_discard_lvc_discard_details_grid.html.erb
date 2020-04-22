@@ -85,8 +85,8 @@
         lvc_discard_detail.low_value_consumption_info.try :location
     end
 
-    g.column name: model_class.human_attribute_name(:user), attribute: 'user', assoc: :low_value_consumption_info do |lvc_discard_detail|
-        lvc_discard_detail.low_value_consumption_info.try :user
+    g.column name: model_class.human_attribute_name(:use_user), attribute: 'use_user', assoc: :low_value_consumption_info do |lvc_discard_detail|
+        lvc_discard_detail.low_value_consumption_info.try :use_user
     end
 
   end 
