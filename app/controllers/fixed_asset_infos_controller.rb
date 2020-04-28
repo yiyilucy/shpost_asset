@@ -2,19 +2,15 @@ class FixedAssetInfosController < ApplicationController
   load_and_authorize_resource
 
   def index
-    if current_user.unit.blank?
-      @fixed_asset_infos = FixedAssetInfo.all
-    else
-      if current_user.unit.unit_level == 1
-        @fixed_asset_infos = FixedAssetInfo.all
-      elsif current_user.unit.is_facility_management_unit
-        @fixed_asset_infos = FixedAssetInfo.where("(relevant_unit_id = ? or unit_id = ?)", current_user.unit_id, current_user.unit_id)
-      elsif current_user.unit.unit_level == 2
-        @fixed_asset_infos = FixedAssetInfo.where(manage_unit_id: current_user.unit_id)
-      elsif current_user.unit.unit_level == 3 && !current_user.unit.is_facility_management_unit   
-        @fixed_asset_infos = FixedAssetInfo.where("unit_id = ? or unit_id in (?)", current_user.unit_id, current_user.unit.children.map{|x| x.id})
-      end  
-    end     
+    @fixed_asset_infos = FixedAssetInfo.where(status: "in_use")
+    
+    if current_user.unit.is_facility_management_unit
+      @fixed_asset_infos = @fixed_asset_infos.where("(relevant_unit_id = ? or unit_id = ?)", current_user.unit_id, current_user.unit_id)
+    elsif current_user.unit.unit_level == 2
+      @fixed_asset_infos = @fixed_asset_infos.where(manage_unit_id: current_user.unit_id)
+    elsif current_user.unit.unit_level == 3 && !current_user.unit.is_facility_management_unit   
+      @fixed_asset_infos = @fixed_asset_infos.where("unit_id = ? or unit_id in (?)", current_user.unit_id, current_user.unit.children.map{|x| x.id})
+    end  
        
     @fixed_asset_infos_grid = initialize_grid(@fixed_asset_infos,
       :name => 'fixed_asset_infos',
