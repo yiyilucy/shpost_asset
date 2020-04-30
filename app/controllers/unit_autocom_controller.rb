@@ -20,12 +20,14 @@ class UnitAutocomController < ApplicationController
 		term = params[:term]
 	    obj_id = params[:objid]
 	    obj = params[:obj]
-	    # binding.pry
+	    
 	    if current_user.unit.unit_level == 2
 	    	lv3children = current_user.unit.children.select(:id)
 	    	use_units = Unit.where("units.name like ? and (units.id = ? or units.parent_id = ? or units.parent_id in (?))","%#{term}%", current_user.unit.id, current_user.unit.id, lv3children).order(:no).all
 	    elsif current_user.unit.is_facility_management_unit
 	    	use_units = Unit.where("units.name like ?","%#{term}%").order(:no).all
+	    elsif (current_user.unit.unit_level == 3) && (!current_user.unit.is_facility_management_unit)
+			use_units = Unit.where("units.name like ? and (units.id = ? or units.parent_id = ?)", "%#{term}%", current_user.unit.id, current_user.unit.id).order(:no).all	    		
 	    end
 	    		
 	      

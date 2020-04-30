@@ -93,7 +93,7 @@ class Ability
         end
         can :manage, LowValueConsumptionInfo
         if (user.unit.unit_level == 3 && !user.unit.is_facility_management_unit) || (user.unit.unit_level == 4)
-            cannot [:low_value_consumption_info_import, :batch_destroy, :discard, :low_value_consumption_report, :lvc_report, :lvc_report_export, :select_catalog2, :select_catalog3, :select_catalog4], LowValueConsumptionInfo
+            cannot [:low_value_consumption_info_import, :batch_destroy, :discard, :low_value_consumption_report, :lvc_report, :lvc_report_export], LowValueConsumptionInfo
         end
         can :manage, Purchase
         if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
