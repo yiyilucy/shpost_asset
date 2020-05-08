@@ -192,6 +192,7 @@ ShpostAsset::Application.routes.draw do
       get 'p_autocomplete_low_value_consumption_parent_catalog'
       get 'p_autocomplete_low_value_consumption_catalog4'
       get 'si_autocomplete_fixed_asset_catalog'
+      get 'si_autocomplete_low_value_consumption_catalog'
       get 'si_autocomplete_lv3_unit'
       get 'lvc_report_autocomplete_manage_unit'
     end

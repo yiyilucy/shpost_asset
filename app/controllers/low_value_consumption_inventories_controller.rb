@@ -112,11 +112,11 @@ class LowValueConsumptionInventoriesController < ApplicationController
       end
 
       if !params[:start_sum].blank? and !params[:start_sum]["start_sum"].blank?
-        @start_sum = params[:start_sum]["start_sum"].to_i
+        @start_sum = params[:start_sum]["start_sum"].to_f
       end
 
       if !params[:end_sum].blank? and !params[:end_sum]["end_sum"].blank?
-        @end_sum = params[:end_sum]["end_sum"].to_i
+        @end_sum = params[:end_sum]["end_sum"].to_f
       end
 
       
@@ -193,6 +193,8 @@ class LowValueConsumptionInventoriesController < ApplicationController
         @low_value_consumption_inventory.create_user_id = current_user.id
         @low_value_consumption_inventory.create_unit_id = current_user.unit_id
         @low_value_consumption_inventory.relevant_unit_ids = relevant_departments.compact.join(",")
+        @low_value_consumption_inventory.start_sum = @start_sum
+        @low_value_consumption_inventory.end_sum = @end_sum
 
         if current_user.unit.unit_level == 2
           @low_value_consumption_inventory.is_lv2_unit = true
@@ -362,11 +364,11 @@ class LowValueConsumptionInventoriesController < ApplicationController
       end
 
       if !params[:start_sum].blank? and !params[:start_sum]["start_sum"].blank?
-        @start_sum = params[:start_sum]["start_sum"].to_i
+        @start_sum = params[:start_sum]["start_sum"].to_f
       end
 
       if !params[:end_sum].blank? and !params[:end_sum]["end_sum"].blank?
-        @end_sum = params[:end_sum]["end_sum"].to_i
+        @end_sum = params[:end_sum]["end_sum"].to_f
       end
 
       low_value_consumption_infos = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where("low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ? ", "in_use", @start_sum)
@@ -430,7 +432,7 @@ class LowValueConsumptionInventoriesController < ApplicationController
         relevant_unit_ids = low_value_consumption_infos.select(:relevant_unit_id).distinct.map{|o| o.relevant_unit_id}.compact.join(",")
       end
    
-      @low_value_consumption_inventory = LowValueConsumptionInventory.create no: params[:low_value_consumption_inventory][:no], name: params[:low_value_consumption_inventory][:name], start_time: params[:low_value_consumption_inventory][:start_time], end_time: params[:low_value_consumption_inventory][:end_time], desc: params[:low_value_consumption_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids, lvc_catalog_id: lvc_catalog_id, sample_unit_id: pd_unit_id
+      @low_value_consumption_inventory = LowValueConsumptionInventory.create no: params[:low_value_consumption_inventory][:no], name: params[:low_value_consumption_inventory][:name], start_time: params[:low_value_consumption_inventory][:start_time], end_time: params[:low_value_consumption_inventory][:end_time], desc: params[:low_value_consumption_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids, lvc_catalog_id: lvc_catalog_id, sample_unit_id: pd_unit_id, start_sum: @start_sum, end_sum: @end_sum
       
       if pd_unit_id.blank?
         low_value_consumption_infos.select(:manage_unit_id).distinct.each do |x|

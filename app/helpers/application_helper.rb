@@ -29,6 +29,11 @@ module ApplicationHelper
     hidden_field(obj_id.to_sym,"fixed_asset_catalog_id");
   end
 
+  def low_value_consumption_catalog_select_autocom(obj_id,obj)
+    concat text_field_tag('lvc_catalog_name', nil, 'data-autocomplete' => "/shpost_asset/unit_autocom/si_autocomplete_low_value_consumption_catalog?objid=#{obj_id}&obj=#{obj}")
+    hidden_field(obj_id.to_sym,"lvc_catalog_id");
+  end
+
   def lv3_unit_select_autocom(obj_id,obj)
     concat text_field_tag('lv3_unit_name', nil, 'data-autocomplete' => "/shpost_asset/unit_autocom/si_autocomplete_lv3_unit?objid=#{obj_id}&obj=#{obj}")
     hidden_field(obj_id.to_sym,"lv3_unit_id");

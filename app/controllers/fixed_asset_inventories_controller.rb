@@ -119,11 +119,11 @@ class FixedAssetInventoriesController < ApplicationController
       end
 
       if !params[:start_sum].blank? and !params[:start_sum]["start_sum"].blank?
-        @start_sum = params[:start_sum]["start_sum"].to_i
+        @start_sum = params[:start_sum]["start_sum"].to_f
       end
 
       if !params[:end_sum].blank? and !params[:end_sum]["end_sum"].blank?
-        @end_sum = params[:end_sum]["end_sum"].to_i
+        @end_sum = params[:end_sum]["end_sum"].to_f
       end
 
       # if current_user.unit.unit_level == 1 or current_user.unit.is_facility_management_unit
@@ -211,6 +211,8 @@ class FixedAssetInventoriesController < ApplicationController
         @fixed_asset_inventory.create_user_id = current_user.id
         @fixed_asset_inventory.create_unit_id = current_user.unit_id
         @fixed_asset_inventory.relevant_unit_ids = relevant_departments.compact.join(",")
+        @fixed_asset_inventory.start_sum = @start_sum
+        @fixed_asset_inventory.end_sum = @end_sum
 
         if current_user.unit.unit_level == 2
           @fixed_asset_inventory.is_lv2_unit = true
@@ -395,11 +397,11 @@ class FixedAssetInventoriesController < ApplicationController
       end
 
       if !params[:start_sum].blank? and !params[:start_sum]["start_sum"].blank?
-        @start_sum = params[:start_sum]["start_sum"].to_i
+        @start_sum = params[:start_sum]["start_sum"].to_f
       end
 
       if !params[:end_sum].blank? and !params[:end_sum]["end_sum"].blank?
-        @end_sum = params[:end_sum]["end_sum"].to_i
+        @end_sum = params[:end_sum]["end_sum"].to_f
       end
 
       fixed_asset_infos = FixedAssetInfo.joins(:fixed_asset_catalog).where("fixed_asset_infos.status = ? and fixed_asset_infos.sum >= ?", "in_use", @start_sum)
@@ -463,7 +465,7 @@ class FixedAssetInventoriesController < ApplicationController
         relevant_unit_ids = fixed_asset_infos.select(:relevant_unit_id).distinct.map{|o| o.relevant_unit_id}.compact.join(",")
       end
 
-      @fixed_asset_inventory = FixedAssetInventory.create no: params[:fixed_asset_inventory][:no], name: params[:fixed_asset_inventory][:name], start_time: params[:fixed_asset_inventory][:start_time], end_time: params[:fixed_asset_inventory][:end_time], desc: params[:fixed_asset_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids, fixed_asset_catalog_id: fixed_asset_catalog_id, sample_unit_id: pd_unit_id
+      @fixed_asset_inventory = FixedAssetInventory.create no: params[:fixed_asset_inventory][:no], name: params[:fixed_asset_inventory][:name], start_time: params[:fixed_asset_inventory][:start_time], end_time: params[:fixed_asset_inventory][:end_time], desc: params[:fixed_asset_inventory][:desc], status: "waiting", create_user_id: current_user.id, create_unit_id: current_user.unit_id, is_lv2_unit: false, is_sample: true, relevant_unit_ids: relevant_unit_ids, fixed_asset_catalog_id: fixed_asset_catalog_id, sample_unit_id: pd_unit_id, start_sum: @start_sum, end_sum: @end_sum
 
       if pd_unit_id.blank?
         fixed_asset_infos.select(:manage_unit_id).distinct.each do |x|

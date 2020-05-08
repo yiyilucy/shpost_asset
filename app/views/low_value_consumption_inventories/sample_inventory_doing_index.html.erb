@@ -30,6 +30,10 @@
       low_value_consumption_inventory.end_time.blank? ? "" : DateTime.parse(low_value_consumption_inventory.end_time.to_s).strftime('%Y-%m-%d %H:%M:%S').to_s
     end
 
+    g.column name: model_class.human_attribute_name(:start_sum), attribute: 'start_sum'
+
+    g.column name: model_class.human_attribute_name(:end_sum), attribute: 'end_sum'
+
     g.column name: "资产总数" do |low_value_consumption_inventory|
       if current_user.unit.unit_level == 2 
         low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id).size

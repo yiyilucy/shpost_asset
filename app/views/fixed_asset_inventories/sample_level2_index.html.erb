@@ -31,6 +31,10 @@
       fixed_asset_inventory.end_time.blank? ? "" : DateTime.parse(fixed_asset_inventory.end_time.to_s).strftime('%Y-%m-%d %H:%M:%S').to_s
     end
 
+    g.column name: model_class.human_attribute_name(:start_sum), attribute: 'start_sum'
+
+    g.column name: model_class.human_attribute_name(:end_sum), attribute: 'end_sum'
+
     g.column name: model_class.human_attribute_name(:is_lv2_unit), attribute: 'is_lv2_unit' do |fixed_asset_inventory| 
       fixed_asset_inventory.is_lv2_unit_name
     end

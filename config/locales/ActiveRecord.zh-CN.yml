@@ -501,6 +501,8 @@ zh-CN:
         is_sample: "是否抽样"
         fixed_asset_catalog_id: "抽样类别目录"
         sample_unit_id: "抽样单位"
+        start_sum: "原值大于"
+        end_sum: "原值小于"
       fixed_asset_inventory_detail:
         sn: "序号"
         asset_name: "资产名称"
@@ -560,6 +562,8 @@ zh-CN:
         is_sample: "是否抽样"
         lvc_catalog_id: "抽样类别目录"
         sample_unit_id: "抽样单位"
+        start_sum: "原值大于"
+        end_sum: "原值小于"
       low_value_consumption_inventory_unit:
         unit_id: "单位"
         lvc_inventory_id: "低值易耗品盘点单"
