@@ -286,7 +286,7 @@ class FixedAssetInfosController < ApplicationController
       @result = []
       
       until @selected.blank? do 
-        @result = FixedAssetInfo.where(id:@selected.pop(1000))
+        @result += FixedAssetInfo.where(id:@selected.pop(1000))
       end
       
       # @result.sort_by{|x| "#{x.unit_id.to_s} #{x.fixed_asset_catalog_id.to_s}"}
