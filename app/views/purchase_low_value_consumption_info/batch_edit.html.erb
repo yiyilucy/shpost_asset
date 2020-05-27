@@ -1,10 +1,12 @@
 <%- model_class = LowValueConsumptionInfo -%>
 <div class="page-header">
   <h1>批量更新</h1>
+  <font color="#FF0000">(输入框填入数据将覆盖原有数据,空白不填表示不更改原字段数据内容,是否租赁勾选则所有资产都改为租赁，不勾改为非租赁,请谨慎修改)</font>
 </div>
 <div>
    <%= form_tag(batch_update_purchase_low_value_consumption_infos_path, method: "post")%>
    <%= hidden_field_tag('lvcids',@lvcids)%>
+   <%= hidden_field_tag('is_batch',"1")%>
    <% if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked" %>
       <div class="control-group">
 	      <%= label_tag(:lvc_catalog_id, "一到三级类别目录") %>
@@ -21,56 +23,56 @@
       <div class="control-group">
 	      <%= label_tag(:asset_name, "资产名称") %><font color="#FF0000">  *</font>
 	      <div class="controls">
-	      <%= text_field_tag(:asset_name,@low_value_consumption_info.asset_name) %>
+	      <%= text_field_tag(:asset_name,@low_value_consumption_info.asset_name, :value=>nil) %>
 		  </div>
       </div>
       <div class="control-group">
 	      <%= label_tag(:batch_no, "生产批次") %>
 	      <div class="controls">
-	      <%= text_field_tag(:batch_no,@low_value_consumption_info.batch_no) %>
+	      <%= text_field_tag(:batch_no,@low_value_consumption_info.batch_no, :value=>nil) %>
 		  </div>
       </div>
       <div class="control-group">
 	      <%= label_tag(:brand_model, "品牌型号") %><font color="#FF0000">  *</font>
 	      <div class="controls">
-	      <%= text_field_tag(:brand_model,@low_value_consumption_info.brand_model) %>
+	      <%= text_field_tag(:brand_model,@low_value_consumption_info.brand_model, :value=>nil) %>
 		  </div>
       </div>
       <div class="control-group">
 	      <%= label_tag(:measurement_unit, "计量单位") %>
 	      <div class="controls">
-	      <%= text_field_tag(:measurement_unit,@low_value_consumption_info.measurement_unit) %>
+	      <%= text_field_tag(:measurement_unit,@low_value_consumption_info.measurement_unit, :value=>nil) %>
 		  </div>
       </div>
       <div class="control-group">
 	      <%= label_tag(:sum, "金额") %><font color="#FF0000">  *</font>
 	      <div class="controls">
-	      <%= text_field_tag(:sum,@low_value_consumption_info.sum) %>
+	      <%= text_field_tag(:sum,@low_value_consumption_info.sum, :value=>nil) %>
 		  </div>
       </div>
       <div class="control-group">
 	      <%= label_tag(:use_years, "使用年限") %>
 	      <div class="controls">
-	      <%= text_field_tag(:use_years,@low_value_consumption_info.use_years) %>
+	      <%= text_field_tag(:use_years,@low_value_consumption_info.use_years, :value=>nil) %>
 		  </div>
       </div>
       <% end %>
       <div class="control-group">
 	      <%= label_tag(:branch, "所在网点") %><font color="#FF0000">  *</font>
 	      <div class="controls">
-	      <%= text_field_tag(:branch,@low_value_consumption_info.branch) %>
+	      <%= text_field_tag(:branch,@low_value_consumption_info.branch, :value=>nil) %>
 		  </div>
       </div>  
       <div class="control-group">
 	      <%= label_tag(:location, "所在地点") %><font color="#FF0000">  *</font>
 	      <div class="controls">
-	      <%= text_field_tag(:location,@low_value_consumption_info.location) %>
+	      <%= text_field_tag(:location,@low_value_consumption_info.location, :value=>nil) %>
 		  </div>
       </div>
       <div class="control-group">
 	      <%= label_tag(:use_user, "使用人") %>
 	      <div class="controls">
-	      <%= text_field_tag(:use_user,@low_value_consumption_info.use_user) %>
+	      <%= text_field_tag(:use_user,@low_value_consumption_info.use_user, :value=>nil) %>
 		  </div>
       </div>
       <div class="control-group">
@@ -90,13 +92,13 @@
       <div class="control-group">
 	      <%= label_tag(:desc1, "备注") %>
 	      <div class="controls">
-	      <%= text_field_tag(:desc1,@low_value_consumption_info.desc1) %>
+	      <%= text_field_tag(:desc1,@low_value_consumption_info.desc1, :value=>nil) %>
 		  </div>
       </div>
       <div class="control-group">
 	      <%= label_tag(:change_log, "变动记录") %>
 	      <div class="controls">
-	      <%= text_field_tag(:change_log,@low_value_consumption_info.change_log) %>
+	      <%= text_field_tag(:change_log,@low_value_consumption_info.change_log, :value=>nil) %>
 		  </div>
       </div>
       <div class="control-group">

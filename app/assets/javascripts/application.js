@@ -187,6 +187,15 @@ ready = function() {
   }); 
 
   $('#lvc_catalog_name').val(' ');
+
+  if($("#is_batch").val()=="1"){
+    $("#low_value_consumption_catalog_name").val(' ');
+    $('#relevant_department_name').val(' ');
+    $('#use_unit_name').val(' ');
+    $('#low_value_consumption_info_lvc_catalog_id').val('');
+    $('#low_value_consumption_info_relevant_unit_id').val('');
+    $('#low_value_consumption_info_use_unit_id').val('');
+  }
 }
 
 

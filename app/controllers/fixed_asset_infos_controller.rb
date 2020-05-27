@@ -207,7 +207,7 @@ class FixedAssetInfosController < ApplicationController
               ori_info = FixedAssetInfo.find_by(asset_no:asset_no)
 
               if !ori_info.blank?
-                ori_info.update!(sum: sum, accumulate_depreciation: accumulate_depreciation, net_value: net_value, month_depreciation: month_depreciation, use_status: use_status, use_user: user, unit_id: use_departments[unit_name], location:location, relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department], desc1: desc1, license: license, status:"in_use", manage_unit_id: current_user.unit_id, old_sys_no: old_sys_no)
+                ori_info.update!(sum: sum, accumulate_depreciation: accumulate_depreciation, net_value: net_value, month_depreciation: month_depreciation, use_status: use_status, use_user: user, unit_id: use_departments[unit_name], location:location, relevant_unit_id: relevant_departments[relevant_department].blank? ? short_relevant_departments[relevant_department] : relevant_departments[relevant_department], desc1: desc1, license: license, status:"in_use", manage_unit_id: current_user.unit_id, old_sys_no: old_sys_no,  asset_name: asset_name, brand_model: brand_model)
 
                 ori_infos.delete(asset_no)
               else

@@ -169,23 +169,51 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
         params[:lvcids].split(",").map(&:to_i).each do |id|
           @low_value_consumption_info = LowValueConsumptionInfo.find_by(id:id.to_i)
           if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked"
-            @low_value_consumption_info.sn = params[:sn]
-            @low_value_consumption_info.lvc_catalog_id = params[:low_value_consumption_info][:lvc_catalog_id]
-            @low_value_consumption_info.asset_name = params[:asset_name]
-            @low_value_consumption_info.batch_no = params[:batch_no]
-            @low_value_consumption_info.brand_model = params[:brand_model]
-            @low_value_consumption_info.measurement_unit = params[:measurement_unit]
-            @low_value_consumption_info.sum = params[:sum]           
-            @low_value_consumption_info.change_log = params[:change_log]
-            @low_value_consumption_info.use_years = params[:use_years]
+            # @low_value_consumption_info.sn = params[:sn]
+            if !params[:low_value_consumption_info][:lvc_catalog_id].blank?
+              @low_value_consumption_info.lvc_catalog_id = params[:low_value_consumption_info][:lvc_catalog_id]
+            end
+            if !params[:asset_name].blank? && !params[:asset_name].strip.blank?
+              @low_value_consumption_info.asset_name = params[:asset_name]
+            end
+            if !params[:batch_no].blank? && !params[:batch_no].strip.blank?
+              @low_value_consumption_info.batch_no = params[:batch_no]
+            end
+            if !params[:brand_model].blank? && !params[:brand_model].strip.blank?
+              @low_value_consumption_info.brand_model = params[:brand_model]
+            end
+            if !params[:measurement_unit].blank? && !params[:measurement_unit].strip.blank?
+              @low_value_consumption_info.measurement_unit = params[:measurement_unit]
+            end
+            if !params[:sum].blank? && !params[:sum].strip.blank?
+              @low_value_consumption_info.sum = params[:sum]
+            end           
+            if !params[:change_log].blank? && !params[:change_log].strip.blank?
+              @low_value_consumption_info.change_log = params[:change_log]
+            end
+            if !params[:use_years].blank? && !params[:use_years].strip.blank?
+              @low_value_consumption_info.use_years = params[:use_years]
+            end
             @low_value_consumption_info.is_rent = params[:checkbox][:is_rent].eql?"1"
           end
-          @low_value_consumption_info.branch = params[:branch]
-          @low_value_consumption_info.location = params[:location]
-          @low_value_consumption_info.use_user = params[:use_user]
-          @low_value_consumption_info.relevant_unit_id = params[:low_value_consumption_info][:relevant_unit_id]
-          @low_value_consumption_info.use_unit_id = params[:low_value_consumption_info][:use_unit_id]
-          @low_value_consumption_info.desc1 = params[:desc1]
+          if !params[:branch].blank? && !params[:branch].strip.blank?
+            @low_value_consumption_info.branch = params[:branch]
+          end
+          if !params[:location].blank? && !params[:location].strip.blank?
+            @low_value_consumption_info.location = params[:location]
+          end
+          if !params[:use_user].blank? && !params[:use_user].strip.blank?
+            @low_value_consumption_info.use_user = params[:use_user]
+          end
+          if !params[:low_value_consumption_info][:relevant_unit_id].blank?
+            @low_value_consumption_info.relevant_unit_id = params[:low_value_consumption_info][:relevant_unit_id]
+          end
+          if !params[:low_value_consumption_info][:use_unit_id].blank?
+            @low_value_consumption_info.use_unit_id = params[:low_value_consumption_info][:use_unit_id]
+          end
+          if !params[:desc1].blank? && !params[:desc1].strip.blank?
+            @low_value_consumption_info.desc1 = params[:desc1]
+          end
           @low_value_consumption_info.save
         end
         flash[:notice] = "批量修改成功"
