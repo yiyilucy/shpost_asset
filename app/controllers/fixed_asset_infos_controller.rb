@@ -15,7 +15,8 @@ class FixedAssetInfosController < ApplicationController
     @fixed_asset_infos_grid = initialize_grid(@fixed_asset_infos,
       :name => 'fixed_asset_infos',
       :enable_export_to_csv => true,
-      :csv_file_name => 'fixed_asset_infos'
+      :csv_file_name => 'fixed_asset_infos', 
+      :per_page => params[:page_size]
       # :csv_encoding => Encoding::GBK
       )
     export_grid_if_requested
@@ -385,6 +386,54 @@ class FixedAssetInfosController < ApplicationController
   
     book.write xls_report  
     xls_report.string  
+  end
+
+  def reprint_import
+    unless request.get?
+      if file = upload_fixed_asset_info(params[:file]['file'])       
+        ActiveRecord::Base.transaction do
+          begin
+            rowarr = [] 
+            instance=nil
+            flash_message = "导入成功!"
+            current_line = 0
+            is_error = false
+
+            if file.include?('.xlsx')
+              instance= Roo::Excelx.new(file)
+            elsif file.include?('.xls')
+              instance= Roo::Excel.new(file)
+            elsif file.include?('.csv')
+              instance= Roo::CSV.new(file)
+            end
+            instance.default_sheet = instance.sheets.first
+            title_row = instance.row(1)
+            asset_no_index = title_row.index("资产编号").blank? ? 0 : title_row.index("资产编号")
+            
+            2.upto(instance.last_row) do |line|
+              current_line = line
+              rowarr = instance.row(line)
+              asset_no = rowarr[asset_no_index].blank? ? "" : rowarr[asset_no_index].to_s.split('.0')[0]
+              
+              ori_info = FixedAssetInfo.find_by(asset_no: asset_no)
+
+              if !ori_info.blank?
+                ori_info.update! is_reprint: true
+              end
+            end
+
+            flash[:notice] = flash_message
+
+            redirect_to :action => 'index'
+            
+          rescue Exception => e
+            Rails.logger.error e.backtrace
+            flash[:alert] = e.message + "第" + current_line.to_s + "行"
+            raise ActiveRecord::Rollback
+          end
+        end
+      end   
+    end
   end
 
 

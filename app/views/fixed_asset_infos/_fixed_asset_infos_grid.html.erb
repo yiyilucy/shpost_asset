@@ -48,7 +48,7 @@
 
     g.column name: model_class.human_attribute_name(:amount), attribute: 'amount'
 
-    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum'  
+    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum', filter_type: :range  
 
     g.column name: model_class.human_attribute_name(:accumulate_depreciation), attribute: 'accumulate_depreciation'
 
@@ -76,7 +76,9 @@
 
     g.column name: model_class.human_attribute_name(:print_times), attribute: 'print_times'
 
-
+    g.column name: model_class.human_attribute_name(:is_reprint), attribute: 'is_reprint' do |fixed_asset_info|
+      fixed_asset_info.is_reprint_name
+    end
 
   end 
 %>

@@ -13,4 +13,12 @@ class FixedAssetInfo < ActiveRecord::Base
 	def status_name
 		status.blank? ? "" : FixedAssetInfo::STATUS["#{status}".to_sym]
 	end
+
+	def is_reprint_name
+	  if is_reprint
+	    name = "是"
+	  else
+	    name = "否"
+	  end
+	end
 end

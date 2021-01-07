@@ -431,6 +431,7 @@ zh-CN:
         use_status: "使用状态"
         license: "牌照"
         old_sys_no: "资产原系统编码"
+        is_reprint: "是否补打"
       low_value_consumption_info:
         sn: "序号"
         asset_name: "资产名称"
@@ -464,6 +465,7 @@ zh-CN:
         use_years: "使用年限"
         desc1: "备注"
         is_rent: "是否租赁"
+        is_reprint: "是否补打"
       purchase:
         no: "采购单号"
         name: "采购单名称"

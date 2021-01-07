@@ -36,7 +36,7 @@
     
     g.column name: model_class.human_attribute_name(:measurement_unit), attribute: 'measurement_unit'
 
-    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum'
+    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum',filter_type: :range
 
     g.column name: model_class.human_attribute_name(:is_rent), attribute: 'is_rent' do |low_value_consumption_info|
         low_value_consumption_info.is_rent_name

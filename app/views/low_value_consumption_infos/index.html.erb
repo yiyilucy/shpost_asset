@@ -1,6 +1,7 @@
 <%- model_class = LowValueConsumptionInfo -%>
 <div class="page-header">
-  <h1>在用低值易耗品信息
+  <h1>在用低值易耗品信息  </h1>
+  <div><%= render partial: '/layouts/page_size' %></div>
 
   <div style="float:right">
     <% if can? :low_value_consumption_info_import, LowValueConsumptionInfo %>
@@ -15,12 +16,14 @@
     <% if (can? :discard, LowValueConsumptionInfo) %>
     <%= submit_tag "报废",:class => 'btn btn-primary', onclick: "if(!confirm('确定报废?')){return false;}else{form2.action='low_value_consumption_infos/discard';form2.submit();}" %>
     <% end %>
+    <% if can? :reprint_import, FixedAssetInfo %>
+    <%= link_to '补打导入', "/shpost_asset/low_value_consumption_infos/reprint_import", :class => 'btn btn-primary' %>
+    <% end %>
     <% if (can? :print, LowValueConsumptionInfo) %>
   	<%= submit_tag "打印",:class => 'btn btn-primary', target: '_blank', onclick: "form2.action='low_value_consumption_infos/print';form2.submit();" %>
   	<% end %>
     <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="low_value_consumption_infos">导出</button>
   </div>
-  </h1>
 </div>
 <div>
   <%= form_tag('', :method => "get", name: 'form1') do %>
@@ -47,7 +50,7 @@
   <%end %>  
 
 <%= form_tag('', :method => "post", name: 'form2') do %>  
-<%= render :partial => 'low_value_consumption_infos_grid' %>
+<div style="float:left"><%= render :partial => 'low_value_consumption_infos_grid' %></div>
 <%end %>
 </div>
 

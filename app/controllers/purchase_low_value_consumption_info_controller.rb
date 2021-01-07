@@ -6,7 +6,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
     # binding.pry
     @low_value_consumption_infos = @low_value_consumption_infos.order(:use_unit_id, :lvc_catalog_id)
     @low_value_consumption_infos_grid = initialize_grid(@low_value_consumption_infos,
-      per_page: 50,
+      :per_page => params[:page_size],
       :name => 'purchase_low_value_consumption_infos',
       :enable_export_to_csv => true,
       :csv_file_name => 'low_value_consumption_infos')

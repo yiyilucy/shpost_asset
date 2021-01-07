@@ -45,8 +45,8 @@ class Ability
 
         can :manage, FixedAssetCatalog
         can :manage, LowValueConsumptionCatalog
-        can [:read, :print, :fixed_asset_report, :to_scan], FixedAssetInfo
-        can [:read, :discard_index, :print, :low_value_consumption_report, :low_value_consumption_report_export, :to_scan, :lvc_report, :lvc_report_export, :select_catalog2, :select_catalog3, :select_catalog4], LowValueConsumptionInfo
+        can [:read, :print, :fixed_asset_report, :to_scan, :reprint_import], FixedAssetInfo
+        can [:read, :discard_index, :print, :low_value_consumption_report, :low_value_consumption_report_export, :to_scan, :lvc_report, :lvc_report_export, :select_catalog2, :select_catalog3, :select_catalog4, :reprint_import], LowValueConsumptionInfo
         # can [:new, :read], Purchase
         can :manage, Sequence
         can :manage, FixedAssetInventory

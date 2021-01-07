@@ -111,6 +111,8 @@ ShpostAsset::Application.routes.draw do
       post 'print'
       get 'fixed_asset_report'
       post 'fixed_asset_report_export'
+      get 'reprint_import'
+      post 'reprint_import' => 'fixed_asset_infos#reprint_import'
     end
     member do 
       get 'to_scan'
@@ -177,6 +179,8 @@ ShpostAsset::Application.routes.draw do
       post 'select_catalog3'
       get 'select_catalog4'
       post 'select_catalog4'
+      get 'reprint_import'
+      post 'reprint_import' => 'low_value_consumption_infos#reprint_import'
     end
     member do 
       get 'to_scan'

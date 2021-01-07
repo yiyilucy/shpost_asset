@@ -46,6 +46,7 @@ function low_value_consumption_infos_preview() {
 
     <% print_times = info.print_times+1 %>
     <% info.update print_times: print_times %>
+    <% info.update is_reprint: false if info.is_reprint %>
 
     // LODOP.PREVIEW(); 
     LODOP.PRINT();

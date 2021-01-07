@@ -37,7 +37,7 @@
     
     g.column name: model_class.human_attribute_name(:measurement_unit), attribute: 'measurement_unit'
 
-    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum'
+    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum',filter_type: :range
 
     g.column name: model_class.human_attribute_name(:is_rent), attribute: 'is_rent' do |low_value_consumption_info|
         low_value_consumption_info.is_rent_name
@@ -77,6 +77,10 @@
     g.column name: model_class.human_attribute_name(:location), attribute: 'location'
 
     g.column name: model_class.human_attribute_name(:use_user), attribute: 'use_user' 
+
+    g.column name: model_class.human_attribute_name(:is_reprint), attribute: 'is_reprint' do |low_value_consumption_info|
+      low_value_consumption_info.is_reprint_name
+    end
 
     g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log'
 

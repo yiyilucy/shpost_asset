@@ -10,7 +10,7 @@ class LowValueConsumptionInfo < ActiveRecord::Base
 	# validates_uniqueness_of :asset_no, :message => '该资产编号已存在'
 	
 	STATUS = { waiting: '待处理', checking: '待复核', declined: '否决', canceled: '取消', in_use: '在用', revoked: '撤回', discard: '报废' }
-
+	
 	def status_name
 		status.blank? ? "" : LowValueConsumptionInfo::STATUS["#{status}".to_sym]
 	end
@@ -38,5 +38,13 @@ class LowValueConsumptionInfo < ActiveRecord::Base
 
 	def self.select_months
 	  ["","1","2","3","4","5","6","7","8","9","10","11","12"]
+	end
+
+	def is_reprint_name
+	  if is_reprint
+	    name = "是"
+	  else
+	    name = "否"
+	  end
 	end
 end

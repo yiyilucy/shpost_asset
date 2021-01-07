@@ -1,0 +1,21 @@
+<div style="float:left">
+    分页数量:
+    <%= link_to '20',
+            url_for(request.params.merge({page_size: 20})),
+            :class => 'btn btn-primary btn-xs' %>
+    <%= link_to '50',
+            url_for(request.params.merge({page_size: 50})),
+            :class => 'btn btn-primary btn-xs' %>
+    <%= link_to '100',
+            url_for(request.params.merge({page_size: 100})),
+            :class => 'btn btn-primary btn-xs' %>
+    <%= link_to '200',
+            url_for(request.params.merge({page_size: 200})),
+            :class => 'btn btn-primary btn-xs' %>
+    跳转到第<%= text_field_tag 'turn_to_page', nil, size: "1" %>页
+
+    
+    <%= hidden_field_tag('ori_url',request.path_info) %>
+    <%= hidden_field_tag('mname',request.params["controller"]) %>
+ 
+  </div>

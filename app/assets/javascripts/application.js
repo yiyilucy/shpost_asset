@@ -196,6 +196,16 @@ ready = function() {
     $('#low_value_consumption_info_relevant_unit_id').val('');
     $('#low_value_consumption_info_use_unit_id').val('');
   }
+
+  $('#turn_to_page').change(function(){
+    ori_url = $('#ori_url').val();
+    mname = $('#mname').val();
+    to_page = $('#turn_to_page').val();
+    
+    to_url = ori_url+"?"+mname+"[page]="+to_page;
+    
+    window.open(to_url, "_self");
+  }); 
 }
 
 
