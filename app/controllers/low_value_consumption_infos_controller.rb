@@ -720,6 +720,7 @@ class LowValueConsumptionInfosController < ApplicationController
             flash_message = "导入成功!"
             current_line = 0
             is_error = false
+            sheet_error = []
 
             if file.include?('.xlsx')
               instance= Roo::Excelx.new(file)
@@ -741,12 +742,24 @@ class LowValueConsumptionInfosController < ApplicationController
 
               if !ori_info.blank?
                 ori_info.update! is_reprint: true
+              else
+                txt = "资产编号不存在"
+                sheet_error << (rowarr << txt)
               end
             end
 
+            if !sheet_error.blank?
+              flash_message << "有部分信息导入失败！"
+            end
             flash[:notice] = flash_message
 
-            redirect_to :action => 'index'
+            if !sheet_error.blank?
+              send_data(exporterrorreprint_infos_xls_content_for(sheet_error,title_row),  
+              :type => "text/excel;charset=utf-8; header=present",  
+              :filename => "Error_Reprints_#{Time.now.strftime("%Y%m%d")}.xls")  
+            else
+              redirect_to :action => 'index'
+            end
             
           rescue Exception => e
             Rails.logger.error e.backtrace
@@ -756,6 +769,30 @@ class LowValueConsumptionInfosController < ApplicationController
         end
       end   
     end
+  end
+
+  def exporterrorreprint_infos_xls_content_for(obj,title_row)
+    xls_report = StringIO.new  
+    book = Spreadsheet::Workbook.new  
+    sheet1 = book.create_worksheet :name => "Reprints"  
+
+    blue = Spreadsheet::Format.new :color => :blue, :weight => :bold, :size => 10  
+    red = Spreadsheet::Format.new :color => :red
+    sheet1.row(0).default_format = blue 
+    sheet1.row(0).concat title_row
+    size = obj.first.size 
+    count_row = 1
+    obj.each do |obj|
+      count = 0
+      while count<=size
+        sheet1[count_row,count]=obj[count]
+        count += 1
+      end
+      
+      count_row += 1
+    end 
+    book.write xls_report  
+    xls_report.string  
   end
 
   private
