@@ -150,6 +150,8 @@ ShpostAsset::Application.routes.draw do
         post 'batch_edit'
         post 'batch_update'
         post 'print'
+        get 'import'
+        post 'import' => 'purchase_low_value_consumption_info#import' 
       end
     end
       

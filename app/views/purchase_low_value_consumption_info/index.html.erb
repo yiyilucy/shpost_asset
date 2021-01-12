@@ -8,6 +8,9 @@
       <%= link_to t('.new', :default => t("helpers.links.new")),
                   new_purchase_low_value_consumption_info_path,
                   :class => 'btn btn-primary' %>
+      <%= link_to t('.import', :default => t("helpers.links.import")),
+                  import_purchase_low_value_consumption_infos_path,
+                  :class => 'btn btn-primary' %>
       
     <%= submit_tag "批量删除",:class => 'btn btn-primary', onclick: "if(!confirm('确定删除?')){return false;}else{form1.action='low_value_consumption_infos/batch_destroy';form1.submit();}" %>
     <% end %>
