@@ -82,7 +82,7 @@
     g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log'
 
     g.column name: model_class.human_attribute_name(:log), attribute: 'log' do |low_value_consumption_info|
-      low_value_consumption_info.log.blank? ? "" : low_value_consumption_info.log[0,low_value_consumption_info.log.length-1]
+      [(low_value_consumption_info.log.blank? ? "" : low_value_consumption_info.log[0,low_value_consumption_info.log.length-1]).try(:truncate, 35), {title: (low_value_consumption_info.log.blank? ? "" : low_value_consumption_info.log[0,low_value_consumption_info.log.length-1])}]
     end
 
     

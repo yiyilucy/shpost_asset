@@ -85,10 +85,9 @@
     g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log'
 
     g.column name: model_class.human_attribute_name(:log), attribute: 'log' do |low_value_consumption_info|
-      low_value_consumption_info.log.blank? ? "" : low_value_consumption_info.log[0,low_value_consumption_info.log.length-1]
+      [(low_value_consumption_info.log.blank? ? "" : low_value_consumption_info.log[0,low_value_consumption_info.log.length-1]).try(:truncate, 35), {title: (low_value_consumption_info.log.blank? ? "" : low_value_consumption_info.log[0,low_value_consumption_info.log.length-1])}]
     end
-
-
+ 
     g.column in_csv: false do |low_value_consumption_info|
       ActiveSupport::SafeBuffer.new << 
       (link_to t('.edit', :default => t("helpers.links.edit")), edit_low_value_consumption_info_path(low_value_consumption_info), :class => 'btn btn-xs btn-primary' if (can? :update, low_value_consumption_info) and ((low_value_consumption_info.manage_unit_id == current_user.unit_id ) || (low_value_consumption_info.use_unit_id == current_user.unit_id) || (Unit.find(low_value_consumption_info.use_unit_id).parent_id == current_user.unit_id)))
