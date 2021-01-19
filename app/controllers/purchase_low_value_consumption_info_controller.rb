@@ -25,9 +25,9 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
       if file = upload_low_value_consumption_info(params[:file]['file'])       
         ActiveRecord::Base.transaction do
           begin
-            catalogs = LowValueConsumptionCatalog.all.group(:name).size
+            catalogs = LowValueConsumptionCatalog.all.group(:code).size
             catalogs.each do |key, value|
-              catalogs[key] = LowValueConsumptionCatalog.find_by(name: key).id
+              catalogs[key] = LowValueConsumptionCatalog.find_by(code: key).id
             end
 
             use_units = Unit.all.group(:name).size
@@ -62,7 +62,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
             instance.default_sheet = instance.sheets.first
             title_row = instance.row(1)
             
-            catalog_name_index = title_row.index("资产类别名称")
+            catalog_code_index = title_row.index("资产类别编码")
             branch_index =title_row.index("所在网点")
             batch_no_index = title_row.index("生产批次")
             asset_name_index = title_row.index("资产名称")
@@ -91,7 +91,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
                 break
               end
               asset_name = rowarr[asset_name_index].blank? ? "" : to_string(rowarr[asset_name_index])
-              catalog_name = rowarr[catalog_name_index].blank? ? "" : to_string(rowarr[catalog_name_index]).split(".").last.strip
+              catalog_code = rowarr[catalog_code_index].blank? ? "" : rowarr[catalog_code_index].to_s
               relevant_unit =rowarr[relevant_unit_index].blank? ? "" : to_string(rowarr[relevant_unit_index])
               buy_at = rowarr[buy_at_index].blank? ? nil : DateTime.parse(rowarr[buy_at_index].to_s).strftime('%Y-%m-%d')
               # buy_at = rowarr[buy_at_index].blank? ? nil : DateTime.parse(rowarr[buy_at_index].to_s.split(".0")[0]).strftime('%Y-%m-%d')
@@ -116,19 +116,20 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
                 raise txt
                 raise ActiveRecord::Rollback         
               end
-              if catalog_name.blank?
-                txt = "缺少类别目录_"
+              if catalog_code.blank?
+                txt = "缺少资产类别编码_"
                 sheet_error << (rowarr << txt)
                 raise txt
                 raise ActiveRecord::Rollback 
               end
               
-              if !catalogs.has_key?catalog_name
+              if !catalogs.has_key?catalog_code
                 txt = "类别目录不存在_"
                 sheet_error << (rowarr << txt)
                 raise txt
                 raise ActiveRecord::Rollback 
               end
+
               if relevant_unit.blank?
                 txt = "缺少归口管理部门_"
                 sheet_error << (rowarr << txt)
@@ -180,7 +181,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
               end
               
               while amount>0
-                lvc_info = LowValueConsumptionInfo.create!(asset_name: asset_name, lvc_catalog_id: catalogs[catalog_name], relevant_unit_id: relevant_units[relevant_unit].blank? ? short_relevant_units[relevant_unit] : relevant_units[relevant_unit], change_log: change_log, batch_no: batch_no, use_unit_id: use_units[use_unit], measurement_unit: measurement_unit, branch: branch, buy_at: buy_at, sum:sum, location: location, use_user: use_user, status: "waiting", print_times: 0, manage_unit_id: current_user.unit_id, desc1: desc1, use_years: use_years, brand_model: brand_model, is_rent: is_rent, purchase_id: @purchase_id)
+                lvc_info = LowValueConsumptionInfo.create!(asset_name: asset_name, lvc_catalog_id: catalogs[catalog_code], relevant_unit_id: relevant_units[relevant_unit].blank? ? short_relevant_units[relevant_unit] : relevant_units[relevant_unit], change_log: change_log, batch_no: batch_no, use_unit_id: use_units[use_unit], measurement_unit: measurement_unit, branch: branch, buy_at: buy_at, sum:sum, location: location, use_user: use_user, status: "waiting", print_times: 0, manage_unit_id: current_user.unit_id, desc1: desc1, use_years: use_years, brand_model: brand_model, is_rent: is_rent, purchase_id: @purchase_id)
                 # lvc_info.update asset_no: Sequence.generate_asset_no(lvc_info,lvc_info.buy_at)
 
                 amount = amount - 1
