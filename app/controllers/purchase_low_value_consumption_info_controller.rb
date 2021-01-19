@@ -40,10 +40,10 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
               relevant_units[key] = Unit.find_by(name: key).id
             end
 
-            # short_relevant_departments = Unit.where(is_facility_management_unit: true).group(:unit_desc).size
-            # short_relevant_departments.each do |key, value|
-            #   short_relevant_departments[key] = Unit.find_by(unit_desc: key).id
-            # end
+            short_relevant_units = Unit.where(is_facility_management_unit: true).group(:unit_desc).size
+            short_relevant_units.each do |key, value|
+              short_relevant_units[key] = Unit.find_by(unit_desc: key).id
+            end
            
             sheet_error = []
             rowarr = [] 
@@ -167,6 +167,13 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
               end
               if sum.blank?
                 txt = "原值_"
+                sheet_error << (rowarr << txt)
+                raise txt
+                raise ActiveRecord::Rollback 
+              end
+
+              if use_unit.blank?
+                txt = "缺少使用部门_"
                 sheet_error << (rowarr << txt)
                 raise txt
                 raise ActiveRecord::Rollback 
