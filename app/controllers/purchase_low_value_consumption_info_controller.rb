@@ -71,7 +71,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
             sum_index = title_row.index("原值")
             brand_model_index = title_row.index("结构/型号")
             measurement_unit_index = title_row.index("计量单位")
-            location_index = title_row.index("[存放地点]")
+            location_index = title_row.index("所在地点")
             use_user_index = title_row.index("资产使用人")
             relevant_unit_index = title_row.index("归口管理部门")
             use_unit_index = title_row.index("使用部门")
