@@ -662,6 +662,9 @@ zh-CN:
         log: "日志"
         discard_at: "报废日期"
         is_reprint: "是否补打"
+        ori_asset_no: "原资产编号"
+        desc: "备注"
+        change_log: "变动记录"
   menu:
     permission:
       name: "权限管理"

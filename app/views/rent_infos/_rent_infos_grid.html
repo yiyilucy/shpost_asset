@@ -74,6 +74,12 @@
       rent_info.is_reprint_name
     end
 
+    g.column name: model_class.human_attribute_name(:ori_asset_no), attribute: 'ori_asset_no'
+
+    g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log'
+
+    g.column name: model_class.human_attribute_name(:desc), attribute: 'desc'
+
     g.column name: model_class.human_attribute_name(:log), attribute: 'log' do |rent_info|
       [(rent_info.log.blank? ? "" : rent_info.log[0,rent_info.log.length-1]).try(:truncate, 35), {title: (rent_info.log.blank? ? "" : rent_info.log[0,rent_info.log.length-1])}]
     end

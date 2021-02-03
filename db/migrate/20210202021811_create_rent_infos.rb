@@ -25,6 +25,9 @@ class CreateRentInfos < ActiveRecord::Migration
       t.string :log
       t.datetime :discard_at
       t.boolean :is_reprint, default: false
+      t.string :ori_asset_no
+      t.string :desc
+      t.string :change_log
 
       t.timestamps
     end
