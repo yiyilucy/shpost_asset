@@ -1,4 +1,6 @@
 ShpostAsset::Application.routes.draw do
+  
+
   scope 'shpost_asset' do
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -313,6 +315,39 @@ ShpostAsset::Application.routes.draw do
     member do
       get 'up_download_export'
       post 'up_download_export' => 'up_downloads#up_download_export'
+    end
+  end
+
+  resources :rent_infos do
+    collection do
+      get 'discard_index'
+      get 'print'
+      post 'print'  
+      get 'batch_edit'
+      post 'batch_edit'
+      post 'batch_update'   
+      get 'rent_info_import'
+      post 'rent_info_import' => 'rent_infos#rent_info_import' 
+      post 'batch_destroy'
+      get 'discard'
+      post 'discard'
+      get 'rent_report'
+      post 'rent_report_export'
+      get 'rent_sum_report'
+      post 'rent_sum_report'
+      post 'rent_sum_report_export'
+      get 'select_catalog2'
+      post 'select_catalog2'
+      get 'select_catalog3'
+      post 'select_catalog3'
+      get 'select_catalog4'
+      post 'select_catalog4'
+      get 'reprint_import'
+      post 'reprint_import' => 'rent_infos#reprint_import'
+    end
+    member do 
+      get 'to_scan'
+      # get 'discard'
     end
   end
 

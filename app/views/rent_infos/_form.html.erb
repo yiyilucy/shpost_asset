@@ -1,0 +1,17 @@
+<%= form_for(@rent_info) do |f| %>
+  <% if @rent_info.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@rent_info.errors.count, "error") %> prohibited this rent_info from being saved:</h2>
+
+      <ul>
+      <% @rent_info.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

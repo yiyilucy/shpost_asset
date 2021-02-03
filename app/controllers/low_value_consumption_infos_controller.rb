@@ -3,32 +3,39 @@ class LowValueConsumptionInfosController < ApplicationController
   # attr_reader :records
 
   def index
-    if current_user.unit.blank?
-      @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use")
-    else
-      if current_user.unit.unit_level == 1
-        @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use")
-      elsif current_user.unit.is_facility_management_unit
-        @low_value_consumption_infos = LowValueConsumptionInfo.where("(relevant_unit_id = ? or use_unit_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, "in_use")
-      elsif current_user.unit.unit_level == 2
-        @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use")
-      elsif current_user.unit.unit_level == 3 && !current_user.unit.is_facility_management_unit 
-        @low_value_consumption_infos = LowValueConsumptionInfo.where("(use_unit_id = ? or use_unit_id in (?)) and status = ?", current_user.unit_id, current_user.unit.children.map{|x| x.id}, "in_use")
-      end
-    end
+    # if current_user.unit.blank?
+    #   @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use")
+    # else
+    #   if current_user.unit.unit_level == 1
+    #     @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "in_use")
+    #   elsif current_user.unit.is_facility_management_unit
+    #     @low_value_consumption_infos = LowValueConsumptionInfo.where("(relevant_unit_id = ? or use_unit_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, "in_use")
+    #   elsif current_user.unit.unit_level == 2
+    #     @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "in_use")
+    #   elsif current_user.unit.unit_level == 3 && !current_user.unit.is_facility_management_unit 
+    #     @low_value_consumption_infos = LowValueConsumptionInfo.where("(use_unit_id = ? or use_unit_id in (?)) and status = ?", current_user.unit_id, current_user.unit.children.map{|x| x.id}, "in_use")
+    #   end
+    # end
     
-    if !params[:catalog4].blank?
-      @low_value_consumption_infos = @low_value_consumption_infos.where(lvc_catalog_id: params[:catalog4].to_i)
-    elsif !params[:catalog3].blank?
-      catalog3_code = LowValueConsumptionCatalog.find(params[:catalog3].to_i).code
-      @low_value_consumption_infos = @low_value_consumption_infos.joins(:low_value_consumption_catalog).where("low_value_consumption_catalogs.code like ?", "#{catalog3_code}%" )  
-    elsif !params[:catalog2].blank?
-      catalog2_code = LowValueConsumptionCatalog.find(params[:catalog2].to_i).code
-      @low_value_consumption_infos = @low_value_consumption_infos.joins(:low_value_consumption_catalog).where("low_value_consumption_catalogs.code like ?", "#{catalog2_code}%" )  
-    elsif !params[:catalog].blank? && !params[:catalog][:catalog1].blank?
-      catalog1_code = LowValueConsumptionCatalog.find(params[:catalog][:catalog1].to_i).code
-      @low_value_consumption_infos = @low_value_consumption_infos.joins(:low_value_consumption_catalog).where("low_value_consumption_catalogs.code like ?", "#{catalog1_code}%" )  
+    # if !params[:catalog4].blank?
+    #   @low_value_consumption_infos = @low_value_consumption_infos.where(lvc_catalog_id: params[:catalog4].to_i)
+    # elsif !params[:catalog3].blank?
+    #   catalog3_code = LowValueConsumptionCatalog.find(params[:catalog3].to_i).code
+    #   @low_value_consumption_infos = @low_value_consumption_infos.joins(:low_value_consumption_catalog).where("low_value_consumption_catalogs.code like ?", "#{catalog3_code}%" )  
+    # elsif !params[:catalog2].blank?
+    #   catalog2_code = LowValueConsumptionCatalog.find(params[:catalog2].to_i).code
+    #   @low_value_consumption_infos = @low_value_consumption_infos.joins(:low_value_consumption_catalog).where("low_value_consumption_catalogs.code like ?", "#{catalog2_code}%" )  
+    # elsif !params[:catalog].blank? && !params[:catalog][:catalog1].blank?
+    #   catalog1_code = LowValueConsumptionCatalog.find(params[:catalog][:catalog1].to_i).code
+    #   @low_value_consumption_infos = @low_value_consumption_infos.joins(:low_value_consumption_catalog).where("low_value_consumption_catalogs.code like ?", "#{catalog1_code}%" )  
+    # end
+    catalog1 = nil
+    
+    if !params[:catalog].blank? && !params[:catalog][:catalog1].blank?
+      catalog1 = params[:catalog][:catalog1]
     end
+
+    @low_value_consumption_infos = LowValueConsumptionInfo.get_in_use_infos(LowValueConsumptionInfo, current_user, params[:catalog4], params[:catalog3], params[:catalog2], catalog1)
     
     @low_value_consumption_infos_grid = initialize_grid(@low_value_consumption_infos,
       :name => 'low_value_consumption_infos',
@@ -675,36 +682,29 @@ class LowValueConsumptionInfosController < ApplicationController
   end
 
   def select_catalog2
-    @catalog2s = nil
-    if !params[:catalog1].blank?
-      code = LowValueConsumptionCatalog.find(params[:catalog1].to_i).code
-      @catalog2s = LowValueConsumptionCatalog.where("length(code)=4 and code like ?", "#{code}%").order(:code).map{|c| [c.name,c.id]}.insert(0,"")
-    end
-    # binding.pry
+    # @catalog2s = nil
+    # if !params[:catalog1].blank?
+    #   code = LowValueConsumptionCatalog.find(params[:catalog1].to_i).code
+    #   @catalog2s = LowValueConsumptionCatalog.where("length(code)=4 and code like ?", "#{code}%").order(:code).map{|c| [c.name,c.id]}.insert(0,"")
+    # end
+    @catalog2s = LowValueConsumptionInfo.select_catalog2(LowValueConsumptionCatalog, params[:catalog1])
+    
     respond_to do |format|
       format.js 
     end
   end
 
   def select_catalog3
-    @catalog3s = nil
-    if !params[:catalog2].blank?
-      code = LowValueConsumptionCatalog.find(params[:catalog2].to_i).code
-      @catalog3s = LowValueConsumptionCatalog.where("length(code)=6 and code like ?", "#{code}%").order(:code).map{|c| [c.name,c.id]}.insert(0,"")
-    end
-    # binding.pry
+   @catalog3s = LowValueConsumptionInfo.select_catalog3(LowValueConsumptionCatalog, params[:catalog2])
+
     respond_to do |format|
       format.js 
     end
   end
 
   def select_catalog4
-    @catalog4s = nil
-    if !params[:catalog3].blank?
-      code = LowValueConsumptionCatalog.find(params[:catalog3].to_i).code
-      @catalog4s = LowValueConsumptionCatalog.where("length(code)=8 and code like ?", "#{code}%").order(:code).map{|c| [c.name,c.id]}.insert(0,"")
-    end
-    # binding.pry
+    @catalog4s = LowValueConsumptionInfo.select_catalog4(LowValueConsumptionCatalog, params[:catalog3])
+
     respond_to do |format|
       format.js 
     end

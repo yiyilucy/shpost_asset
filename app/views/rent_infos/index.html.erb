@@ -1,0 +1,44 @@
+<%- model_class = RentInfo -%>
+<div class="page-header">
+  <h1>在用其他租赁资产信息  </h1>
+  <div><%= render partial: '/layouts/page_size' %></div>
+
+  <div style="float:right">
+    <% if (can? :discard, RentInfo) %>
+    <%= submit_tag "报废",:class => 'btn btn-primary', onclick: "if(!confirm('确定报废?')){return false;}else{form2.action='rent_infos/discard';form2.submit();}" %>
+    <% end %>
+    <% if (can? :print, RentInfo) %>
+    <%= submit_tag "打印",:class => 'btn btn-primary', target: '_blank', onclick: "form2.action='rent_infos/print';form2.submit();" %>
+    <% end %>
+    <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="rent_infos">导出</button>
+  </div>
+</div>
+<div>
+  <%= form_tag('', :method => "get", name: 'form1') do %>
+  <b>一级类别:</b><%= select("catalog","fix_catalog1", FixedAssetCatalog.where("length(code)=2").order(:code).map{|c| [c.name,c.id]}.insert(0,""),class: 'control-label') %>
+  <b>二级类别:</b>
+  <% if !@catalog2s.blank? %>
+  <%= select("catalog","fix_catalog2", @catalog2s,class: 'control-label') %>    
+  <% else %>
+    <%= select_tag "fix_catalog2", options_for_select("") %>
+  <% end %>
+  <b>三级类别:</b>
+  <% if !@catalog3s.blank? %>
+  <%= select("catalog","fix_catalog3", @catalog3s,class: 'control-label') %>    
+  <% else %>
+    <%= select_tag "fix_catalog3", options_for_select("") %>
+  <% end %>
+  <b>四级类别:</b>
+  <% if !@catalog4s.blank? %>
+  <%= select("catalog","fix_catalog4", @catalog4s,class: 'control-label') %>    
+  <% else %>
+    <%= select_tag "fix_catalog4", options_for_select("") %>
+  <% end %>
+  <%= submit_tag "查询", :class => 'btn btn-primary', :method => "get", onclick: "form1.action='/shpost_asset/rent_infos';form1.submit();" %>
+  <%end %>  
+
+<%= form_tag('', :method => "post", name: 'form2') do %>  
+<div style="float:left"><%= render :partial => 'rent_infos_grid' %></div>
+<%end %>
+</div>
+

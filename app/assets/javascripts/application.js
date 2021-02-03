@@ -206,6 +206,34 @@ ready = function() {
     
     window.open(to_url, "_self");
   }); 
+
+  $('#catalog_fix_catalog1').click(function(){
+    $.ajax({
+      type : 'GET',
+      url : '/shpost_asset/rent_infos/select_catalog2/',
+      data: { catalog1: $('#catalog_fix_catalog1').val()},
+      dataType : 'script'
+    });
+   return false;
+  }); 
+  $('#fix_catalog2').click(function(){
+    $.ajax({
+      type : 'GET',
+      url : '/shpost_asset/rent_infos/select_catalog3/',
+      data: { catalog2: $('#fix_catalog2').val()},
+      dataType : 'script'
+    });
+   return false;
+  }); 
+  $('#fix_catalog3').click(function(){
+    $.ajax({
+      type : 'GET',
+      url : '/shpost_asset/rent_infos/select_catalog4/',
+      data: { catalog3: $('#fix_catalog3').val()},
+      dataType : 'script'
+    });
+   return false;
+  });
 }
 
 

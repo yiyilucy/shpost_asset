@@ -356,6 +356,9 @@ zh-CN:
       up_download:
         one: 上传下载模板
         other: 上传下载模板
+      rent_info:
+        one: 其他租赁资产信息
+        other: 其他租赁资产信息
     attributes:
       user:
         email: "电子邮件"
@@ -627,6 +630,38 @@ zh-CN:
         ver_no: "版本号"
         url: "地址"
         oper_date: "操作时间"
+      rent_info:
+        asset_no: "资产编号"
+        asset_name: "资产名称"       
+        fixed_asset_catalog_id: "类别目录"
+        use_at: "启用日期"
+        amount: "数量"
+        brand_model: "结构/型号"
+        use_user: "资产使用人"
+        use_unit_id: "使用部门"
+        location: "地点备注"
+        area: "[建筑面积（平方米）]"
+        sum: "[租金总金额]"
+        use_right_start: "[使用权取得日期]"
+        use_right_end: "[使用权终止日期]"
+        pay_cycle: "[租赁费支付周期]"
+        license: "[牌照]"
+        deposit: "[租赁押金]"
+        relevant_unit_id: "归口管理部门"
+        status: "状态"
+        print_times: "标签打印次数"
+        purchase_id: "采购单号"
+        manage_unit_id: "管理单位"
+        status_waiting: "待处理"
+        status_checking: "待复核"
+        status_declined: "否决"
+        status_canceled: "取消"
+        status_in_use: "在用"
+        status_revoked: "撤回"
+        status_discard: "报废"
+        log: "日志"
+        discard_at: "报废日期"
+        is_reprint: "是否补打"
   menu:
     permission:
       name: "权限管理"
@@ -688,94 +723,6 @@ zh-CN:
           needrole:
             can: :fixed_asset_report
             role: :FixedAssetInfo
-    low_value_consumptions:
-      name: "低值易耗品"
-      needrole:
-        can: :read
-        role: :LowValueConsumptionCatalog
-      submenu:
-        low_value_consumption_catalog:
-          name: "低值易耗品目录"
-          link: "/low_value_consumption_catalogs"
-          need_count: false
-          needrole:
-            can: :read
-            role: :LowValueConsumptionCatalog
-        low_value_consumption_info_inuse:
-          name: "在用低值易耗品信息"
-          link: "/low_value_consumption_infos"
-          need_count: false
-          needrole:
-            can: :read
-            role: :LowValueConsumptionInfo
-        low_value_consumption_info_discard:
-          name: "报废低值易耗品信息"
-          link: "/low_value_consumption_infos/discard_index"
-          need_count: false
-          needrole:
-            can: :read
-            role: :LowValueConsumptionInfo
-        low_value_consumption_report:
-          name: "低值易耗品报表"
-          link: "/low_value_consumption_infos/low_value_consumption_report"
-          need_count: false
-          needrole:
-            can: :low_value_consumption_report
-            role: :LowValueConsumptionInfo
-        lvc_report:
-          name: "资产汇总报表"
-          link: "/low_value_consumption_infos/lvc_report"
-          need_count: false
-          needrole:
-            can: :lvc_report
-            role: :LowValueConsumptionInfo
-    purchases:
-      name: "采购单"  
-      needrole:
-        can: :read
-        role: :Purchase  
-      submenu:
-        new_purchase:
-          name: "创建采购单"
-          link: "/purchases"
-          need_count: false
-          needrole:
-            can: :new
-            role: :Purchase
-        to_do_purchase:
-          name: "待处理采购单"
-          link: "/purchases/to_do_index"
-          need_count: false
-          needrole:
-            can: :read
-            role: :Purchase
-        doing_purchase:
-          name: "处理中采购单"
-          link: "/purchases/doing_index"
-          need_count: false
-          needrole:
-            can: :read
-            role: :Purchase
-        done_purchase:
-          name: "已完成采购单"
-          link: "/purchases/done_index"
-          need_count: false
-          needrole:
-            can: :read
-            role: :Purchase
-    lvc_discards:
-      name: "低值易耗品报废单"    
-      needrole:
-        can: :read
-        role: :LvcDiscard
-      submenu:
-        lvc_discard:
-          name: "低值易耗品报废单"
-          link: "/lvc_discards"
-          need_count: false
-          needrole:
-            can: :read
-            role: :LvcDiscard
     fixed_asset_inventory:    
       name: "固定资产盘点单"    
       needrole:
@@ -824,6 +771,95 @@ zh-CN:
           needrole:
             can: :sample_inventory_doing_index
             role: :FixedAssetInventory
+    low_value_consumptions:
+      name: "低值易耗品"
+      needrole:
+        can: :read
+        role: :LowValueConsumptionCatalog
+      submenu:
+        low_value_consumption_catalog:
+          name: "低值易耗品目录"
+          link: "/low_value_consumption_catalogs"
+          need_count: false
+          needrole:
+            can: :read
+            role: :LowValueConsumptionCatalog
+        low_value_consumption_info_inuse:
+          name: "在用低值易耗品信息"
+          link: "/low_value_consumption_infos"
+          need_count: false
+          needrole:
+            can: :read
+            role: :LowValueConsumptionInfo
+        low_value_consumption_info_discard:
+          name: "报废低值易耗品信息"
+          link: "/low_value_consumption_infos/discard_index"
+          need_count: false
+          needrole:
+            can: :read
+            role: :LowValueConsumptionInfo
+        low_value_consumption_report:
+          name: "低值易耗品报表"
+          link: "/low_value_consumption_infos/low_value_consumption_report"
+          need_count: false
+          needrole:
+            can: :low_value_consumption_report
+            role: :LowValueConsumptionInfo
+        lvc_report:
+          name: "资产汇总报表"
+          link: "/low_value_consumption_infos/lvc_report"
+          need_count: false
+          needrole:
+            can: :lvc_report
+            role: :LowValueConsumptionInfo
+    purchases:
+      name: "低值易耗品采购单"  
+      needrole:
+        can: :read
+        role: :Purchase  
+      submenu:
+        new_purchase:
+          name: "创建采购单"
+          link: "/purchases"
+          need_count: false
+          needrole:
+            can: :new
+            role: :Purchase
+        to_do_purchase:
+          name: "待处理采购单"
+          link: "/purchases/to_do_index"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Purchase
+        doing_purchase:
+          name: "处理中采购单"
+          link: "/purchases/doing_index"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Purchase
+        done_purchase:
+          name: "已完成采购单"
+          link: "/purchases/done_index"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Purchase
+    lvc_discards:
+      name: "低值易耗品报废单"    
+      needrole:
+        can: :read
+        role: :LvcDiscard
+      submenu:
+        lvc_discard:
+          name: "低值易耗品报废单"
+          link: "/lvc_discards"
+          need_count: false
+          needrole:
+            can: :read
+            role: :LvcDiscard
+    
 
     low_value_consumption_inventory:    
       name: "低值易耗品盘点单" 
@@ -873,6 +909,19 @@ zh-CN:
           needrole:
             can: :sample_inventory_doing_index
             role: :LowValueConsumptionInventory
+    rent_infos:
+      name: "其他租赁资产"
+      needrole:
+        can: :read
+        role: :RentInfo
+      submenu:
+        rent_info_inuse:
+          name: "在用其他租赁资产"
+          link: "/rent_infos"
+          need_count: false
+          needrole:
+            can: :read
+            role: :RentInfo
     up_downloads:
       name: "模板管理"
       needrole:

@@ -1,0 +1,87 @@
+<%- model_class = RentInfo -%>
+<%= grid(@rent_infos_grid) do |g|
+    g.action_column select_all_buttons: true
+    
+    g.column name: model_class.human_attribute_name(:fixed_asset_catalog_id), attribute: 'name', assoc: :fixed_asset_catalog do |rent_info|
+        code = rent_info.fixed_asset_catalog.code
+        code1 = FixedAssetCatalog.find_by(code: code[0,2]).try :name
+        if code.length>=4
+            code2 = FixedAssetCatalog.find_by(code: code[0,4]).try :name
+        else
+            code2 = ""
+        end
+        if code.length>=6
+            code3 = FixedAssetCatalog.find_by(code: code[0,6]).try :name
+        else
+            code3 = ""
+        end
+        if code.length>=8
+            code4 = FixedAssetCatalog.find_by(code: code[0,8]).try :name
+        else
+            code4 = ""
+        end
+        (code1.blank? ? "" : code1)+"."+(code2.blank? ? "" : code2)+"."+(code3.blank? ? "" : code3)+"."+(code4.blank? ? "" : code4)
+    end
+    
+    g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name'
+
+    g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no'
+
+    g.column name: model_class.human_attribute_name(:use_at), attribute: 'use_at' do |rent_info|
+      rent_info.use_at.blank? ? "" : DateTime.parse(rent_info.use_at.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:amount), attribute: 'amount'
+
+    g.column name: model_class.human_attribute_name(:brand_model), attribute: 'brand_model'
+
+    g.column name: model_class.human_attribute_name(:use_user), attribute: 'use_user' 
+
+    g.column name: model_class.human_attribute_name(:use_unit_id), assoc: :use_unit, attribute: 'name'
+
+    g.column name: model_class.human_attribute_name(:location), attribute: 'location'
+
+    g.column name: model_class.human_attribute_name(:area), attribute: 'area'
+  
+
+    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum', filter_type: :range
+
+    g.column name: model_class.human_attribute_name(:use_right_start), attribute: 'use_right_start', filter_type: :range do |rent_info|
+      rent_info.use_right_start.blank? ? "" : DateTime.parse(rent_info.use_right_start.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:use_right_end), attribute: 'use_right_end', filter_type: :range do |rent_info|
+      rent_info.use_right_end.blank? ? "" : DateTime.parse(rent_info.use_right_end.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:pay_cycle), attribute: 'pay_cycle'
+
+    g.column name: model_class.human_attribute_name(:license), attribute: 'license'
+
+    g.column name: model_class.human_attribute_name(:deposit), attribute: 'deposit', filter_type: :range
+
+    g.column name: model_class.human_attribute_name(:relevant_unit_id), assoc: :relevant_unit, attribute: 'name', table_alias: 'relevant_units_rent_infos'
+
+    g.column name: model_class.human_attribute_name(:status), attribute: 'status',custom_filter: LowValueConsumptionInfo::STATUS.map {|k, v| [model_class.human_attribute_name("status_#{k}"), v]} do |rent_info| 
+      rent_info.status_name
+    end
+
+    g.column name: model_class.human_attribute_name(:manage_unit_id), assoc: :manage_unit, attribute: 'name', table_alias: 'manage_units_rent_infos'
+
+    g.column name: model_class.human_attribute_name(:print_times), attribute: 'print_times'
+    
+    g.column name: model_class.human_attribute_name(:is_reprint), attribute: 'is_reprint' do |rent_info|
+      rent_info.is_reprint_name
+    end
+
+    g.column name: model_class.human_attribute_name(:log), attribute: 'log' do |rent_info|
+      [(rent_info.log.blank? ? "" : rent_info.log[0,rent_info.log.length-1]).try(:truncate, 35), {title: (rent_info.log.blank? ? "" : rent_info.log[0,rent_info.log.length-1])}]
+    end
+ 
+    g.column in_csv: false do |rent_info|
+      ActiveSupport::SafeBuffer.new << 
+      (link_to t('.edit', :default => t("helpers.links.edit")), edit_rent_info_path(rent_info), :class => 'btn btn-xs btn-primary' if (can? :update, rent_info) and ((rent_info.manage_unit_id == current_user.unit_id ) || (rent_info.use_unit_id == current_user.unit_id) || (Unit.find(rent_info.use_unit_id).parent_id == current_user.unit_id)))
+    end
+  end 
+%>  
+

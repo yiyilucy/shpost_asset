@@ -47,16 +47,18 @@ class Ability
         can :manage, LowValueConsumptionCatalog
         can [:read, :print, :fixed_asset_report, :to_scan, :reprint_import], FixedAssetInfo
         can [:read, :discard_index, :print, :low_value_consumption_report, :low_value_consumption_report_export, :to_scan, :lvc_report, :lvc_report_export, :select_catalog2, :select_catalog3, :select_catalog4, :reprint_import], LowValueConsumptionInfo
+        can [:read, :discard_index, :print, :rent_report, :rent_report_export, :to_scan, :rent_sum_report, :rent_sum_report_export, :select_catalog2, :select_catalog3, :select_catalog4, :reprint_import], RentInfo
         # can [:new, :read], Purchase
         can :manage, Sequence
         can :manage, FixedAssetInventory
         cannot [:doing_index, :sample_inventory_doing_index], FixedAssetInventory
         can :manage, FixedAssetInventoryDetail
-        # cannot :scan, FixedAssetInventoryDetail
         can :manage, LowValueConsumptionInventory
         cannot [:doing_index, :sample_inventory_doing_index], LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
-        # cannot :scan, LowValueConsumptionInventoryDetail
+        # can :manage, RentInventory
+        # cannot [:doing_index, :sample_inventory_doing_index], RentInventory
+        # can :manage, RentInventoryDetail
         can :manage, UpDownload
     end
         
@@ -82,6 +84,7 @@ class Ability
         cannot [:create, :to_import, :up_download_import,:destroy], UpDownload
         can :to_scan, FixedAssetInfo
         can :to_scan, LowValueConsumptionInfo
+        can :to_scan, RentInfo
     end    
 
     if user.deviceadmin?
@@ -94,6 +97,10 @@ class Ability
         can :manage, LowValueConsumptionInfo
         if (user.unit.unit_level == 3 && !user.unit.is_facility_management_unit) || (user.unit.unit_level == 4)
             cannot [:low_value_consumption_info_import, :batch_destroy, :discard, :low_value_consumption_report, :lvc_report, :lvc_report_export], LowValueConsumptionInfo
+        end
+        can :manage, RentInfo
+        if (user.unit.unit_level == 3 && !user.unit.is_facility_management_unit) || (user.unit.unit_level == 4)
+            cannot [:rent_info_import, :batch_destroy, :discard, :rent_report, :rent_sum_report, :rent_sum_report_export], RentInfo
         end
         can :manage, Purchase
         if user.unit.unit_level == 3 && !user.unit.is_facility_management_unit
@@ -134,6 +141,20 @@ class Ability
             cannot [:to_sample_inventory, :sample_inventory, :sample_inventory_index], LowValueConsumptionInventory
         end
         can :manage, LowValueConsumptionInventoryDetail
+
+        # can :manage, RentInventory
+        # if (user.unit.unit_level == 3 && !user.unit.is_facility_management_unit) || (user.unit.unit_level == 4)
+        #     cannot :create, RentInventory
+        # end
+        # if !user.unit.is_facility_management_unit && !(user.unit.unit_level == 1)
+        #     cannot [:level2_index, :sample_level2_index], RentInventory
+        # end
+        # if user.unit.unit_level == 3 && user.unit.is_facility_management_unit
+        #     cannot :sample_inventory_doing_index, RentInventory
+        # else           
+        #     cannot [:to_sample_inventory, :sample_inventory, :sample_inventory_index], RentInventory
+        # end
+        # can :manage, RentInventoryDetail
         can :update, User, id: user.id
         can [:read, :up_download_export], UpDownload
         cannot [:create, :to_import, :up_download_import,:destroy], UpDownload
@@ -144,6 +165,9 @@ class Ability
             can [:read, :to_report, :report, :export, :level2_index], LowValueConsumptionInventory
             cannot [:doing_index, :sample_inventory_doing_index], LowValueConsumptionInventory
             can :read, LowValueConsumptionInventoryDetail
+            # can [:read, :to_report, :report, :export, :level2_index], RentInventory
+            # cannot [:doing_index, :sample_inventory_doing_index], RentInventory
+            # can :read,RentInventoryDetail
             can [:read, :to_report, :report, :export, :level2_index], FixedAssetInventory
             cannot [:doing_index, :sample_inventory_doing_index], FixedAssetInventory
             can :read,  FixedAssetInventoryDetail
@@ -153,12 +177,14 @@ class Ability
         can :read, LowValueConsumptionCatalog
         can :read, FixedAssetInfo, unit_id: user.unit_id
         can [:read, :discard_index, :select_catalog2, :select_catalog3, :select_catalog4], LowValueConsumptionInfo
+        can [:read, :discard_index, :select_catalog2, :select_catalog3, :select_catalog4], RentInfo
         can [:to_do_index, :doing_index, :done_index, :read, :approve, :decline, :print_certificate], Purchase
         can :manage, LvcDiscard
         can :manage, LvcDiscardDetail
         can :update, User, id: user.id
         can :to_scan, FixedAssetInfo
         can :to_scan, LowValueConsumptionInfo
+        can :to_scan, RentInfo
         can [:read, :up_download_export], UpDownload
         cannot [:create, :to_import, :up_download_import,:destroy], UpDownload
     end
@@ -170,6 +196,9 @@ class Ability
         can [:read, :doing_index, :sample_inventory_doing_index, :to_report, :report, :export, :sample_report], LowValueConsumptionInventory
         can :manage, LowValueConsumptionInventoryDetail
         can :to_scan, LowValueConsumptionInfo
+        # can [:read, :doing_index, :sample_inventory_doing_index, :to_report, :report, :export, :sample_report], RentInventory
+        # can :manage, RentInventoryDetail
+        can :to_scan,RentInfo
         can [:read, :up_download_export], UpDownload
         cannot [:create, :to_import, :up_download_import,:destroy], UpDownload
     end
