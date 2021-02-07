@@ -19,10 +19,10 @@
     </div>
   </div>
  
-
+  <%= hidden_field_tag('atype',@atype) %>
   <%= f.submit nil, :class => 'btn btn-primary', onclick: "if($('#purchase_no').val() == ''){ alert('请输入采购单号'); return false;}; " %>
   <% if can? :index, Purchase %>
     <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
-              purchases_path, :class => 'btn btn-default' %>
+              request.referer, :class => 'btn btn-default' %>
   <% end %>
 <% end %>

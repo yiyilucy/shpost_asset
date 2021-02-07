@@ -219,16 +219,16 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
   end  
   def edit
     if !@low_value_consumption_info.relevant_unit_id.blank?
-      @relename = Unit.find_by(id: @low_value_consumption_info.relevant_unit_id).try(:name)
+      @relename = Unit.get_relevant_unit_name(@low_value_consumption_info.relevant_unit_id)
     else
       @relename = ''
     end
     if !@low_value_consumption_info.use_unit_id.blank?
-      @usename = Unit.find_by(id: @low_value_consumption_info.use_unit_id).try(:name)
+      @usename = Unit.get_use_unit_name(@low_value_consumption_info.use_unit_id)
     else
       @usename = ''
     end
-    @low_value_consumption_catalog = LowValueConsumptionCatalog.find_by(id: @low_value_consumption_info.lvc_catalog_id).try(:name)
+    @low_value_consumption_catalog = LowValueConsumptionCatalog.get_catalog_name(@low_value_consumption_info.lvc_catalog_id)
   end
 
   def batch_edit

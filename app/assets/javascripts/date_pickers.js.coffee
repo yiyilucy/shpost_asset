@@ -41,5 +41,15 @@ ready = ->
     changeMonth:true,
     changeYear:true
   });
+  $('#rent_info_use_right_start').datepicker({
+    showAnim:"blind",
+    changeMonth:true,
+    changeYear:true
+  });
+  $('#rent_info_use_right_end').datepicker({
+    showAnim:"blind",
+    changeMonth:true,
+    changeYear:true
+  });
 $(document).ready(ready)
 $(document).on('page:load', ready)

@@ -153,6 +153,7 @@ zh-CN:
       to_send: 下发
       to_check: 送审
       low_value_consumption_infos: 低值易耗品信息
+      rent_infos: 其他租赁资产信息
       approve: 通过
       decline: 拒绝
       revoke: 撤回
@@ -823,28 +824,28 @@ zh-CN:
       submenu:
         new_purchase:
           name: "创建采购单"
-          link: "/purchases"
+          link: "/purchases?atype=lvc"
           need_count: false
           needrole:
             can: :new
             role: :Purchase
         to_do_purchase:
           name: "待处理采购单"
-          link: "/purchases/to_do_index"
+          link: "/purchases/to_do_index?atype=lvc"
           need_count: false
           needrole:
             can: :read
             role: :Purchase
         doing_purchase:
           name: "处理中采购单"
-          link: "/purchases/doing_index"
+          link: "/purchases/doing_index?atype=lvc"
           need_count: false
           needrole:
             can: :read
             role: :Purchase
         done_purchase:
           name: "已完成采购单"
-          link: "/purchases/done_index"
+          link: "/purchases/done_index?atype=lvc"
           need_count: false
           needrole:
             can: :read
@@ -925,6 +926,19 @@ zh-CN:
           needrole:
             can: :read
             role: :RentInfo
+    rent_purchases:
+      name: "其他租赁采购单"  
+      needrole:
+        can: :read
+        role: :Purchase  
+      submenu:
+        new_rent_purchase:
+          name: "创建采购单"
+          link: "/purchases?atype=rent"
+          need_count: false
+          needrole:
+            can: :new
+            role: :Purchase
     up_downloads:
       name: "模板管理"
       needrole:

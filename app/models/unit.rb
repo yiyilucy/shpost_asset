@@ -33,4 +33,12 @@ class Unit < ActiveRecord::Base
     self.unit_desc.blank? ? self.name : self.unit_desc
   end
 
+  def self.get_relevant_unit_name(relevant_unit_id)
+    relename = Unit.find_by(id: relevant_unit_id).try(:name)
+  end
+
+  def self.get_use_unit_name(use_unit_id)
+    usename = Unit.find_by(id: use_unit_id).try(:name)
+  end
+    
 end

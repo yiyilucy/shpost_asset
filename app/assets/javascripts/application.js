@@ -72,6 +72,19 @@ function ajaxunits() {
     var unitid = "#"+data.item.obj+"_manage_unit_id";
     $(unitid).val(data.item.id);
   });
+
+  $('#fix_parent_catalog_name').bind('railsAutocomplete.select', function(event, data){
+    /* Do something here */
+    // var catalogid = "#"+data.item.obj+"_fixed_asset_catalog_id";
+    $('#rent_infos_fixed_asset_catalog_id').val(data.item.id);
+    $("#fix4_catalog_name").attr("data-autocomplete", "/shpost_asset/unit_autocom/p_autocomplete_fixed_asset_catalog4?objid=rent_info&obj=obj&pid="+data.item.id)
+  });
+
+  $('#fix4_catalog_name').bind('railsAutocomplete.select', function(event, data){
+    /* Do something here */
+    var catalogid = "#"+data.item.obj+"_fixed_asset_catalog_id";
+    $(catalogid).val(data.item.id);
+  });
 }
 
 var ready;

@@ -1,0 +1,118 @@
+<%= form_for ([ @purchase, @rent_info]), :html => { :class => 'form-horizontal' } do |f| %>
+  <div class="control-group">
+    <%= f.label "一到三级类别目录", :class => 'control-label' %>
+    <div class="controls">
+      <%= fixed_asset_parent_catalog_select_autocom("rent_info",@rent_info.id) %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label "四级类别目录", :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= fixed_asset_catalog4_select_autocom("rent_info", @rent_info.id, nil) %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :asset_name, :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= f.text_field :asset_name, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :brand_model, :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= f.text_field :brand_model, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :use_user, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :use_user, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :use_unit_id, :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= use_unit_select_autocom("rent_info",@rent_info.id) %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :location, :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= f.text_field :location, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :area, :class => 'control-label' %><font color="#FF0000">  *(房产必填)</font>
+    <div class="controls">
+      <%= f.text_field :area, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :sum, :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= f.text_field :sum, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :use_right_start, :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= f.text_field  :use_right_start %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :use_right_end, :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= f.text_field  :use_right_end %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :pay_cycle, :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= f.text_field :pay_cycle, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :license, :class => 'control-label' %><font color="#FF0000">  *(车辆必填)</font>
+    <div class="controls">
+      <%= f.text_field :license, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :deposit, :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= f.text_field :deposit, :class => 'text_field' %>
+    </div>
+  </div> 
+  <div class="control-group">
+    <%= f.label :relevant_unit_id, :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= relevant_department_select_autocom("rent_info",@rent_info.id) %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :desc, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :desc, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :change_log, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :change_log, :class => 'text_field' %>
+    </div>
+  </div>
+   
+  <% if @rent_info.asset_name.blank? %>
+    <div class="control-group">
+      <%= label_tag(:amount, "数量") %><font color="#FF0000">  *</font>
+      <div class="controls">
+        <%= text_field("amount", "amount") %>
+      </div>  
+    </div>
+  <% end %>
+  
+  <%= f.submit nil, :class => 'btn btn-primary' %>
+  <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+            purchase_rent_infos_path(@purchase), :class => 'btn btn-default' %>
+ 
+<% end %>

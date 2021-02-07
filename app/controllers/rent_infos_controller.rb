@@ -76,6 +76,6 @@ class RentInfosController < ApplicationController
     end
 
     def rent_info_params
-      params[:rent_info]
+      params.require(:rent_info).permit(:asset_name, :asset_no, :fixed_asset_catalog_id, :use_at, :amount, :brand_model, :use_user, :use_unit_id, :location, :area, :sum, :use_right_start, :use_right_end, :pay_cycle, :license, :deposit, :relevant_unit_id, :manage_unit_id, :desc, :is_rent, :is_reprint, :change_log)
     end
 end

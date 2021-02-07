@@ -43,4 +43,14 @@ module ApplicationHelper
     concat text_field_tag('manage_unit_name', nil, 'data-autocomplete' => "/shpost_asset/unit_autocom/lvc_report_autocomplete_manage_unit?objid=#{obj_id}&obj=#{obj}")
     hidden_field(obj_id.to_sym,"manage_unit_id");
   end
+
+  def fixed_asset_parent_catalog_select_autocom(obj_id,obj)
+    concat text_field_tag('fix_parent_catalog_name',@fixed_asset_catalog, 'data-autocomplete' => "/shpost_asset/unit_autocom/p_autocomplete_fixed_asset_parent_catalog?objid=#{obj_id}&obj=#{obj}")
+    hidden_field("rent_infos","fixed_asset_catalog_id");
+  end
+
+  def fixed_asset_catalog4_select_autocom(obj_id,obj,pid)
+    concat text_field_tag('fix4_catalog_name',@fixed_asset_catalog, 'data-autocomplete' => "/shpost_asset/unit_autocom/p_autocomplete_fixed_asset_catalog4?objid=#{obj_id}&obj=#{obj}&pid=#{pid}")
+    hidden_field(obj_id.to_sym,"fixed_asset_catalog_id");
+  end
 end
