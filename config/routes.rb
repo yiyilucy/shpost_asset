@@ -344,6 +344,8 @@ ShpostAsset::Application.routes.draw do
       post 'select_catalog4'
       get 'reprint_import'
       post 'reprint_import' => 'rent_infos#reprint_import'
+      get 'import'
+      post 'import' => 'rent_infos#import'
     end
     member do 
       get 'to_scan'

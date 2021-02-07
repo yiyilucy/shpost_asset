@@ -10,6 +10,9 @@
     <% if (can? :print, RentInfo) %>
     <%= submit_tag "打印",:class => 'btn btn-primary', target: '_blank', onclick: "form2.action='rent_infos/print';form2.submit();" %>
     <% end %>
+    <%= link_to t('.import', :default => t("helpers.links.import")),
+                  import_rent_infos_path,
+                  :class => 'btn btn-primary' %>
     <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="rent_infos">导出</button>
   </div>
 </div>
