@@ -1,0 +1,1 @@
+json.extract! @rent_info, :id

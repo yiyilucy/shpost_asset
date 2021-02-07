@@ -156,6 +156,17 @@ ShpostAsset::Application.routes.draw do
         post 'import' => 'purchase_low_value_consumption_info#import' 
       end
     end
+
+    resources :rent_infos, :controller => 'purchase_rent_info' do
+      collection do
+        post 'batch_destroy'
+        post 'batch_edit'
+        post 'batch_update'
+        post 'print'
+        get 'import'
+        post 'import' => 'purchase_rent_info#import' 
+      end
+    end
       
   end
 
@@ -203,6 +214,8 @@ ShpostAsset::Application.routes.draw do
       get 'si_autocomplete_low_value_consumption_catalog'
       get 'si_autocomplete_lv3_unit'
       get 'lvc_report_autocomplete_manage_unit'
+      get 'p_autocomplete_fixed_asset_parent_catalog'
+      get 'p_autocomplete_fixed_asset_catalog4'
     end
   end
 

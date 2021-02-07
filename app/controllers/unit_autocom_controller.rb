@@ -121,4 +121,30 @@ class UnitAutocomController < ApplicationController
 
 	    render :json => manage_units.map { |unit| {:id => unit.id, :label => unit.name, :value => unit.name, :obj => obj_id} }
     end
+
+    def p_autocomplete_fixed_asset_parent_catalog
+    	term = params[:term]
+	    obj_id = params[:objid]
+	    obj = params[:obj]
+
+	    fixed_asset_catalogs = FixedAssetCatalog.where("(length(fixed_asset_catalogs.code)<=6) and (fixed_asset_catalogs.name like ? or fixed_asset_catalogs.code like ?)", "%#{term}%", "%#{term}%").order(:code).all
+
+	    render :json => fixed_asset_catalogs.map { |fixed_asset_catalog| {:id => fixed_asset_catalog.id, :label => fixed_asset_catalog.code+"_"+fixed_asset_catalog.name, :value => fixed_asset_catalog.code+"_"+fixed_asset_catalog.name, :obj => obj_id} }
+    end
+
+    def p_autocomplete_fixed_asset_catalog4
+    	term = params[:term]
+	    obj_id = params[:objid]
+	    obj = params[:obj]
+	    pid = params[:pid]
+
+	    if !pid.blank?
+			pcode = FixedAssetCatalog.find(pid.to_i).code
+	    	fixed_asset_catalogs = FixedAssetCatalog.where("(length(fixed_asset_catalogs.code)=8) and (fixed_asset_catalogs.name like ? or fixed_asset_catalogs.code like ?) and fixed_asset_catalogs.code like ?", "%#{term}%", "%#{term}%", "#{pcode}%").order(:code).all
+	    else
+	    	fixed_asset_catalogs = FixedAssetCatalog.where("(length(fixed_asset_catalogs.code)=8) and (fixed_asset_catalogs.name like ? or fixed_asset_catalogs.code like ?)", "%#{term}%", "%#{term}%").order(:code).all
+	    end
+
+	    render :json => fixed_asset_catalogs.map { |fixed_asset_catalog| {:id => fixed_asset_catalog.id, :label => fixed_asset_catalog.code+"_"+fixed_asset_catalog.name, :value => fixed_asset_catalog.code+"_"+fixed_asset_catalog.name, :obj => obj_id} }
+    end
 end

@@ -2,9 +2,10 @@ class PurchasesController < ApplicationController
   load_and_authorize_resource
 
   def index
-    # binding.pry
+    @atype = params[:atype]
+
     if current_user.deviceadmin?
-      @purchases = @purchases.accessible_by(current_ability).where("(create_user_id = ? or create_unit_id = ?) and status = ? and is_send = ?", current_user.id, current_user.unit_id, "waiting", false)
+      @purchases = @purchases.accessible_by(current_ability).where("(create_user_id = ? or create_unit_id = ?) and status = ? and is_send = ? and atype = ?", current_user.id, current_user.unit_id, "waiting", false, @atype)
     end
 
     @purchases_grid = initialize_grid(@purchases, order: 'purchases.created_at',
@@ -12,33 +13,36 @@ class PurchasesController < ApplicationController
   end
 
   def to_do_index
-    # binding.pry
+    @atype = params[:atype]
+
     if current_user.deviceadmin?
-      @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? and status in (?) and is_send = ? ) or ((create_user_id = ? or create_unit_id = ?) and status in (?)) or ((create_user_id = ? or create_unit_id = ?) and status = ? and is_send = ?)", current_user.unit_id, ["waiting", "declined"], true, current_user.id, current_user.unit_id, ["declined", "revoked"], current_user.id, current_user.unit_id, "waiting", true )
+      @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? and status in (?) and is_send = ? ) or ((create_user_id = ? or create_unit_id = ?) and status in (?)) or ((create_user_id = ? or create_unit_id = ?) and status = ? and is_send = ? and atype = ?)", current_user.unit_id, ["waiting", "declined"], true, current_user.id, current_user.unit_id, ["declined", "revoked"], current_user.id, current_user.unit_id, "waiting", true, @atype )
     elsif current_user.accountant?
-      @purchases = @purchases.accessible_by(current_ability).where(manage_unit_id: current_user.unit_id, status: "checking")
+      @purchases = @purchases.accessible_by(current_ability).where(manage_unit_id: current_user.unit_id, status: "checking", atype: @atype)
     end
 
     @purchases_grid = initialize_grid(@purchases, order: 'purchases.updated_at', order_direction: 'desc')
   end
 
   def doing_index
-    # binding.pry
+    @atype = params[:atype]
+    
     if current_user.accountant?
-      @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? and status in (?) and is_send = ? ) or (create_unit_id = ? and status in (?)) or (create_unit_id = ? and status = ? and is_send = ?)", current_user.unit_id, ["waiting", "declined"], true, current_user.unit_id, ["declined", "revoked"], current_user.unit_id, "waiting", true )
+      @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? and status in (?) and is_send = ? ) or (create_unit_id = ? and status in (?)) or (create_unit_id = ? and status = ? and is_send = ? and atype = ?)", current_user.unit_id, ["waiting", "declined"], true, current_user.unit_id, ["declined", "revoked"], current_user.unit_id, "waiting", true, @atype )
     elsif current_user.deviceadmin?
-      @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? or create_unit_id = ? or create_user_id = ?) and status = ?", current_user.unit_id, current_user.unit_id, current_user.id, "checking")
+      @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? or create_unit_id = ? or create_user_id = ?) and status = ? and atype = ?", current_user.unit_id, current_user.unit_id, current_user.id, "checking", @atype)
     end
 
     @purchases_grid = initialize_grid(@purchases, order: 'purchases.updated_at', order_direction: 'desc')
   end
 
   def done_index
-    # binding.pry
+    @atype = params[:atype]
+    
     if current_user.deviceadmin?
-      @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? or create_unit_id = ? or create_user_id = ?) and status in (?)", current_user.unit_id, current_user.unit_id, current_user.id, ["canceled", "done"])
+      @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? or create_unit_id = ? or create_user_id = ?) and status in (?) and atype = ?", current_user.unit_id, current_user.unit_id, current_user.id, ["canceled", "done"], @atype)
     elsif current_user.accountant?
-      @purchases = @purchases.accessible_by(current_ability).where("manage_unit_id = ? and status in (?)", current_user.unit_id, ["canceled", "done"])
+      @purchases = @purchases.accessible_by(current_ability).where("manage_unit_id = ? and status in (?) and atype = ?", current_user.unit_id, ["canceled", "done"], @atype)
     end
     
     @purchases_grid = initialize_grid(@purchases, order: 'purchases.updated_at', order_direction: 'desc')
@@ -48,14 +52,15 @@ class PurchasesController < ApplicationController
   end
 
   def new
+    @atype = params[:atype]
   end
 
   def edit
+    @atype = params[:atype]
     @usename = Unit.find_by(id: @purchase.use_unit_id).try(:name)
   end
 
   def create
-    # binding.pry
     if !params[:purchase].blank? and !params[:purchase][:no].blank?
       ori_purchase = Purchase.find_by(no: params[:purchase][:no])
       if !ori_purchase.blank?
@@ -71,6 +76,7 @@ class PurchasesController < ApplicationController
           @purchase.status = "waiting"
           @purchase.manage_unit_id = current_user.try(:unit).try :id
           @purchase.change_log = Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单创建" + ","
+          @purchase.atype = params[:atype]
 
           respond_to do |format|
             if @purchase.save
@@ -93,8 +99,7 @@ class PurchasesController < ApplicationController
               #   amount = amount-1
               # end
 
-
-              format.html { redirect_to @purchase, notice: I18n.t('controller.create_success_notice', model: '采购单') }
+              format.html { redirect_to purchases_path(atype: params[:atype]), notice: I18n.t('controller.create_success_notice', model: '采购单') }
               format.json { render action: 'show', status: :created, location: @purchase }
             else
               format.html { render action: 'new' }
@@ -126,7 +131,7 @@ class PurchasesController < ApplicationController
             format.html { redirect_to to_do_index_purchases_url, notice: I18n.t('controller.update_success_notice', model: '采购单')  }
             format.json { head :no_content }
           else
-            format.html { redirect_to @purchase, notice: I18n.t('controller.update_success_notice', model: '采购单')  }
+            format.html { redirect_to purchases_path(atype: params[:atype]), notice: I18n.t('controller.update_success_notice', model: '采购单')  }
             format.json { head :no_content }
           end
         else
@@ -141,7 +146,7 @@ class PurchasesController < ApplicationController
     @purchase.destroy
     @purchase.low_value_consumption_infos.delete_all
     respond_to do |format|
-      format.html { redirect_to purchases_url }
+      format.html { redirect_to request.referer }
       format.json { head :no_content }
     end
   end
@@ -174,41 +179,50 @@ class PurchasesController < ApplicationController
 
   def to_check
     ActiveRecord::Base.transaction do 
-      if @purchase.can_to_check?
+      @atype = params[:atype]
+      if (!@atype.blank? && (@atype.eql?"lvc") && @purchase.can_to_check?) || (!@atype.blank? && (@atype.eql?"rent") && @purchase.can_to_check_rent?)
         @purchase.status = "checking"
         @purchase.to_check_user_id = current_user.id
         @purchase.change_log = (@purchase.change_log.blank? ? "" : @purchase.change_log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单送审" + ","
 
         respond_to do |format|
           if @purchase.save
-            @purchase.low_value_consumption_infos.update_all(status: "checking")
+            if @atype.eql?"lvc"
+              @purchase.low_value_consumption_infos.update_all(status: "checking")
+            else
+              @purchase.rent_infos.update_all(status: "checking")
+            end
             if @purchase.create_user_id == current_user.id
-              format.html { redirect_to purchases_url, notice: I18n.t('controller.to_check_success_notice', model: '采购单') }
+              format.html { redirect_to purchases_url(atype: @atype), notice: I18n.t('controller.to_check_success_notice', model: '采购单') }
               format.json { head :no_content }
             else
-              format.html { redirect_to to_do_index_purchases_url, notice: I18n.t('controller.to_check_success_notice', model: '采购单') }
+              format.html { redirect_to to_do_index_purchases_url(atype: @atype), notice: I18n.t('controller.to_check_success_notice', model: '采购单') }
               format.json { head :no_content }
             end
           else
             if @purchase.create_user_id == current_user.id
-              format.html { redirect_to purchases_url }
+              format.html { redirect_to purchases_url(atype: @atype) }
               format.json { render json: @purchase.errors, status: :unprocessable_entity }
             else
-              format.html { redirect_to to_do_index_purchases_url }
+              format.html { redirect_to to_do_index_purchases_url(atype: @atype) }
               format.json { render json: @purchase.errors, status: :unprocessable_entity }
             end
           end
         end
       else
-        flash[:alert] = "低值易耗品不能为空,所在网点，所在地点，使用部门不能为空"
+        if @atype.eql?"lvc"
+          flash[:alert] = "低值易耗品不能为空,所在网点，所在地点，使用部门不能为空"
+        else
+          flash[:alert] = "其他租赁资产明细不能为空,地点备注，使用部门不能为空"
+        end
         if @purchase.create_user_id == current_user.id
           respond_to do |format|
-            format.html { redirect_to purchases_url }
+            format.html { redirect_to purchases_url(atype: @atype) }
             format.json { head :no_content }
           end
         else 
           respond_to do |format|
-            format.html { redirect_to to_do_index_purchases_url }
+            format.html { redirect_to to_do_index_purchases_url(atype: @atype) }
             format.json { head :no_content }
           end
         end
