@@ -8,6 +8,9 @@
       <%= link_to t('.new', :default => t("helpers.links.new")),
                   new_purchase_rent_info_path,
                   :class => 'btn btn-primary' %>
+      <%= link_to t('.import', :default => t("helpers.links.import")),
+                  import_purchase_rent_infos_path,
+                  :class => 'btn btn-primary' %>
      
     <% end %>
     <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="purchase_rent_infos">导出</button>
