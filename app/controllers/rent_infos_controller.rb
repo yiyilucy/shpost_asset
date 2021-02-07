@@ -324,6 +324,8 @@ class RentInfosController < ApplicationController
       end   
     end
   end
+
+  
   private
     def set_rent_info
       @rent_info = RentInfo.find(params[:id])

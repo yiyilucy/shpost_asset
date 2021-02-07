@@ -4,10 +4,11 @@
   <div><%= render partial: '/layouts/page_size' %></div>
   <%= form_tag('', :method => "post", name: 'form1') do %>
   <div style="float:right">
-    <% if (can? :new, RentInfo) and ((@purchase.status.eql?"waiting" and !@purchase.is_send and @purchase.create_user_id == current_user.id) or (@purchase.status.eql?"revoked" and @purchase.create_user_id == current_user.id) ) %>
+    <% if (can? :new, RentInfo) and (@purchase.status.eql?"waiting" and @purchase.create_user_id == current_user.id) %>
       <%= link_to t('.new', :default => t("helpers.links.new")),
                   new_purchase_rent_info_path,
                   :class => 'btn btn-primary' %>
+      <%= submit_tag "批量删除",:class => 'btn btn-primary', onclick: "if(!confirm('确定删除?')){return false;}else{form1.action='rent_infos/batch_destroy';form1.submit();}" %>
      
     <% end %>
     <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="purchase_rent_infos">导出</button>

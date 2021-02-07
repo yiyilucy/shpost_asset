@@ -448,9 +448,8 @@ class LowValueConsumptionInfosController < ApplicationController
     # binding.pry
     ActiveRecord::Base.transaction do
       if !params["low_value_consumption_infos"].blank? and !params["low_value_consumption_infos"]["selected"].blank?
-        params["low_value_consumption_infos"]["selected"].each do |id|
-          LowValueConsumptionInfo.find(id.to_i).destroy
-        end
+        LowValueConsumptionInfo.batch_destroy(LowValueConsumptionInfo, params["low_value_consumption_infos"]["selected"])
+        
         flash[:notice] = "批量删除成功"
       end
     end

@@ -151,6 +151,17 @@ class PurchaseRentInfoController < ApplicationController
     end
   end
 
+  def batch_destroy
+    # binding.pry
+    ActiveRecord::Base.transaction do
+      if !params["purchase_rent_infos"].blank? and !params["purchase_rent_infos"]["selected"].blank?
+        LowValueConsumptionInfo.batch_destroy(RentInfo, params["purchase_rent_infos"]["selected"])
+        flash[:notice] = "批量删除成功"
+      end
+    end
+    redirect_to purchase_rent_infos_path(@purchase)
+  end
+
   private
 
   def set_relationship

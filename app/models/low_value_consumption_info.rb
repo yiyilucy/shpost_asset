@@ -128,6 +128,10 @@ class LowValueConsumptionInfo < ActiveRecord::Base
     return catalog4s
   end
 
-
+  def self.batch_destroy(object, selected_infos)
+  	selected_infos.each do |id|
+      object.find(id.to_i).destroy
+    end
+  end
 
 end
