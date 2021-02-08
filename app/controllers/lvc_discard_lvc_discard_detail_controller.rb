@@ -4,6 +4,7 @@ class LvcDiscardLvcDiscardDetailController < ApplicationController
 
   def index
     # binding.pry
+    @atype = params[:atype]
     @lvc_discard_details_grid = initialize_grid(@lvc_discard_details,
       :order => 'lvc_discard_details.low_value_consumption_info_id',
       :order_direction => 'asc', per_page: 50)

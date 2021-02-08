@@ -19,7 +19,6 @@ class RentInfosController < ApplicationController
   end
 
   def show
-    respond_with(@rent_info)
   end
 
   def new
@@ -28,6 +27,10 @@ class RentInfosController < ApplicationController
   end
 
   def edit
+    @relename=Unit.get_relevant_unit_name(@rent_info.relevant_unit_id)
+    @usename = Unit.get_use_unit_name(@rent_info.use_unit_id)
+    @fixed_asset_catalog = FixedAssetCatalog.get_catalog_name(@rent_info.fixed_asset_catalog_id)
+  
   end
 
   def create
@@ -37,8 +40,18 @@ class RentInfosController < ApplicationController
   end
 
   def update
-    @rent_info.update(rent_info_params)
-    respond_with(@rent_info)
+    respond_to do |format|
+      if @rent_info.update(rent_info_params)
+        if @rent_info.status.eql?"in_use"
+          @rent_info.update log: (@rent_info.log.blank? ? "" : @rent_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"其他租赁资产信息修改" + ","
+        end
+        format.html { redirect_to @rent_info, notice: I18n.t('controller.update_success_notice', model: '其他租赁资产信息')}
+        format.json { head :no_content }
+      else
+        format.html { render action: 'edit' }
+        format.json { render json: @rent_info.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
   def destroy
@@ -69,6 +82,7 @@ class RentInfosController < ApplicationController
       format.js 
     end
   end
+
 
   def batch_edit
     @relename = ''
@@ -130,6 +144,7 @@ class RentInfosController < ApplicationController
       end
     end
   end
+
 
   def to_string(text)
     if text.is_a? Float
@@ -385,6 +400,27 @@ class RentInfosController < ApplicationController
         end
       end   
     end
+  end
+
+  def discard
+    ActiveRecord::Base.transaction do
+      if !params["rent_infos"].blank? and !params["rent_infos"]["selected"].blank?
+        LvcDiscard.do_discard(params[:atype], params["rent_infos"]["selected"], current_user)
+        
+        flash[:notice] = "报废单已生成"
+      end
+    end
+    redirect_to lvc_discards_path(atype: params[:atype])
+  end
+
+  def discard_index
+    @rent_infos = LowValueConsumptionInfo.get_discard_infos(RentInfo, current_user)
+    
+    @rent_infos_grid = initialize_grid(@rent_infos,
+      :name => 'discard_rent_infos',
+      :enable_export_to_csv => true,
+      :csv_file_name => 'rent_infos')
+    export_grid_if_requested
   end
 
   

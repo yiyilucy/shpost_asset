@@ -1,17 +1,50 @@
-<%= form_for(@rent_info) do |f| %>
-  <% if @rent_info.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@rent_info.errors.count, "error") %> prohibited this rent_info from being saved:</h2>
-
-      <ul>
-      <% @rent_info.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+<%= form_for @rent_info, :html => { :class => 'form-horizontal' } do |f| %>
+<%= f.error_messages %>
+  <div class="control-group">
+    <%= f.label "一到三级类别目录", :class => 'control-label' %>
+    <div class="controls">
+      <%= fixed_asset_parent_catalog_select_autocom("rent_info",@rent_info.id) %>
     </div>
-  <% end %>
-
-  <div class="actions">
-    <%= f.submit %>
   </div>
+  <div class="control-group">
+    <%= f.label "四级类别目录", :class => 'control-label' %><font color="#FF0000">  *</font>
+    <div class="controls">
+      <%= fixed_asset_catalog4_select_autocom("rent_info", @rent_info.id, nil) %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :location, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :location, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :use_user, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :use_user, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :relevant_unit_id, :class => 'control-label' %>
+    <div class="controls">
+      <%= relevant_department_select_autocom("rent_info",@rent_info.id) %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :use_unit_id, :class => 'control-label' %>
+    <div class="controls">
+      <%= use_unit_select_autocom("rent_info",@rent_info.id) %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :desc, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :desc, :class => 'text_field' %>
+    </div>
+  </div>
+  
+  <%= f.submit nil, :class => 'btn btn-primary' %>
+  <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+            rent_infos_path(@rent_info), :class => 'btn btn-default' %>
+ 
 <% end %>

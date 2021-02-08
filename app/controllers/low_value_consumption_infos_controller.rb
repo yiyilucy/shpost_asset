@@ -58,19 +58,7 @@ class LowValueConsumptionInfosController < ApplicationController
   end
 
   def discard_index
-    if current_user.unit.blank?
-      @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "discard").order(:relevant_unit_id, :manage_unit_id, :asset_no)
-    else
-      if current_user.unit.unit_level == 1
-        @low_value_consumption_infos = LowValueConsumptionInfo.where(status: "discard").order(:relevant_unit_id, :manage_unit_id, :asset_no)
-      elsif current_user.unit.is_facility_management_unit
-        @low_value_consumption_infos = LowValueConsumptionInfo.where(relevant_unit_id: current_user.unit_id, status: "discard").order(:manage_unit_id, :asset_no)
-      elsif current_user.unit.unit_level == 2
-        @low_value_consumption_infos = LowValueConsumptionInfo.where(manage_unit_id: current_user.unit_id, status: "discard").order(:asset_no)
-      elsif current_user.unit.unit_level == 3 && !current_user.unit.is_facility_management_unit   
-        @low_value_consumption_infos = LowValueConsumptionInfo.where("(use_unit_id = ? or use_unit_id in (?)) and status = ?", current_user.unit_id, current_user.unit.children.map{|x| x.id}, "discard").order(:use_unit_id, :asset_no)
-      end
-    end
+    @low_value_consumption_infos = LowValueConsumptionInfo.get_discard_infos(LowValueConsumptionInfo, current_user)
     
     @low_value_consumption_infos_grid = initialize_grid(@low_value_consumption_infos,
       :name => 'discard_low_value_consumption_infos',
@@ -457,18 +445,14 @@ class LowValueConsumptionInfosController < ApplicationController
   end
 
   def discard
-    # binding.pry
     ActiveRecord::Base.transaction do
       if !params["low_value_consumption_infos"].blank? and !params["low_value_consumption_infos"]["selected"].blank?
-        lvc_discard = LvcDiscard.create name: "报废单#{Time.now.strftime("%Y%m%d")}", status: "checking", create_user_id: current_user.id, create_unit_id: current_user.unit_id
-
-        params["low_value_consumption_infos"]["selected"].each do |id|
-          lvc_discard.lvc_discard_details.create low_value_consumption_info_id: id.to_i
-        end
+        LvcDiscard.do_discard(params[:atype], params["low_value_consumption_infos"]["selected"], current_user)
+        
         flash[:notice] = "报废单已生成"
       end
     end
-    redirect_to lvc_discards_path
+    redirect_to lvc_discards_path(atype: params[:atype])
   end
 
   def low_value_consumption_report

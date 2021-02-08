@@ -1,0 +1,108 @@
+<%- model_class = RentInfo -%>
+<%= grid(@lvc_discard_details_grid) do |g|
+	g.column name: model_class.human_attribute_name(:fixed_asset_catalog_id), attribute: 'fixed_asset_catalog_id', assoc: :rent_info do |lvc_discard_detail|
+        code = lvc_discard_detail.rent_info.fixed_asset_catalog.code
+        code1 = FixedAssetCatalog.find_by(code: code[0,2]).try :name
+        if code.length>=4
+            code2 = FixedAssetCatalog.find_by(code: code[0,4]).try :name
+        else
+            code2 = ""
+        end
+        if code.length>=6
+            code3 = FixedAssetCatalog.find_by(code: code[0,6]).try :name
+        else
+            code3 = ""
+        end
+        if code.length>=8
+            code4 = FixedAssetCatalog.find_by(code: code[0,8]).try :name
+        else
+            code4 = ""
+        end
+        (code1.blank? ? "" : code1)+"."+(code2.blank? ? "" : code2)+"."+(code3.blank? ? "" : code3)+"."+(code4.blank? ? "" : code4)
+    end
+
+	g.column name: model_class.human_attribute_name(:asset_name), attribute: 'asset_name', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :asset_name
+    end
+
+    g.column name: model_class.human_attribute_name(:asset_no), attribute: 'asset_no', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :asset_no
+    end
+
+    g.column name: model_class.human_attribute_name(:use_at), attribute: 'use_at', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.use_at.blank? ? "" : DateTime.parse(lvc_discard_detail.rent_info.use_at.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:amount), attribute: 'amount', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :amount
+    end
+
+    g.column name: model_class.human_attribute_name(:brand_model), attribute: 'brand_model', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :brand_model
+    end
+
+    g.column name: model_class.human_attribute_name(:use_user), attribute: 'use_user', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :use_user
+    end
+
+    g.column name: model_class.human_attribute_name(:use_unit_id), attribute: 'use_unit_id', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.use_unit_id.blank? ? "" : Unit.find(lvc_discard_detail.rent_info.use_unit_id).name
+    end
+
+    g.column name: model_class.human_attribute_name(:location), attribute: 'location', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :location
+    end
+
+    g.column name: model_class.human_attribute_name(:area), attribute: 'area', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :area
+    end
+
+    g.column name: model_class.human_attribute_name(:sum), attribute: 'sum', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :sum
+    end
+
+    g.column name: model_class.human_attribute_name(:use_right_start), attribute: 'use_right_start', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.use_right_start.blank? ? "" : DateTime.parse(lvc_discard_detail.rent_info.use_right_start.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:use_right_end), attribute: 'use_right_end', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.use_right_end.blank? ? "" : DateTime.parse(lvc_discard_detail.rent_info.use_right_end.to_s).strftime('%Y-%m-%d').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:pay_cycle), attribute: 'pay_cycle', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :pay_cycle
+    end
+
+    g.column name: model_class.human_attribute_name(:license), attribute: 'license', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :license
+    end
+
+    g.column name: model_class.human_attribute_name(:deposit), attribute: 'deposit', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :deposit
+    end
+
+    g.column name: model_class.human_attribute_name(:relevant_unit_id), attribute: 'relevant_unit_id', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.relevant_unit_id.blank? ? "" : Unit.find(lvc_discard_detail.rent_info.relevant_unit_id).name
+    end
+
+    g.column name: model_class.human_attribute_name(:status), attribute: 'status', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.status_name
+    end
+
+    g.column name: model_class.human_attribute_name(:manage_unit_id), attribute: 'manage_unit_id', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.manage_unit_id.blank? ? "" : Unit.find(lvc_discard_detail.rent_info.manage_unit_id).name
+    end
+
+    g.column name: model_class.human_attribute_name(:ori_asset_no), attribute: 'ori_asset_no', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :ori_asset_no
+    end
+
+    g.column name: model_class.human_attribute_name(:change_log), attribute: 'change_log', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :change_log
+    end
+
+    g.column name: model_class.human_attribute_name(:desc), attribute: 'desc', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :desc
+    end
+  end 
+%> 

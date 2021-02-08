@@ -1,4 +1,25 @@
-<p id="notice"><%= notice %></p>
+<%- model_class = RentInfo -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
 
-<%= link_to 'Edit', edit_rent_info_path(@rent_info) %> |
-<%= link_to 'Back', rent_infos_path %>
+<dl class="dl-horizontal">
+	<dt><strong><%= model_class.human_attribute_name(:fixed_asset_catalog_id) %>:</strong></dt>
+  <dd><%= FixedAssetCatalog.get_catalog_name(@rent_info.fixed_asset_catalog_id) %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:location) %>:</strong></dt>
+  <dd><%= @rent_info.location %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:use_user) %>:</strong></dt>
+  <dd><%= @rent_info.use_user %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:relevant_unit_id) %>:</strong></dt>
+  <dd><%= Unit.get_relevant_unit_name(@rent_info.relevant_unit_id) %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:use_unit_id) %>:</strong></dt>
+  <dd><%= Unit.get_use_unit_name(@rent_info.use_unit_id) %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:desc) %>:</strong></dt>
+  <dd><%= @rent_info.desc %></dd>
+</dl>
+
+<%= link_to t('.back', :default => t("helpers.links.back")),
+              rent_infos_path(@rent_info), :class => 'btn btn-default'  %>
+<%= link_to t('.edit', :default => t("helpers.links.edit")),
+              edit_rent_info_path(@rent_info), :class => 'btn btn-default' %>
+

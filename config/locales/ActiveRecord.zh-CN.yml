@@ -349,11 +349,11 @@ zh-CN:
         one: 低值易耗品信息盘点单位
         other: 低值易耗品信息盘点单位
       lvc_discard:
-        one: 低值易耗品报废单
-        other: 低值易耗品报废单
+        one: 报废单
+        other: 报废单
       lvc_discard_detail:
-        one: 低值易耗品报废明细
-        other: 低值易耗品报废明细
+        one: 报废明细
+        other: 报废明细
       up_download:
         one: 上传下载模板
         other: 上传下载模板
@@ -624,6 +624,7 @@ zh-CN:
       lvc_discard_detail:
         lvc_discard_id: "低值易耗品报废单"
         low_value_consumption_info_id: "低值易耗品"
+        rent_info_id: "其他租赁资产"
       up_download:
         name: "名字"
         use: "用途"
@@ -858,7 +859,7 @@ zh-CN:
       submenu:
         lvc_discard:
           name: "低值易耗品报废单"
-          link: "/lvc_discards"
+          link: "/lvc_discards?atype=lvc"
           need_count: false
           needrole:
             can: :read
@@ -926,6 +927,13 @@ zh-CN:
           needrole:
             can: :read
             role: :RentInfo
+        rent_info_discard:
+          name: "报废其他租赁资产"
+          link: "/rent_infos/discard_index"
+          need_count: false
+          needrole:
+            can: :read
+            role: :RentInfo
     rent_purchases:
       name: "其他租赁采购单"  
       needrole:
@@ -960,6 +968,19 @@ zh-CN:
           needrole:
             can: :read
             role: :Purchase
+    rent_lvc_discards:
+      name: "其他租赁报废单"    
+      needrole:
+        can: :read
+        role: :LvcDiscard
+      submenu:
+        lvc_discard:
+          name: "其他租赁报废单"
+          link: "/lvc_discards?atype=rent"
+          need_count: false
+          needrole:
+            can: :read
+            role: :LvcDiscard
     up_downloads:
       name: "模板管理"
       needrole:

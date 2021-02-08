@@ -4,6 +4,7 @@ class RentInfo < ActiveRecord::Base
 	belongs_to :relevant_unit, class_name: 'Unit'
 	belongs_to :manage_unit, class_name: 'Unit'
 	belongs_to :use_unit, class_name: 'Unit'
+	has_one :lvc_discard_detail
 
 	def status_name
 		status.blank? ? "" : LowValueConsumptionInfo::STATUS["#{status}".to_sym]

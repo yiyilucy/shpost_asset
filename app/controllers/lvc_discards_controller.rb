@@ -3,10 +3,12 @@ class LvcDiscardsController < ApplicationController
 
   def index
     @lvc_discards = nil
+    @atype = params[:atype]
+
     if current_user.deviceadmin?
-      @lvc_discards = LvcDiscard.accessible_by(current_ability).where("create_user_id = ? or create_unit_id = ?", current_user.id, current_user.unit_id)
+      @lvc_discards = LvcDiscard.accessible_by(current_ability).where("(create_user_id = ? or create_unit_id = ?) and atype = ?", current_user.id, current_user.unit_id, @atype)
     elsif current_user.accountant?
-      @lvc_discards = LvcDiscard.accessible_by(current_ability).where("(create_unit_id = ? and status = ?) or checked_user_id = ?", current_user.unit_id, "checking", current_user.id)
+      @lvc_discards = LvcDiscard.accessible_by(current_ability).where("((create_unit_id = ? and status = ?) or checked_user_id = ?) and atype = ?", current_user.unit_id, "checking", current_user.id, @atype)
     end
     
     @lvc_discards_grid = initialize_grid(@lvc_discards, order: 'lvc_discards.created_at',
@@ -47,16 +49,20 @@ class LvcDiscardsController < ApplicationController
         @lvc_discard = LvcDiscard.find(params[:id].to_i)
         @lvc_discard.update status: "done", checked_user_id: current_user.id
         @lvc_discard.lvc_discard_details.each do |l|
-          l.low_value_consumption_info.update status: "discard", discard_at: Time.now, log: (l.low_value_consumption_info.log.blank? ? "" : l.low_value_consumption_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + User.find(@lvc_discard.create_user_id).name + " " +"低值易耗品信息报废" + ","
+          if params[:atype].eql? "lvc"
+            l.low_value_consumption_info.update status: "discard", discard_at: Time.now, log: (l.low_value_consumption_info.log.blank? ? "" : l.low_value_consumption_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + User.find(@lvc_discard.create_user_id).name + " " +"低值易耗品信息报废" + ","
+          elsif params[:atype].eql? "rent"
+            l.rent_info.update status: "discard", discard_at: Time.now, log: (l.rent_info.log.blank? ? "" : l.rent_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + User.find(@lvc_discard.create_user_id).name + " " +"其他租赁资产信息报废" + ","
+          end
         end
 
         respond_to do |format|
-          format.html { redirect_to lvc_discards_url, notice: I18n.t('controller.approve_success_notice', model: '低值易耗品报废单') }
+          format.html { redirect_to lvc_discards_url(atype: params[:atype]), notice: I18n.t('controller.approve_success_notice', model: '报废单') }
           format.json { head :no_content }
         end
       else
         respond_to do |format|
-          format.html { redirect_to lvc_discards_url, notice: '找不到该报废单' }
+          format.html { redirect_to lvc_discards_url(atype: params[:atype]), notice: '找不到该报废单' }
           format.json { head :no_content }
         end
       end
@@ -71,12 +77,12 @@ class LvcDiscardsController < ApplicationController
         @lvc_discard.update status: "declined", checked_user_id: current_user.id
 
         respond_to do |format|
-          format.html { redirect_to lvc_discards_url, notice: I18n.t('controller.decline_success_notice', model: '低值易耗品报废单') }
+          format.html { redirect_to lvc_discards_url(atype: params[:atype]), notice: I18n.t('controller.decline_success_notice', model: '报废单') }
           format.json { head :no_content }
         end
       else
         respond_to do |format|
-          format.html { redirect_to lvc_discards_url, notice: '找不到该报废单' }
+          format.html { redirect_to lvc_discards_url(atype: params[:atype]), notice: '找不到该报废单' }
           format.json { head :no_content }
         end
       end
