@@ -16,7 +16,7 @@ class PurchasesController < ApplicationController
     @atype = params[:atype]
 
     if current_user.deviceadmin?
-      @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? and status in (?) and is_send = ? ) or ((create_user_id = ? or create_unit_id = ?) and status in (?)) or ((create_user_id = ? or create_unit_id = ?) and status = ? and is_send = ? and atype = ?)", current_user.unit_id, ["waiting", "declined"], true, current_user.id, current_user.unit_id, ["declined", "revoked"], current_user.id, current_user.unit_id, "waiting", true, @atype )
+      @purchases = @purchases.accessible_by(current_ability).where("((manage_unit_id = ? and status in (?) and is_send = ? ) or ((create_user_id = ? or create_unit_id = ?) and status in (?)) or ((create_user_id = ? or create_unit_id = ?) and status = ? and is_send = ?)) and atype = ?", current_user.unit_id, ["waiting", "declined"], true, current_user.id, current_user.unit_id, ["declined", "revoked"], current_user.id, current_user.unit_id, "waiting", true, @atype )
     elsif current_user.accountant?
       @purchases = @purchases.accessible_by(current_ability).where(manage_unit_id: current_user.unit_id, status: "checking", atype: @atype)
     end
@@ -28,7 +28,7 @@ class PurchasesController < ApplicationController
     @atype = params[:atype]
     
     if current_user.accountant?
-      @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? and status in (?) and is_send = ? ) or (create_unit_id = ? and status in (?)) or (create_unit_id = ? and status = ? and is_send = ? and atype = ?)", current_user.unit_id, ["waiting", "declined"], true, current_user.unit_id, ["declined", "revoked"], current_user.unit_id, "waiting", true, @atype )
+      @purchases = @purchases.accessible_by(current_ability).where("((manage_unit_id = ? and status in (?) and is_send = ? ) or (create_unit_id = ? and status in (?)) or (create_unit_id = ? and status = ? and is_send = ?)) and atype = ?", current_user.unit_id, ["waiting", "declined"], true, current_user.unit_id, ["declined", "revoked"], current_user.unit_id, "waiting", true, @atype )
     elsif current_user.deviceadmin?
       @purchases = @purchases.accessible_by(current_ability).where("(manage_unit_id = ? or create_unit_id = ? or create_user_id = ?) and status = ? and atype = ?", current_user.unit_id, current_user.unit_id, current_user.id, "checking", @atype)
     end
@@ -57,6 +57,7 @@ class PurchasesController < ApplicationController
 
   def edit
     @atype = params[:atype]
+    @source = params[:source]
     @usename = Unit.find_by(id: @purchase.use_unit_id).try(:name)
   end
 
@@ -127,8 +128,8 @@ class PurchasesController < ApplicationController
 
           # end
 
-          if @purchase.is_send
-            format.html { redirect_to to_do_index_purchases_url, notice: I18n.t('controller.update_success_notice', model: '采购单')  }
+          if @purchase.is_send || (params[:source].eql?"to_do")
+            format.html { redirect_to to_do_index_purchases_url(atype: params[:atype]), notice: I18n.t('controller.update_success_notice', model: '采购单')  }
             format.json { head :no_content }
           else
             format.html { redirect_to purchases_path(atype: params[:atype]), notice: I18n.t('controller.update_success_notice', model: '采购单')  }
@@ -189,10 +190,10 @@ class PurchasesController < ApplicationController
           if @purchase.save
             if @atype.eql?"lvc"
               @purchase.low_value_consumption_infos.update_all(status: "checking")
-            else
+            elsif @atype.eql?"rent"
               @purchase.rent_infos.update_all(status: "checking")
             end
-            if @purchase.create_user_id == current_user.id
+            if (@purchase.create_user_id == current_user.id) && (params[:source].eql?"index")
               format.html { redirect_to purchases_url(atype: @atype), notice: I18n.t('controller.to_check_success_notice', model: '采购单') }
               format.json { head :no_content }
             else
@@ -200,7 +201,7 @@ class PurchasesController < ApplicationController
               format.json { head :no_content }
             end
           else
-            if @purchase.create_user_id == current_user.id
+            if (@purchase.create_user_id == current_user.id) && (params[:source].eql?"index")
               format.html { redirect_to purchases_url(atype: @atype) }
               format.json { render json: @purchase.errors, status: :unprocessable_entity }
             else
@@ -212,10 +213,10 @@ class PurchasesController < ApplicationController
       else
         if @atype.eql?"lvc"
           flash[:alert] = "低值易耗品不能为空,所在网点，所在地点，使用部门不能为空"
-        else
+        elsif @atype.eql?"rent"
           flash[:alert] = "其他租赁资产明细不能为空,地点备注，使用部门不能为空"
         end
-        if @purchase.create_user_id == current_user.id
+        if (@purchase.create_user_id == current_user.id) && (params[:source].eql?"index")
           respond_to do |format|
             format.html { redirect_to purchases_url(atype: @atype) }
             format.json { head :no_content }
@@ -233,14 +234,22 @@ class PurchasesController < ApplicationController
   def approve
     ActiveRecord::Base.transaction do 
       @purchase.update status: "done", checked_user_id: current_user.id, change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log)+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单审核通过" + ",")
-      @purchase.low_value_consumption_infos.each do |l|
-        asset_no = Sequence.generate_asset_no(l,l.created_at)
-        l.update status: "in_use", use_at: Time.now, asset_no: asset_no
+
+      if !params[:atype].blank? && (params[:atype].eql?"lvc")
+        @purchase.low_value_consumption_infos.each do |l|
+          asset_no = Sequence.generate_asset_no(l,l.created_at)
+          l.update status: "in_use", use_at: Time.now, asset_no: asset_no
+        end
+      elsif !params[:atype].blank? && (params[:atype].eql?"rent")
+        @purchase.rent_infos.each do |l|
+          asset_no = Sequence.generate_asset_no(l,l.created_at)
+          l.update status: "in_use", use_at: Time.now, asset_no: asset_no
+        end
       end
     end
     
     respond_to do |format|
-      format.html { redirect_to to_do_index_purchases_url, notice: I18n.t('controller.approve_success_notice', model: '采购单') }
+      format.html { redirect_to to_do_index_purchases_url(atype: @atype), notice: I18n.t('controller.approve_success_notice', model: '采购单') }
       format.json { head :no_content }
     end
 
@@ -249,11 +258,16 @@ class PurchasesController < ApplicationController
   def decline
     ActiveRecord::Base.transaction do 
       @purchase.update status: "declined", change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log) +Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"采购单审核否决" + ",")
-      @purchase.low_value_consumption_infos.update_all status: "declined"
+
+      if !params[:atype].blank? && (params[:atype].eql?"lvc")
+        @purchase.low_value_consumption_infos.update_all status: "declined"
+      elsif !params[:atype].blank? && (params[:atype].eql?"rent")
+        @purchase.rent_infos.update_all status: "declined"
+      end
     end
 
     respond_to do |format|
-      format.html { redirect_to to_do_index_purchases_url, notice: I18n.t('controller.decline_success_notice', model: '采购单') }
+      format.html { redirect_to to_do_index_purchases_url(atype: @atype), notice: I18n.t('controller.decline_success_notice', model: '采购单') }
       format.json { head :no_content }
     end
   end
@@ -279,7 +293,7 @@ class PurchasesController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { redirect_to to_do_index_purchases_url, notice: I18n.t('controller.cancel_success_notice', model: '采购单') }
+      format.html { redirect_to to_do_index_purchases_url(atype: params[:atype]), notice: I18n.t('controller.cancel_success_notice', model: '采购单') }
       format.json { head :no_content }
     end
   end

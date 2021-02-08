@@ -43,6 +43,9 @@ class PurchaseRentInfoController < ApplicationController
     @fixed_asset_catalog = FixedAssetCatalog.get_catalog_name(@rent_info.fixed_asset_catalog_id)
   end
 
+
+
+
   def create
     ActiveRecord::Base.transaction do 
       success = false

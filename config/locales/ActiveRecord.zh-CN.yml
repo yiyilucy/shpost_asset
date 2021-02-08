@@ -939,6 +939,27 @@ zh-CN:
           needrole:
             can: :new
             role: :Purchase
+        to_do_rent_purchase:
+          name: "待处理采购单"
+          link: "/purchases/to_do_index?atype=rent"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Purchase
+        doing_rent_purchase:
+          name: "处理中采购单"
+          link: "/purchases/doing_index?atype=rent"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Purchase
+        done_rent_purchase:
+          name: "已完成采购单"
+          link: "/purchases/done_index?atype=rent"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Purchase
     up_downloads:
       name: "模板管理"
       needrole:

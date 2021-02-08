@@ -46,7 +46,9 @@
     g.column do |purchase|
       ActiveSupport::SafeBuffer.new << 
       (link_to t('.low_value_consumption_infos', :default => t("helpers.links.low_value_consumption_infos")),
-                purchase_low_value_consumption_infos_path(purchase), :class => 'btn btn-xs btn-primary' if (can? :read, LowValueConsumptionInfo))<< ' ' <<
+                purchase_low_value_consumption_infos_path(purchase), :class => 'btn btn-xs btn-primary' if (can? :read, LowValueConsumptionInfo) and (@atype.eql?"lvc"))<< ' ' <<
+      (link_to t('.rent_infos', :default => t("helpers.links.rent_infos")),
+                purchase_rent_infos_path(purchase), :class => 'btn btn-xs btn-primary' if (can? :read, RentInfo) and (@atype.eql?"rent"))<< ' ' <<
       button_tag("变动记录", class: "btn btn-xs btn-primary")
     end
 
