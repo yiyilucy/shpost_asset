@@ -134,4 +134,24 @@ class LowValueConsumptionInfo < ActiveRecord::Base
     end
   end
 
+  def self.get_discard_infos(object, user)
+  	infos = nil
+
+  	if user.unit.blank?
+      infos = object.where(status: "discard").order(:relevant_unit_id, :manage_unit_id, :asset_no)
+    else
+      if user.unit.unit_level == 1
+        infos = object.where(status: "discard").order(:relevant_unit_id, :manage_unit_id, :asset_no)
+      elsif user.unit.is_facility_management_unit
+        infos = object.where(relevant_unit_id: user.unit_id, status: "discard").order(:manage_unit_id, :asset_no)
+      elsif user.unit.unit_level == 2
+        infos = object.where(manage_unit_id: user.unit_id, status: "discard").order(:asset_no)
+      elsif user.unit.unit_level == 3 && !user.unit.is_facility_management_unit   
+        infos = object.where("(use_unit_id = ? or use_unit_id in (?)) and status = ?", user.unit_id, user.unit.children.map{|x| x.id}, "discard").order(:use_unit_id, :asset_no)
+      end
+    end
+
+    return infos
+  end
+
 end

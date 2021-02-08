@@ -2,6 +2,8 @@
 <div class="page-header">
   <h1><%=t '.title', :default => model_class.model_name.human%></h1>
   </div>
-
+<% if @atype.eql?"lvc" %>
 <%= render :partial => 'lvc_discard_lvc_discard_details_grid' %>
-
+<% else %>
+<%= render :partial => 'rent_lvc_discard_lvc_discard_details_grid' %>
+<% end %>
