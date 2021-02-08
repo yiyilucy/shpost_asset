@@ -46,7 +46,7 @@ module ApplicationHelper
 
   def fixed_asset_parent_catalog_select_autocom(obj_id,obj)
     concat text_field_tag('fix_parent_catalog_name',@fixed_asset_catalog, 'data-autocomplete' => "/shpost_asset/unit_autocom/p_autocomplete_fixed_asset_parent_catalog?objid=#{obj_id}&obj=#{obj}")
-    hidden_field("rent_infos","fixed_asset_catalog_id");
+    hidden_field(obj_id.to_sym,"fixed_asset_catalog_id");
   end
 
   def fixed_asset_catalog4_select_autocom(obj_id,obj,pid)
