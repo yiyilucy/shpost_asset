@@ -1,0 +1,62 @@
+<%- model_class = RentInfo -%>
+<div class="page-header">
+  <h1>批量更新</h1>
+  <font color="#FF0000">(输入框填入数据将覆盖原有数据,空白不填表示不更改原字段数据内容,请谨慎修改)</font>
+</div>
+<div>
+   <%= form_tag(batch_update_purchase_rent_infos_path, method: "post")%>
+   <%= hidden_field_tag('rentids',@rentids)%>
+   <%= hidden_field_tag('is_batch',"1")%>
+  <% if (["waiting", "declined"].include?@purchase.status and !@purchase.is_send) or @purchase.status.eql?"revoked" %>
+      <div class="control-group">
+      <%= label_tag(:fixed_asset_catalog_id, "一到三级类别目录") %>
+      <div class="controls">
+       <%= fixed_asset_parent_catalog_select_autocom("rent_info", @rent_info.id) %>
+      </div>
+    </div>
+    <div class="control-group">
+      <%= label_tag(:fixed_asset_catalog_id, "四级类别目录") %><font color="#FF0000">  *</font>
+      <div class="controls">
+        <%= fixed_asset_catalog4_select_autocom("rent_info", @rent_info.id, nil) %>
+      </div>
+    </div>  
+    <div class="control-group">
+      <%= label_tag(:location, "所在地点") %>
+      <div class="controls">
+      <%= text_field_tag(:location,@rent_info.location, :value=>nil) %>
+	    </div>
+    </div>
+    <div class="control-group">
+      <%= label_tag(:use_user, "使用人") %>
+      <div class="controls">
+      <%= text_field_tag(:use_user,@rent_info.use_user, :value=>nil) %>
+	    </div>
+    </div>
+    <div class="control-group">
+      <%= label_tag(:relevant_unit_id, "归口管理部门") %>
+      <div class="controls">
+      <%= relevant_department_select_autocom("rent_info",@rent_info.id) %>
+	    </div>
+    </div>
+    <div class="control-group">
+      <%= label_tag(:use_unit_id, "使用部门") %>
+      <div class="controls">
+      <%= use_unit_select_autocom("rent_info",@rent_info.id) %>
+	    </div>
+    </div>
+    <div class="control-group">
+      <%= label_tag(:desc, "备注") %>
+      <div class="controls">
+        <%= text_field_tag(:desc,@rent_info.desc, :value=>nil) %>
+      </div>
+    </div>
+  <% end %>
+    
+    <p><p><p>
+    <div>
+      <%= submit_tag "批量更新",:class => 'btn btn-primary' %>
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+              rent_infos_path, :class => 'btn btn-default' %>
+    </div>
+  </form>
+</div>

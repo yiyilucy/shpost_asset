@@ -399,6 +399,68 @@ class PurchaseRentInfoController < ApplicationController
       end   
     end
   end
+
+  def batch_edit
+    @relename = ''
+    @usename = ''
+    @fixed_asset_catalog = ''
+    @rentids = ""
+# binding.pry
+ 
+    if !params["purchase_rent_infos"].blank? and !params["purchase_rent_infos"]["selected"].blank?
+      @rentids = params["purchase_rent_infos"]["selected"].compact.join(",")
+      @rent_info = RentInfo.find(params["purchase_rent_infos"]["selected"].first.to_i)
+    
+      if !@rent_info.relevant_unit_id.blank?
+        @relename = Unit.find_by(id: @rent_info.relevant_unit_id).try(:name)
+      end
+      if !@rent_info.use_unit_id.blank?
+        @usename = Unit.find_by(id: @rent_info.use_unit_id).try(:name)
+      end
+      @fixed_asset_catalog = FixedAssetCatalog.find_by(id: @rent_info.fixed_asset_catalog_id).try(:name)
+    else
+      respond_to do |format|
+          format.html { redirect_to purchase_rent_infos_url, alert: "请勾选其他租赁资产" }
+          format.json { head :no_content }
+      end
+    end
+  end
+  def batch_update
+    ActiveRecord::Base.transaction do
+      # binding.pry
+      if !params[:rentids].blank?
+        params[:rentids].split(",").map(&:to_i).each do |id|
+          @rent_info = RentInfo.find_by(id:id.to_i)
+          if !params[:location].blank? && !params[:location].strip.blank?
+            @rent_info.location = params[:location]
+          end
+          if !params[:use_user].blank? && !params[:use_user].strip.blank?
+            @rent_info.use_user = params[:use_user]
+          end
+          if !params[:rent_info][:relevant_unit_id].blank?
+            @rent_info.relevant_unit_id = params[:rent_info][:relevant_unit_id]
+          end
+          if !params[:rent_info][:use_unit_id].blank?
+            @rent_info.use_unit_id = params[:rent_info][:use_unit_id]
+          end
+          @rent_info.update log: (@rent_info.log.blank? ? "" : @rent_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"低值易耗品信息批量修改" + ","
+          if !params[:desc].blank? && !params[:desc].strip.blank?
+            @rent_info.desc = params[:desc]
+          end
+          if !params[:rent_info][:fixed_asset_catalog_id].blank?
+            @rent_info.fixed_asset_catalog_id = params[:rent_info][:fixed_asset_catalog_id]
+          end
+          @rent_info.save
+        end
+        flash[:notice] = "批量修改成功"
+        redirect_to purchase_rent_infos_path(@purchase)
+      else
+        flash[:alert] = "请勾选其他租赁资产"
+        redirect_to purchase_rent_infos_path(@purchase)
+      end
+    end
+  end
+
   def to_string(text)
     if text.is_a? Float
       return text.to_s.split('.0')[0]
