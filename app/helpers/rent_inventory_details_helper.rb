@@ -1,0 +1,2 @@
+module RentInventoryDetailsHelper
+end

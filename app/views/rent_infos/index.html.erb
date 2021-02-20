@@ -7,6 +7,9 @@
     <% if (can? :discard, RentInfo) %>
     <%= submit_tag "报废",:class => 'btn btn-primary', onclick: "if(!confirm('确定报废?')){return false;}else{form2.action='rent_infos/discard?atype=rent';form2.submit();}" %>
     <% end %>
+    <% if can? :reprint_import, LowValueConsumptionInfo %>
+    <%= link_to '补打导入', "/shpost_asset/low_value_consumption_infos/reprint_import?object=RentInfo", :class => 'btn btn-primary' %>
+    <% end %>
     <% if (can? :print, RentInfo) %>
     <%= submit_tag "打印",:class => 'btn btn-primary', target: '_blank', onclick: "form2.action='rent_infos/print';form2.submit();" %>
     <% end %>

@@ -1,0 +1,25 @@
+<h1>Listing rent_inventory_units</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @rent_inventory_units.each do |rent_inventory_unit| %>
+      <tr>
+        <td><%= link_to 'Show', rent_inventory_unit %></td>
+        <td><%= link_to 'Edit', edit_rent_inventory_unit_path(rent_inventory_unit) %></td>
+        <td><%= link_to 'Destroy', rent_inventory_unit, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Rent inventory unit', new_rent_inventory_unit_path %>

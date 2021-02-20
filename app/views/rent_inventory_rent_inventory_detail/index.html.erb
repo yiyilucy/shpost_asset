@@ -1,0 +1,15 @@
+<%- model_class = RentInventoryDetail -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human%></h1>
+  <div style="float:right">
+    <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="rent_inventory_rent_inventory_details">导出</button>
+    <% if @rent_inventory.is_sample %>
+    <%= link_to '盘点报表',
+                sample_report_rent_inventory_path(@rent_inventory), :class => 'btn btn-primary' %>
+    <% else %>
+    <%= link_to '盘点报表',
+                to_report_rent_inventory_path(@rent_inventory), :class => 'btn btn-primary' %>
+    <% end %>
+  </div>
+<%= render :partial => 'rent_inventory_rent_inventory_details_grid' %>
+</div>

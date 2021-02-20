@@ -1,0 +1,54 @@
+<%- model_class = RentInfo -%>
+<div class="page-header">
+  <h1>资产汇总报表</h1>
+</div> 
+
+<%= form_tag('', name: 'form1') do %>
+
+<%= label_tag(:return_year, "年:", :style => "padding:0px") %>
+<%= select_tag "year", options_for_select(LowValueConsumptionInfo.select_years, :selected=>@year) %>
+<%= label_tag(:return_month, "月:", :style => "padding:0px") %>
+<%= select_tag "month", options_for_select(LowValueConsumptionInfo.select_months, :selected=>@month) %>
+<%= submit_tag "查询",:class => 'btn btn-primary', onclick: "form1.action='/shpost_asset/rent_infos/rent_report';form1.submit();" %>  
+<%= submit_tag "报表导出",:class => 'btn btn-primary', onclick: "form1.action='rent_report_export.xls';form1.submit();" %>
+<% end %>
+<br><br>
+<% if !@results.blank? %>
+<div>
+<table border="1" table-layout="fixed">
+<tr class= 'nowrapb'>
+	<th>会计期间</th>
+	<th>资产类别</th>
+	<th>资产一级类别</th>
+	<th>资产二级类别</th>
+	<th>资产三级类别</th>
+	<th>资产四级类别</th>
+	<th>公司</th>
+	<th>资产数量</th>
+</tr>
+<% @counts.each do |k, v| %>
+  <% code = FixedAssetCatalog.find(k[0]).code %>
+<tr class= 'nowrap'>
+	<td><%= (@year+@month.rjust(2, '0')+"01").to_datetime.strftime("%Y-%m") %></td>
+	<td><%= code[0,2]+"."+code[0,4]+"."+code[0,6]+"."+code[0,8] %></td>
+	<td><%= FixedAssetCatalog.find_by(code: code[0,2]).try :name %></td>
+	<td><%= FixedAssetCatalog.find_by(code: code[0,4]).try :name %></td>
+	<td><%= FixedAssetCatalog.find_by(code: code[0,6]).try :name %></td>
+	<td><%= FixedAssetCatalog.find_by(code: code[0,8]).try :name %></td>
+	<td><%= Unit.find(k[1]).name %>
+	<td><%= v %></td>
+</tr>
+<% end %>
+<tr class= 'nowrap'>
+	<td>合计</td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td><%= @total_count.blank? ? 0 : @total_count %></td>
+</tr>
+</table>
+</div>
+<% end %>

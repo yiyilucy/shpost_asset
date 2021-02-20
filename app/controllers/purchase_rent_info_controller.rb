@@ -480,6 +480,23 @@ class PurchaseRentInfoController < ApplicationController
     redirect_to purchase_rent_infos_path(@purchase)
   end
 
+  def print
+    if params[:purchase_rent_infos] && params[:purchase_rent_infos][:selected]
+      @selected = params[:purchase_rent_infos][:selected]
+      @result = []
+      
+      until @selected.blank? do 
+        @result = @result + RentInfo.where(id:@selected.pop(1000))
+      end
+    else
+      flash[:alert] = "请勾选需要打印的其他租赁资产"
+      respond_to do |format|
+        format.html { redirect_to purchase_rent_infos_path(@purchase) }
+        format.json { head :no_content }
+      end
+    end
+  end
+
   private
 
   def set_relationship
@@ -489,6 +506,10 @@ class PurchaseRentInfoController < ApplicationController
   def upload_rent_info(file)
     if !file.original_filename.empty?
       direct = "#{Rails.root}/upload/rent_info/"
+      if !File.exist?(direct)
+        Dir.mkdir(direct)          
+      end
+
       filename = "#{Time.now.to_f}_#{file.original_filename}"
 
       file_path = direct + filename

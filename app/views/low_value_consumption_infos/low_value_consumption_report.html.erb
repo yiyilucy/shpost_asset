@@ -1,17 +1,19 @@
 <%- model_class = LowValueConsumptionInfo -%>
 <div class="page-header">
-  <h1>低值易耗品报表</h1>
+  <h1><%= (@obj.eql?"LowValueConsumptionInfo") ? "低值易耗品报表" : "其他租赁资产报表" %></h1>
 </div> 
 <%= form_tag('', name: 'form1') %>
 <div text-align:center>
 <%= submit_tag "报表导出",:class => 'btn btn-primary', onclick: "form1.action='low_value_consumption_report_export.xls';form1.submit();" %>
-
+<%= hidden_field_tag('object',@obj) %>
 <table class="table table-striped">
 <thead>
 <tr>
 	<th>单位名称</th>
 	<th>数量</th>
+	<% if @obj.eql?"LowValueConsumptionInfo" %>
 	<th>总值</th>
+	<% end %>
 </tr>
 </thead>
 <tbody>
@@ -19,13 +21,17 @@
 <tr>
 	<td><%= x.name %></td>
 	<td><%= @counts[x.id].blank? ? 0 : @counts[x.id] %></td>
+	<% if @obj.eql?"LowValueConsumptionInfo" %>
 	<td><%= @sums[x.id].blank? ? number_with_precision(0, precision: 2) : number_with_precision(@sums[x.id], precision: 2) %></td>
+	<% end %>
 </tr>
 <% end %>
 <tr>
 	<td>合计</td>
 	<td><%= @total_count.blank? ? 0 : @total_count %></td>
+	<% if @obj.eql?"LowValueConsumptionInfo" %>
 	<td><%= @total_sum.blank? ? number_with_precision(0, precision: 2) : number_with_precision(@total_sum, precision: 2) %></td>
+	<% end %>
 </tr>
 </tbody>
 </table>

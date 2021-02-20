@@ -1,0 +1,64 @@
+<%- model_class = RentInventory -%>
+<div class="page-header">
+  <h1>待处理其他租赁盘点单</h1>
+</div>
+
+<%= grid(@rent_inventories_grid) do |g|
+    g.column name: '盘点单号', attribute: 'no'
+
+    g.column name: model_class.human_attribute_name(:name), attribute: 'name'
+
+    g.column name: model_class.human_attribute_name(:status), attribute: 'status',custom_filter: RentInventory::STATUS.map {|k, v| [model_class.human_attribute_name("status_#{k}"), v]} do |rent_inventory| 
+      rent_inventory.status_name
+    end
+
+    g.column name: model_class.human_attribute_name(:create_user_id), assoc: :create_user, attribute: 'name'
+
+    g.column name: model_class.human_attribute_name(:create_unit_id), assoc: :create_unit, attribute: 'name'
+
+    g.column name: model_class.human_attribute_name(:start_time), attribute: 'start_time' do |rent_inventory|
+      rent_inventory.start_time.blank? ? "" : DateTime.parse(rent_inventory.start_time.to_s).strftime('%Y-%m-%d %H:%M:%S').to_s
+    end
+
+    g.column name: model_class.human_attribute_name(:end_time), attribute: 'end_time' do |rent_inventory|
+      rent_inventory.end_time.blank? ? "" : DateTime.parse(rent_inventory.end_time.to_s).strftime('%Y-%m-%d %H:%M:%S').to_s
+    end
+
+    g.column name: "资产总数" do |rent_inventory| 
+      LowValueConsumptionInventory.inventory_amount(rent_inventory.rent_inventory_details, current_user, nil)
+    end
+
+    g.column name: "待扫描数" do |rent_inventory| 
+      LowValueConsumptionInventory.inventory_amount(rent_inventory.rent_inventory_details, current_user, "waiting")
+    end
+
+    g.column name: "匹配数" do |rent_inventory| 
+      LowValueConsumptionInventory.inventory_amount(rent_inventory.rent_inventory_details, current_user, "match")
+    end
+
+    g.column name: "不匹配数" do |rent_inventory| 
+      LowValueConsumptionInventory.inventory_amount(rent_inventory.rent_inventory_details, current_user, "unmatch")
+    end
+
+    g.column name: "未扫描数" do |rent_inventory| 
+      LowValueConsumptionInventory.inventory_amount(rent_inventory.rent_inventory_details, current_user, "no_scan")
+    end
+
+    g.column do |rent_inventory|
+      done_alert = "确定完成？" 
+      waiting_amount = rent_inventory.rent_inventory_details.where(inventory_status: "waiting").size
+      if waiting_amount > 0
+        done_alert = "还有#{waiting_amount}件资产待扫描，点击完成后所有待扫描资产的盘点状态将变为未扫描，且无法修改，确定完成？"
+      end
+      ActiveSupport::SafeBuffer.new << 
+      (link_to t('.sub_done', :default => t("helpers.links.sub_done")), "/shpost_asset/rent_inventories/" + rent_inventory.id.to_s + "/sub_done", :data => { :confirm => "#{done_alert}" }, :class => 'btn btn-xs btn-primary' if (can? :sub_done, rent_inventory) and (rent_inventory.status.eql?"doing") and current_user.unit.unit_level == 2 and !rent_inventory.is_sample and (rent_inventory.rent_inventory_units.find_by(unit_id: current_user.unit_id).status.eql?"unfinished") )<< ' ' <<
+      (link_to '盘点单明细',
+                doing_index_rent_inventory_rent_inventory_details_path(rent_inventory), :class => 'btn btn-xs btn-primary' )<< ' ' <<
+      (link_to '盘点报表',
+                to_report_rent_inventory_path(rent_inventory), :class => 'btn btn-xs btn-primary' )
+    end
+
+
+    
+  end 
+%>

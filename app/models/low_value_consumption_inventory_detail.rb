@@ -24,4 +24,10 @@ class LowValueConsumptionInventoryDetail < ActiveRecord::Base
 	    name = "否"
 	  end
 	end
+
+	def self.recheck(inventory_detail, inventory, inventory_unit)
+		inventory_detail.update inventory_status: "waiting", is_check: true
+        inventory.update status: "doing"
+        inventory_unit.update status: "unfinished" if !inventory_unit.blank?
+	end
 end

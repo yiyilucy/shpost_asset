@@ -23,10 +23,63 @@ class LowValueConsumptionInventory < ActiveRecord::Base
 	end
 
 	def is_lv2_unit_name
-     if is_lv2_unit
-        name = "是"
-     else
-        name = "否"
-     end
-   end
+    if is_lv2_unit
+      name = "是"
+    else
+      name = "否"
+    end
+  end
+
+  def self.done(inventory, inventory_details, inventory_units)
+  	inventory_details.each do |x|
+      if x.inventory_status.eql?"waiting"
+        x.update inventory_status: "no_scan", end_date: Time.now
+      end
+    end
+
+    inventory_units.each do |u|
+      if u.status.eql?"unfinished"
+        u.update status: "finished"
+      end
+    end
+
+    inventory.update status: "done"
+  end
+
+  def self.inventory_amount(inventory_details, current_user, inventory_status)
+  	amount = 0
+
+  	if current_user.unit.unit_level == 2 
+  		if inventory_status.nil?
+      	amount = inventory_details.where(manage_unit_id: current_user.unit_id).size
+      else
+      	amount = inventory_details.where(manage_unit_id: current_user.unit_id, inventory_status: inventory_status).size
+      end
+    elsif current_user.unit.unit_level == 3
+      child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
+
+      if inventory_status.nil?
+     		amount = inventory_details.where("(use_unit_id = ? or use_unit_id in (?))", current_user.unit_id, child_ids).size
+     	else
+     		amount = inventory_details.where("(use_unit_id = ? or use_unit_id in (?)) and inventory_status = ?", current_user.unit_id, child_ids, inventory_status).size
+     	end
+    end 
+    return amount
+  end
+
+  def self.sub_done(inventory_units, inventory_details, current_user)
+  	sub_unit = inventory_units.find_by(unit_id: current_user.unit_id)
+
+    if !sub_unit.blank?
+      inventory_details = inventory_details.where(manage_unit_id: current_user.unit_id)
+
+      inventory_details.each do |x|
+        if x.inventory_status.eql?"waiting"
+          x.update inventory_status: "no_scan", end_date: Time.now
+        end
+      end
+
+      sub_unit.update status: "finished"
+    end
+  end
 end

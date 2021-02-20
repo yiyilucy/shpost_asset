@@ -423,6 +423,146 @@ class RentInfosController < ApplicationController
     export_grid_if_requested
   end
 
+  def print
+    if params[:rent_infos] && params[:rent_infos][:selected]
+      @selected = params[:rent_infos][:selected]
+      @result = []
+      
+      until @selected.blank? do 
+        @result = @result + RentInfo.where(id:@selected.pop(1000))
+      end
+    else
+      flash[:alert] = "请勾选需要打印的其他租赁资产"
+      respond_to do |format|
+        format.html { redirect_to rent_infos_url }
+        format.json { head :no_content }
+      end
+    end
+  end
+
+  def rent_report
+    unless request.get?
+      if !params[:year].blank? && !params[:month].blank?
+        @year = params[:year]
+        @month = params[:month]
+        cal_date = (@year+@month.rjust(2, '0')+"01").to_datetime.end_of_month
+        
+        if current_user.unit.unit_level == 1
+          @results = RentInfo.joins(:fixed_asset_catalog).where("rent_infos.use_at <= ? and (rent_infos.discard_at is null or rent_infos.discard_at > ?)", cal_date, cal_date).where("length(fixed_asset_catalogs.code)=8")
+          @counts = @results.group(:fixed_asset_catalog_id, :manage_unit_id).order(:fixed_asset_catalog_id, :manage_unit_id).count
+          @total_count = @results.count
+        elsif (current_user.unit.unit_level == 3) && current_user.unit.is_facility_management_unit
+          @results = RentInfo.joins(:fixed_asset_catalog).where(relevant_unit_id: current_user.unit_id).where("rent_infos.use_at < ? and (rent_infos.discard_at is null or rent_infos.discard_at >= ?)", cal_date, cal_date).where("length(fixed_asset_catalogs.code)=8")
+          @counts = @results.group(:fixed_asset_catalog_id, :manage_unit_id).order(:fixed_asset_catalog_id, :manage_unit_id).count
+          @total_count = @results.count  
+        elsif current_user.unit.unit_level == 2
+          @results = RentInfo.joins(:fixed_asset_catalog).where(manage_unit_id: current_user.unit_id).where("rent_infos.use_at < ? and (rent_infos.discard_at is null or rent_infos.discard_at >= ?)", cal_date, cal_date).where("length(fixed_asset_catalogs.code)=8")
+          @counts = @results.group(:fixed_asset_catalog_id, :use_unit_id).order(:fixed_asset_catalog_id, :use_unit_id).count
+          @total_count = @results.count
+        end
+      else
+        flash[:alert] = "请先选择统计年月"
+        redirect_to rent_report_rent_infos_url and return
+      end
+    end
+  end
+
+  def rent_report_export
+    unless request.get?
+      if !params[:year].blank? && !params[:month].blank?
+        @year = params[:year]
+        @month = params[:month]
+        cal_date = (@year+@month.rjust(2, '0')+"01").to_datetime.end_of_month
+
+        if current_user.unit.unit_level == 1
+            results = RentInfo.joins(:fixed_asset_catalog).where("rent_infos.use_at <= ? and (rent_infos.discard_at is null or rent_infos.discard_at > ?)", cal_date, cal_date).where("length(fixed_asset_catalogs.code)=8")
+          @counts = results.group(:fixed_asset_catalog_id, :manage_unit_id).order(:fixed_asset_catalog_id, :manage_unit_id).count
+          @total_count = results.count
+        elsif (current_user.unit.unit_level == 3) && current_user.unit.is_facility_management_unit
+            results = RentInfo.joins(:fixed_asset_catalog).where(relevant_unit_id: current_user.unit_id).where("rent_infos.use_at < ? and (rent_infos.discard_at is null or rent_infos.discard_at >= ?)", cal_date, cal_date).where("length(fixed_asset_catalogs.code)=8")
+          @counts = results.group(:fixed_asset_catalog_id, :manage_unit_id).order(:fixed_asset_catalog_id, :manage_unit_id).count
+          @total_count = results.count  
+        elsif current_user.unit.unit_level == 2
+          results = RentInfo.joins(:fixed_asset_catalog).where(manage_unit_id: current_user.unit_id).where("rent_infos.use_at < ? and (rent_infos.discard_at is null or rent_infos.discard_at >= ?)", cal_date, cal_date).where("length(fixed_asset_catalogs.code)=8")
+          @counts = results.group(:fixed_asset_catalog_id, :use_unit_id).order(:fixed_asset_catalog_id, :use_unit_id).count
+          @total_count = results.count
+        end
+      
+        send_data(rent_report_xls_content_for(@counts,@total_count,@year,@month), :type => "text/excel;charset=utf-8; header=present", :filename => "rent_report_#{Time.now.strftime("%Y%m%d")}.xls")  
+      else
+        flash[:alert] = "请先选择统计年月"
+        redirect_to rent_report_rent_infos_url and return
+      end
+    end  
+  end
+
+  def rent_report_xls_content_for(counts,total_count,year,month)
+    xls_report = StringIO.new  
+    book = Spreadsheet::Workbook.new  
+    sheet1 = book.create_worksheet :name => "rent_report"  
+    
+    blue = Spreadsheet::Format.new :color => :blue, :weight => :bold, :size => 10 
+    title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :weight => :bold
+    body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center
+ 
+    sheet1.row(0).default_format = blue  
+
+    sheet1.row(0).concat %w{会计期间 资产类别 资产一级类别 资产二级类别 资产三级类别 资产四级类别 公司 资产数量}
+    0.upto(7) do |i|
+      sheet1.row(0).set_format(i, title)
+    end
+    count_row = 1
+
+    if !counts.blank?
+      counts.each do |k, v|
+        code = FixedAssetCatalog.find(k[0]).code
+        sheet1[count_row,0]=(year+month.rjust(2, '0')+"01").to_datetime.strftime("%Y-%m")
+        sheet1[count_row,1]=code[0,2]+"."+code[0,4]+"."+code[0,6]+"."+code[0,8]
+        sheet1[count_row,2]=FixedAssetCatalog.find_by(code: code[0,2]).try :name
+        sheet1[count_row,3]=FixedAssetCatalog.find_by(code: code[0,4]).try :name
+        sheet1[count_row,4]=FixedAssetCatalog.find_by(code: code[0,6]).try :name
+        sheet1[count_row,5]=FixedAssetCatalog.find_by(code: code[0,8]).try :name
+        sheet1[count_row,6]=Unit.find(k[1]).name
+        sheet1[count_row,7]=v
+        
+        0.upto(7) do |i|
+          sheet1.row(count_row).set_format(i, body)
+        end
+
+        count_row += 1
+      end  
+
+      sheet1[count_row,0]="合计"
+      sheet1[count_row,7]=total_count
+    end
+      
+    0.upto(7) do |i|
+      sheet1.row(count_row).set_format(i, body)
+    end
+  
+    book.write xls_report  
+    xls_report.string  
+  end
+
+  def to_scan
+    @rent_info = nil
+    
+    if !params.blank? and !params[:id].blank?
+      @rent_info = RentInfo.find(params[:id].to_i)
+      rent_inventory_details = RentInventoryDetail.joins(:rent_inventory).where("rent_inventory_details.rent_info_id = ? and rent_inventories.status = ? and rent_inventory_details.inventory_status = ?", @rent_info.id, "doing", "waiting").order("rent_inventories.start_time")     
+
+      if !rent_inventory_details.blank? && (can? :scan, RentInventoryDetail)
+        @rent_inventory_detail = rent_inventory_details.first
+        @rent_inventory = @rent_inventory_detail.rent_inventory
+
+        respond_to do |format|
+          format.html { redirect_to scan_rent_inventory_detail_path(@rent_inventory_detail) }
+          format.json { head :no_content }
+        end
+      end
+    end
+  end
+
   
   private
     def set_rent_info
@@ -431,6 +571,10 @@ class RentInfosController < ApplicationController
     def upload_rent_info(file)
       if !file.original_filename.empty?
         direct = "#{Rails.root}/upload/rent_info/"
+        if !File.exist?(direct)
+          Dir.mkdir(direct)          
+        end
+
         filename = "#{Time.now.to_f}_#{file.original_filename}"
 
         file_path = direct + filename

@@ -1,6 +1,7 @@
 ShpostAsset::Application.routes.draw do
   
 
+
   scope 'shpost_asset' do
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -144,6 +145,7 @@ ShpostAsset::Application.routes.draw do
       get 'cancel'
       get 'print'
       get 'print_certificate'
+      get 'rent_print_certificate'
     end
 
     resources :low_value_consumption_infos, :controller => 'purchase_low_value_consumption_info' do
@@ -345,10 +347,8 @@ ShpostAsset::Application.routes.draw do
       get 'discard'
       post 'discard'
       get 'rent_report'
+      post 'rent_report'
       post 'rent_report_export'
-      get 'rent_sum_report'
-      post 'rent_sum_report'
-      post 'rent_sum_report_export'
       get 'select_catalog2'
       post 'select_catalog2'
       get 'select_catalog3'
@@ -365,6 +365,48 @@ ShpostAsset::Application.routes.draw do
       # get 'discard'
     end
   end
+
+
+  resources :rent_inventory_units
+
+  resources :rent_inventory_details do
+    member do
+      get 'recheck'
+      get 'scan'
+      post 'match'
+      post 'unmatch'
+      post 'import'
+    end
+  end
+
+  resources :rent_inventories do 
+    collection do
+      get 'level2_index'
+      get 'doing_index'
+      get 'to_sample_inventory'
+      post 'sample_inventory'
+      get 'sample_inventory_index'
+      get 'sample_inventory_doing_index'
+      get 'sample_level2_index'
+    end
+
+    member do 
+      get 'cancel'
+      get 'done'
+      get 'sub_done'
+      get 'to_report'
+      post 'report'
+      post 'export'
+      get 'sample_report'
+      post 'sample_report'
+    end
+
+    resources :rent_inventory_details, :controller => 'rent_inventory_rent_inventory_detail' do 
+      collection do
+        get 'doing_index'
+      end     
+    end
+  end 
 
 
 end

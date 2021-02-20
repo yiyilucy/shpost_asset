@@ -24,7 +24,7 @@
 	<td><%= @counts[x.id].blank? ? 0 : @counts[x.id] %></td>
 	<td><%= @sums[x.id].blank? ? number_with_precision(0, precision: 2) : number_with_precision(@sums[x.id], precision: 2)  %></td>
 	<% if current_user.unit.unit_level == 1 or  current_user.unit.is_facility_management_unit %>
-	<td><%= FixedAssetInfo.where(manage_unit_id:x.id).blank? ? "" : FixedAssetInfo.where(manage_unit_id:x.id).last.updated_at %></td>
+	<td><%= FixedAssetInfo.where(manage_unit_id:x.id).blank? ? "" : FixedAssetInfo.where(manage_unit_id:x.id).last.updated_at.strftime('%Y-%m-%d') %></td>
 	<% end %>
 </tr>
 <% end %>

@@ -43,3 +43,7 @@ end
 every 2.minutes do
   runner "LowValueConsumptionInventory.start_inventory"
 end
+
+every 2.minutes do
+  runner "RentInventory.start_inventory"
+end

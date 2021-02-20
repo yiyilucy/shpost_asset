@@ -16,8 +16,8 @@
     <% if (can? :discard, LowValueConsumptionInfo) %>
     <%= submit_tag "报废",:class => 'btn btn-primary', onclick: "if(!confirm('确定报废?')){return false;}else{form2.action='low_value_consumption_infos/discard?atype=lvc';form2.submit();}" %>
     <% end %>
-    <% if can? :reprint_import, FixedAssetInfo %>
-    <%= link_to '补打导入', "/shpost_asset/low_value_consumption_infos/reprint_import", :class => 'btn btn-primary' %>
+    <% if can? :reprint_import, LowValueConsumptionInfo %>
+    <%= link_to '补打导入', "/shpost_asset/low_value_consumption_infos/reprint_import?object=LowValueConsumptionInfo", :class => 'btn btn-primary' %>
     <% end %>
     <% if (can? :print, LowValueConsumptionInfo) %>
   	<%= submit_tag "打印",:class => 'btn btn-primary', target: '_blank', onclick: "form2.action='low_value_consumption_infos/print';form2.submit();" %>

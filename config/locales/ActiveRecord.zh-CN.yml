@@ -236,6 +236,7 @@ zh-CN:
   url:
     fixed_asset_info: "http://localhost:3000/fixed_asset_infos"
     low_value_consumption: "http://localhost:3000/low_value_consumption_infos"
+    rent_info: "http://localhost:3000/rent_infos"
 
     # fixed_asset_info: "http://222.66.108.206:5500/fixed_asset_infos"
     # low_value_consumption: "http://222.66.108.206:5500/low_value_consumption_infos"
@@ -360,6 +361,15 @@ zh-CN:
       rent_info:
         one: 其他租赁资产信息
         other: 其他租赁资产信息
+      rent_inventory:
+        one: 其他租赁资产盘点
+        other: 其他租赁资产盘点
+      rent_inventory_detail:
+        one: 其他租赁资产盘点明细
+        other: 其他租赁资产盘点明细
+      rent_inventory_unit:
+        one: 其他租赁资产盘点单位
+        other: 其他租赁资产盘点单位
     attributes:
       user:
         email: "电子邮件"
@@ -667,6 +677,67 @@ zh-CN:
         ori_asset_no: "原资产编号"
         desc: "备注"
         change_log: "变动记录"
+      rent_inventory:
+        no: "盘点单号"
+        name: "盘点单名称"
+        desc: "备注"
+        status: "状态"
+        create_user_id: "创建人"
+        create_unit_id: "创建单位"
+        start_time: "开始时间"
+        end_time: "结束时间"
+        is_lv2_unit: "是否二级单位创建"
+        status_waiting: "待处理"
+        status_doing: "盘点中"
+        status_canceled: "取消"
+        status_done: "完成"
+        relevant_unit_ids: "单位"
+        unit: "单位"
+        is_sample: "是否抽样"
+        fixed_asset_catalog_id: "抽样类别目录"
+        sample_unit_id: "抽样单位"
+      rent_inventory_unit:
+        unit_id: "单位"
+        rent_inventory_id: "其他租赁资产盘点单"
+        status: "状态"
+        status_unfinished: "未完成"
+        status_finished: "完成"
+      rent_inventory_detail:
+        asset_no: "资产编号"
+        asset_name: "资产名称"       
+        fixed_asset_catalog_id: "类别目录"
+        use_at: "启用日期"
+        amount: "数量"
+        brand_model: "结构/型号"
+        use_user: "资产使用人"
+        use_unit_id: "使用部门"
+        location: "地点备注"
+        area: "[建筑面积（平方米）]"
+        sum: "[租金总金额]"
+        use_right_start: "[使用权取得日期]"
+        use_right_end: "[使用权终止日期]"
+        pay_cycle: "[租赁费支付周期]"
+        license: "[牌照]"
+        deposit: "[租赁押金]"
+        relevant_unit_id: "归口管理部门"
+        rent_status: "其他租赁资产状态"
+        print_times: "标签打印次数"
+        purchase_id: "采购单号"
+        manage_unit_id: "管理单位"
+        ori_asset_no: "原资产编号"
+        desc: "备注"
+        change_log: "变动记录"
+        rent_info_id: "其他租赁资产"
+        rent_inventory_id: "其他租赁资产盘点单"
+        inventory_status: "盘点状态"
+        is_check: "是否复核"
+        rent_inventory_unit_id: "盘点单位"
+        inventory_status_waiting: "待扫描"
+        inventory_status_match: "匹配"
+        inventory_status_unmatch: "不匹配"
+        inventory_status_no_scan: "未扫描"
+        inventory_user_id: "盘点人"
+        end_date: "截止日期"
   menu:
     permission:
       name: "权限管理"
@@ -805,7 +876,7 @@ zh-CN:
             role: :LowValueConsumptionInfo
         low_value_consumption_report:
           name: "低值易耗品报表"
-          link: "/low_value_consumption_infos/low_value_consumption_report"
+          link: "/low_value_consumption_infos/low_value_consumption_report?object=LowValueConsumptionInfo"
           need_count: false
           needrole:
             can: :low_value_consumption_report
@@ -864,8 +935,6 @@ zh-CN:
           needrole:
             can: :read
             role: :LvcDiscard
-    
-
     low_value_consumption_inventory:    
       name: "低值易耗品盘点单" 
       needrole:
@@ -934,6 +1003,20 @@ zh-CN:
           needrole:
             can: :read
             role: :RentInfo
+        rent_info_report:
+          name: "其他租赁资产报表"
+          link: "/low_value_consumption_infos/low_value_consumption_report?object=RentInfo"
+          need_count: false
+          needrole:
+            can: :low_value_consumption_report
+            role: :LowValueConsumptionInfo
+        rent_report:
+          name: "资产汇总报表"
+          link: "/rent_infos/rent_report"
+          need_count: false
+          needrole:
+            can: :rent_report
+            role: :RentInfo
     rent_purchases:
       name: "其他租赁采购单"  
       needrole:
@@ -981,6 +1064,33 @@ zh-CN:
           needrole:
             can: :read
             role: :LvcDiscard
+    rent_inventory:    
+      name: "其他租赁盘点单" 
+      needrole:
+        can: :read
+        role: :RentInventory   
+      submenu:    
+        new_rent_inventory:
+          name: "创建其他租赁盘点单"
+          link: "/rent_inventories"
+          need_count: false
+          needrole:
+            can: :create
+            role: :RentInventory
+        level2_rent_inventory:
+          name: "其他单位创建盘点单"
+          link: "/rent_inventories/level2_index"
+          need_count: false
+          needrole:
+            can: :level2_index
+            role: :RentInventory
+        doing_rent_inventory:
+          name: "待处理其他租赁盘点单"
+          link: "/rent_inventories/doing_index"
+          need_count: false
+          needrole:
+            can: :doing_index
+            role: :RentInventory
     up_downloads:
       name: "模板管理"
       needrole:

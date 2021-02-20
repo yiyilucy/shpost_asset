@@ -29,48 +29,23 @@
     g.column name: model_class.human_attribute_name(:end_sum), attribute: 'end_sum'
 
     g.column name: "资产总数" do |low_value_consumption_inventory|
-      if current_user.unit.unit_level == 2 
-        low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id).size
-      elsif current_user.unit.unit_level == 3
-        child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
-        low_value_consumption_inventory.low_value_consumption_inventory_details.where("lvc_inventory_details.use_unit_id = ? or lvc_inventory_details.use_unit_id in (?)", current_user.unit_id, child_ids).size
-      end          
+      LowValueConsumptionInventory.inventory_amount(low_value_consumption_inventory.low_value_consumption_inventory_details, current_user, nil)    
     end
 
     g.column name: "待扫描数" do |low_value_consumption_inventory| 
-      if current_user.unit.unit_level == 2 
-        low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id, inventory_status: "waiting").size
-      elsif current_user.unit.unit_level == 3
-        child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
-        low_value_consumption_inventory.low_value_consumption_inventory_details.where("(lvc_inventory_details.use_unit_id = ? or lvc_inventory_details.use_unit_id in (?)) and lvc_inventory_details.inventory_status = ?", current_user.unit_id, child_ids, "waiting").size
-      end 
+      LowValueConsumptionInventory.inventory_amount(low_value_consumption_inventory.low_value_consumption_inventory_details, current_user, "waiting")    
     end
 
     g.column name: "匹配数" do |low_value_consumption_inventory| 
-      if current_user.unit.unit_level == 2 
-        low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id, inventory_status: "match").size
-      elsif current_user.unit.unit_level == 3
-        child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
-        low_value_consumption_inventory.low_value_consumption_inventory_details.where("(lvc_inventory_details.use_unit_id = ? or lvc_inventory_details.use_unit_id in (?)) and lvc_inventory_details.inventory_status = ?", current_user.unit_id, child_ids, "match").size
-      end 
+      LowValueConsumptionInventory.inventory_amount(low_value_consumption_inventory.low_value_consumption_inventory_details, current_user, "match")    
     end
 
     g.column name: "不匹配数" do |low_value_consumption_inventory| 
-      if current_user.unit.unit_level == 2 
-        low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id, inventory_status: "unmatch").size
-      elsif current_user.unit.unit_level == 3
-        child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
-        low_value_consumption_inventory.low_value_consumption_inventory_details.where("(lvc_inventory_details.use_unit_id = ? or lvc_inventory_details.use_unit_id in (?)) and lvc_inventory_details.inventory_status = ?", current_user.unit_id, child_ids, "unmatch").size
-      end 
+      LowValueConsumptionInventory.inventory_amount(low_value_consumption_inventory.low_value_consumption_inventory_details, current_user, "unmatch")  
     end
 
     g.column name: "未扫描数" do |low_value_consumption_inventory| 
-      if current_user.unit.unit_level == 2 
-        low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id, inventory_status: "no_scan").size
-      elsif current_user.unit.unit_level == 3
-        child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
-        low_value_consumption_inventory.low_value_consumption_inventory_details.where("(lvc_inventory_details.use_unit_id = ? or lvc_inventory_details.use_unit_id in (?)) and lvc_inventory_details.inventory_status = ?", current_user.unit_id, child_ids, "no_scan").size
-      end 
+      LowValueConsumptionInventory.inventory_amount(low_value_consumption_inventory.low_value_consumption_inventory_details, current_user, "no_scan")  
     end
 
     g.column do |low_value_consumption_inventory|

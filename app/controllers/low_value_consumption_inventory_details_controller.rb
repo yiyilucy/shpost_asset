@@ -45,9 +45,7 @@ class LowValueConsumptionInventoryDetailsController < ApplicationController
         @low_value_consumption_inventory = @low_value_consumption_inventory_detail.low_value_consumption_inventory 
         @low_value_consumption_inventory_unit = @low_value_consumption_inventory_detail.low_value_consumption_inventory_unit
 
-        @low_value_consumption_inventory_detail.update inventory_status: "waiting", is_check: true
-        @low_value_consumption_inventory.update status: "doing"
-        @low_value_consumption_inventory_unit.update status: "unfinished" if !@low_value_consumption_inventory_unit.blank?
+        LowValueConsumptionInventoryDetail.recheck(@low_value_consumption_inventory_detail, @low_value_consumption_inventory, @low_value_consumption_inventory_unit)
 
         respond_to do |format|
           format.html { redirect_to low_value_consumption_inventory_low_value_consumption_inventory_details_path(@low_value_consumption_inventory) }

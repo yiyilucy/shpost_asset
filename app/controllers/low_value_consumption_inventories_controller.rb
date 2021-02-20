@@ -285,43 +285,13 @@ class LowValueConsumptionInventoriesController < ApplicationController
     #   flash[:alert] = "请等待所有参与单位都完成后再点击"
     # end
 
-    @low_value_consumption_inventory.low_value_consumption_inventory_details.each do |x|
-      if x.inventory_status.eql?"waiting"
-        x.update inventory_status: "no_scan", end_date: Time.now
-      end
-    end
-
-    @low_value_consumption_inventory.low_value_consumption_inventory_units.each do |u|
-      if u.status.eql?"unfinished"
-        u.update status: "finished"
-      end
-    end
-
-    @low_value_consumption_inventory.update status: "done"
+    LowValueConsumptionInventory.done(@low_value_consumption_inventory, @low_value_consumption_inventory.low_value_consumption_inventory_details, @low_value_consumption_inventory.low_value_consumption_inventory_units)
   
     redirect_to request.referer
   end
 
   def sub_done
-    sub_unit = @low_value_consumption_inventory.low_value_consumption_inventory_units.find_by(unit_id: current_user.unit_id)
-
-    if !sub_unit.blank?
-      # all_scanned = true
-      low_value_consumption_inventory_details = @low_value_consumption_inventory.low_value_consumption_inventory_details.where(manage_unit_id: current_user.unit_id)
-
-      low_value_consumption_inventory_details.each do |x|
-        if x.inventory_status.eql?"waiting"
-          # all_scanned = false
-          x.update inventory_status: "no_scan", end_date: Time.now
-        end
-      end
-
-      # if all_scanned
-        sub_unit.update status: "finished"
-      # else
-      #   flash[:alert] = "低值易耗品盘点未全部完成"
-      # end
-    end
+    LowValueConsumptionInventory.sub_done(@low_value_consumption_inventory.low_value_consumption_inventory_units, @low_value_consumption_inventory.low_value_consumption_inventory_details, current_user)
 
     respond_to do |format|
       format.html { redirect_to doing_index_low_value_consumption_inventories_url }

@@ -12,13 +12,15 @@
                   import_purchase_rent_infos_path,
                   :class => 'btn btn-primary' %>
 
-    <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="rent_infos">导出</button>
-      <%= submit_tag "批量删除",:class => 'btn btn-primary', onclick: "if(!confirm('确定删除?')){return false;}else{form1.action='rent_infos/batch_destroy';form1.submit();}" %>
+    <%= submit_tag "批量删除",:class => 'btn btn-primary', onclick: "if(!confirm('确定删除?')){return false;}else{form1.action='rent_infos/batch_destroy';form1.submit();}" %>
     <% end %>
 
     <% if (can? :update, RentInfo) and ((@purchase.create_user_id == current_user.id and @purchase.status.eql?"waiting")  or ((@purchase.manage_unit_id == current_user.unit_id) and (@purchase.status.in?(["waiting","declined"])))) %>
     <%= submit_tag "批量修改",:class => 'btn btn-primary', onclick: "form1.action='rent_infos/batch_edit';form1.submit();" %>
     
+    <% end %>
+    <% if @purchase.status.eql?"done" and (can? :print, RentInfo) %>
+    <%= submit_tag "打印",:class => 'btn btn-primary', target: '_blank', onclick: "form1.action='rent_infos/print';form1.submit();" %>
     <% end %>
     <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="purchase_rent_infos">导出</button>
   </div>

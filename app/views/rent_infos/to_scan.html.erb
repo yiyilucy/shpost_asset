@@ -1,0 +1,57 @@
+<%- model_class =RentInfo -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+<div>
+<%= form_tag('', name: 'form1') %>
+<div>
+  <table>
+  <tr>
+    <td><%= label_tag(:asset_no, "资产编号:") %></td>
+    <td><%= @rent_info.try :asset_no %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:asset_name, "资产名称:") %></td>
+    <td><%= @rent_info.try :asset_name %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:brand_model, "结构/型号:") %></td>
+    <td><%= @rent_info.try :brand_model %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:use_at, "启用日期:") %></td>
+    <td><%= @rent_info.use_at.blank? ? "" : @rent_info.use_at.strftime('%Y-%m-%d').to_s %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:use_unit_id, "使用部门:") %></td>
+    <td><%= @rent_info.use_unit_id.blank? ? "" : Unit.find(@rent_info.use_unit_id).name %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:location, "所在地点:") %></td>
+    <td><%= @rent_info.try :location %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:use_user, "使用人:") %></td>
+    <td><%= @rent_info.try :use_user %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:desc, "备注:") %></td>
+    <td><%= @rent_info.try :desc %></td>
+  </tr>
+</table>
+</div>
+</form>
+
+<style>
+@media (max-width: 767px) {
+    .header-container {
+        display: none;
+    }
+    .main-container .container {
+        margin: 0 auto;
+    }
+    .main-container .left-slider {
+        display: none;
+    }
+}
+</style>
