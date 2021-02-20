@@ -82,4 +82,115 @@ class LowValueConsumptionInventory < ActiveRecord::Base
       sub_unit.update status: "finished"
     end
   end
+
+  def self.process_params(params)
+    end_date = DateTime
+    unit_ids = []
+    relevant_unit_ids = []
+    unit_names = []
+    relevant_unit_names = []
+    return_datas = Hash.new
+
+    # 查询页面过来
+    if !params[:end_date].blank? && !params[:end_date]["end_date"].blank?
+      end_date = to_date(params[:end_date]["end_date"])+1
+    # 报表页面过来
+    elsif !params[:edate].blank?
+      end_date = to_date(params[:edate])+1
+    else
+      end_date = Time.now
+    end
+    return_datas["end_date"] = end_date
+    return_datas["edate"] = (end_date-1).strftime("%Y-%m-%d")
+    
+    if !params[:checkbox_unit].blank?
+      params[:checkbox_unit].each do |x|     
+        if x[1].eql?"1"   
+          unit_ids << x[0].to_i 
+          unit_names << Unit.find(x[0].to_i).name
+        end
+      end
+    elsif !params[:uids].blank?
+        unit_ids = eval(params[:uids])
+        unit_ids.each do |x|
+          unit_names << Unit.find(x).name
+        end
+    end
+    return_datas["unit_ids"] = unit_ids
+    return_datas["unit_names"] = unit_names.compact.join(",")
+
+    if !params[:checkbox_relevant].blank?
+      params[:checkbox_relevant].each do |x|     
+        if x[1].eql?"1"   
+          relevant_unit_ids << x[0].to_i 
+          relevant_unit_names << Unit.find(x[0].to_i).name
+        end
+      end
+    elsif !params[:rids].blank?
+      relevant_unit_ids = eval(params[:rids])
+      relevant_unit_ids.each do |x|
+        relevant_unit_names << Unit.find(x).name
+      end  
+    end
+    return_datas["relevant_unit_ids"] = relevant_unit_ids
+    return_datas["relevant_unit_names"] = relevant_unit_names.compact.join(",")
+
+    return  return_datas   
+  end
+
+  def self.get_results(object, current_user, params, return_datas)
+    sum_amount = Hash.new
+    status_amount = Hash.new
+    results = Hash.new
+    total_amount = 0
+    match_amount = 0
+    unmatch_amount = 0
+    no_scan_amount = 0
+    waiting_amount = 0
+
+    if (current_user.unit.unit_level == 1) || (current_user.unit.is_facility_management_unit)
+      if object.eql? LowValueConsumptionInventoryDetail
+        sum_amount = object.where("lvc_inventory_id = ? and manage_unit_id in (?) and relevant_unit_id in (?)", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"]).group(:manage_unit_id).order(:manage_unit_id).count
+        status_amount = object.where("lvc_inventory_id = ? and manage_unit_id in (?) and relevant_unit_id in (?) and end_date <= ?", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"], return_datas["end_date"]).group(:manage_unit_id).group(:inventory_status).order(:manage_unit_id, :inventory_status).count
+      elsif object.eql? RentInventoryDetail
+        sum_amount = object.where("rent_inventory_id = ? and manage_unit_id in (?) and relevant_unit_id in (?)", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"]).group(:manage_unit_id).order(:manage_unit_id).count
+        status_amount = object.where("rent_inventory_id = ? and manage_unit_id in (?) and relevant_unit_id in (?) and end_date <= ?", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"], return_datas["end_date"]).group(:manage_unit_id).group(:inventory_status).order(:manage_unit_id, :inventory_status).count
+      end
+    else 
+      if object.eql? LowValueConsumptionInventoryDetail
+        sum_amount = object.where("lvc_inventory_id = ? and use_unit_id in (?) and relevant_unit_id in (?)", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"]).group(:use_unit_id).order(:use_unit_id).count
+        status_amount = object.where("lvc_inventory_id = ? and use_unit_id in (?) and relevant_unit_id in (?) and end_date <= ?", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"], return_datas["end_date"]).group(:use_unit_id).group(:inventory_status).order(:use_unit_id, :inventory_status).count
+      elsif object.eql? RentInventoryDetail
+        sum_amount = object.where("rent_inventory_id = ? and use_unit_id in (?) and relevant_unit_id in (?)", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"]).group(:use_unit_id).order(:use_unit_id).count
+        status_amount = object.where("rent_inventory_id = ? and use_unit_id in (?) and relevant_unit_id in (?) and end_date <= ?", params[:id].to_i, return_datas["unit_ids"], return_datas["relevant_unit_ids"], return_datas["end_date"]).group(:use_unit_id).group(:inventory_status).order(:use_unit_id, :inventory_status).count
+      end
+    end
+      
+    sum_amount.each do |k,v|
+      match_am = status_amount[[k, "match"]].blank? ? 0 : status_amount[[k, "match"]]
+      match_amount += match_am
+      unmatch_am = status_amount[[k, "unmatch"]].blank? ? 0 : status_amount[[k, "unmatch"]]
+      unmatch_amount += unmatch_am
+      no_scan_am = status_amount[[k, "no_scan"]].blank? ? 0 : status_amount[[k, "no_scan"]]
+      no_scan_amount += no_scan_am
+      waiting_am = v-match_am-unmatch_am-no_scan_am
+      waiting_amount += waiting_am
+      total_amount += v
+
+      results[k]=[v, match_am, unmatch_am, no_scan_am, waiting_am]
+      return_datas["total_amount"] = total_amount
+      return_datas["match_amount"] = match_amount
+      return_datas["unmatch_amount"] = unmatch_amount
+      return_datas["no_scan_amount"] = no_scan_amount
+      return_datas["waiting_amount"] = waiting_amount
+    end
+
+    return results
+  end
+
+  def self.to_date(time)
+    date = Date.civil(time.split(/-|\//)[0].to_i,time.split(/-|\//)[1].to_i,time.split(/-|\//)[2].to_i)
+    return date
+  end
+
 end
