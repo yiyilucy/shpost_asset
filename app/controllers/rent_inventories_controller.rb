@@ -28,7 +28,110 @@ class RentInventoriesController < ApplicationController
 
   def edit
   end
+  def to_report
+    @units = nil
+    @relevant_units = nil
+    @inventory = RentInventory.find(params[:id].to_i)
 
+    if !@inventory.blank?
+      if (current_user.unit.unit_level == 1) || (current_user.unit.is_facility_management_unit)
+        unit_ids = @inventory.rent_inventory_units.select(:unit_id)
+      elsif current_user.unit.unit_level == 2
+        unit_ids = @inventory.rent_inventory_details.where(manage_unit_id: current_user.unit_id).select(:use_unit_id).distinct
+      elsif current_user.unit.unit_level == 3 && !current_user.unit.is_facility_management_unit
+        unit_ids = @inventory.rent_inventory_details.joins(:unit).where("units.id = ? or units.parent_id = ?", current_user.unit_id, current_user.unit_id).select("units.id").distinct
+      elsif current_user.unit.unit_level == 4
+        unit_ids = current_user.unit_id
+      end
+
+      @units = Unit.where(id: unit_ids).order(:unit_level, :no)
+
+      if @inventory.relevant_unit_ids.blank? 
+        @relevant_units = Unit.where(is_facility_management_unit: true).order(:no)
+      else
+        @relevant_units = Unit.where(id: @inventory.relevant_unit_ids.split(",").map(&:to_i))
+      end
+    end
+  end
+
+  def report
+    @return_datas = Hash.new
+    @results = Hash.new
+
+    @inventory_id = params[:id]
+    # binding.pry 
+    
+    @return_datas = LowValueConsumptionInventory.process_params(params)
+
+    @results = LowValueConsumptionInventory.get_results(RentInventoryDetail, current_user, params, @return_datas)
+  end
+
+  
+  def export
+    return_datas = Hash.new
+    results = Hash.new
+   
+    return_datas = LowValueConsumptionInventory.process_params(params)
+
+    results = LowValueConsumptionInventory.get_results(RentInventoryDetail, current_user, params, return_datas)
+
+    send_data(report_xls_content_for(return_datas, results), :type => "text/excel;charset=utf-8; header=present", :filename => "报表_#{Time.now.strftime("%Y%m%d")}.xls")  
+  end
+
+  def report_xls_content_for(return_datas, results)  
+    xls_report = StringIO.new  
+    book = Spreadsheet::Workbook.new  
+    sheet1 = book.create_worksheet :name => "报表"  
+  
+    filter = Spreadsheet::Format.new :size => 10
+    title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :weight => :bold
+    body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center
+
+    sheet1.column(0).width = 60
+    1.upto(5) do |i|
+      sheet1.column(i).width = 20
+    end
+
+    sheet1[0,0] = "截止时间: #{return_datas["edate"]}"
+    sheet1.row(0).default_format = filter 
+    # sheet1[1,0] = "盘点单位: #{return_datas["unit_names"]}"
+    # sheet1.row(1).default_format = filter 
+    # sheet1[2,0] = "资产归口单位: #{return_datas["relevant_unit_names"]}"
+    # sheet1.row(2).default_format = filter 
+    
+    sheet1.row(2).concat %w{单位 总数 匹配数 不匹配数 未扫描数 待扫描数}  
+    0.upto(5) do |i|
+      sheet1.row(2).set_format(i, title)
+    end
+    count_row = 3
+    results.each do |k,v|   
+      sheet1[count_row,0]=Unit.find(k).try(:name)
+      sheet1[count_row,1]=v[0]
+      sheet1[count_row,2]=v[1]
+      sheet1[count_row,3]=v[2]
+      sheet1[count_row,4]=v[3]
+      sheet1[count_row,5]=v[4]
+      0.upto(5) do |i|
+        sheet1.row(count_row).set_format(i, body)
+      end
+
+      count_row += 1
+    end 
+
+    sheet1[count_row,0]="总计"
+    sheet1[count_row,1]=return_datas["total_amount"]
+    sheet1[count_row,2]=return_datas["match_amount"]
+    sheet1[count_row,3]=return_datas["unmatch_amount"]
+    sheet1[count_row,4]=return_datas["no_scan_amount"]
+    sheet1[count_row,5]=return_datas["waiting_amount"]
+
+    0.upto(5) do |i|
+      sheet1.row(count_row).set_format(i, body)
+    end
+
+    book.write xls_report  
+    xls_report.string  
+  end
   def create
     ActiveRecord::Base.transaction do
       if !params[:g1].nil?
@@ -117,7 +220,7 @@ class RentInventoriesController < ApplicationController
             end
           end
         end
-          
+        
         rent_infos.each do |x|
           if @rent_inventory.is_lv2_unit
             inventory_unit_id = RentInventoryUnit.find_by(rent_inventory_id: @rent_inventory.id, unit_id: x.use_unit_id).blank? ? nil : RentInventoryUnit.find_by(rent_inventory_id: @rent_inventory.id, unit_id: x.use_unit_id).id
