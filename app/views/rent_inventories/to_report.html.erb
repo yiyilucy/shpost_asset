@@ -1,0 +1,55 @@
+<div class="page-header">
+  <h1>盘点报表</h1> 
+</div>
+<%= form_tag("", name: 'form1', target: '_blank') do -%>
+  <div>
+  	<table class="table table-striped">
+	    <tr>
+	        <td><%= label_tag(:end_date, "截止时间:") %><%= text_field("end_date","end_date") %>
+	        </td>
+	    </tr>
+	</table>
+  </div>
+  <div>
+  	<table id="lunit" class="table table-striped">  
+  		<thead>
+          <tr>
+            <th><%= check_box_tag 'all_units_checked_low', 'all_units_checked', false %>盘点单位</th>
+          </tr>
+        </thead>
+        <tbody>
+	  		<% until @units.blank? do %>
+	      	<tr>
+	         	<% @units.pop(4).each do |u| %>  
+	          	<td width="25%">
+	          		<%= check_box("checkbox_unit",u.id.to_s)%><%= u.name %>
+	          	</td>        
+	          	<% end %>
+	      	</tr>
+	      	<% end %>
+      	</tbody>
+  	</table>
+  </div>
+  <div>
+  	<table id="lrel" class="table table-striped">  
+  		<thead>
+          <tr>
+            <th><%= check_box_tag 'all_rels_checked_low', 'all_rels_checked', false %>资产归口单位</th>
+          </tr>
+        </thead>
+        <tbody>
+	  		<% until @relevant_units.blank? do %>
+	      	<tr>
+	         	<% @relevant_units.pop(4).each do |u| %>  
+	          	<td width="25%">
+	          		<%= check_box("checkbox_relevant",u.id.to_s)%><%= u.name %>
+	          	</td>        
+	          	<% end %>
+	      	</tr>
+	      	<% end %>
+      	</tbody>
+  	</table>
+  </div>
+  <%= submit_tag "查询",:class => 'btn btn-primary', onclick: "form1.action='/shpost_asset/rent_inventories/#{@inventory.id}/report';form1.submit();" %>   
+  <%= submit_tag "报表导出",:class => 'btn btn-primary', onclick: "form1.action='/shpost_asset/rent_inventories/#{@inventory.id}/export';form1.submit();" %>
+<% end %>

@@ -162,11 +162,14 @@ class PurchaseRentInfoController < ApplicationController
             catalogs.each do |key, value|
               catalogs[key] = FixedAssetCatalog.find_by(name: key).id
             end
-            codes = FixedAssetCatalog.all.group(:name).size
-            codes.each do |key, value|
-              codes[key] = FixedAssetCatalog.find_by(name: key).code[0,2]
-            end
-                     
+            # codes = FixedAssetCatalog.all.group(:name).size
+            # codes.each do |key, value|
+            #   codes[key] = FixedAssetCatalog.find_by(name: key).code[0,2]
+            # end
+            catalog = FixedAssetCatalog.all.group(:name).size
+            catalog.each do |key, value|
+              catalog[key]= FixedAssetCatalog.find_by(name: key)      
+            end         
 
             use_units = Unit.all.group(:name).size
             use_units.each do |key, value|
@@ -199,10 +202,10 @@ class PurchaseRentInfoController < ApplicationController
             end
             instance.default_sheet = instance.sheets.first
             title_row = instance.row(1)
-            ori_asset_no_index = title_row.index("原资产编号")            
+            ori_asset_no_index = title_row.index("资产编号")            
             asset_name_index = title_row.index("资产名称")
             catalog_name_index = title_row.index("资产类别名称")
-            use_at_index = title_row.index("启用日期")
+            # use_at_index = title_row.index("启用日期")
             amount_index = title_row.index("数量")
             brand_model_index = title_row.index("结构/型号")
             use_user_index = title_row.index("资产使用人")
@@ -219,7 +222,7 @@ class PurchaseRentInfoController < ApplicationController
             # manage_unit_index = title_row.index("管理部门")
             # status_index = title_row.index("状态")
             # print_times_index = title_row.index("标签打印次数")
-            desc_index = title_row.index("备注")
+            # desc_index = title_row.index("备注")
             
             
             
@@ -231,19 +234,19 @@ class PurchaseRentInfoController < ApplicationController
               end
               ori_asset_no = rowarr[ori_asset_no_index].blank? ? "" : to_string(rowarr[ori_asset_no_index])
               asset_name = rowarr[asset_name_index].blank? ? "" : to_string(rowarr[asset_name_index])
-              catalog_name = rowarr[catalog_name_index].blank? ? "" : to_string(rowarr[catalog_name_index])
+              catalog_name = rowarr[catalog_name_index].blank? ? "" : rowarr[catalog_name_index].to_s.split(".").last.strip
               relevant_unit =rowarr[relevant_unit_index].blank? ? "" : to_string(rowarr[relevant_unit_index])
-              use_at = rowarr[use_at_index].blank? ? nil : DateTime.parse(rowarr[use_at_index].to_s).strftime('%Y-%m-%d')
+              # use_at = rowarr[use_at_index].blank? ? nil : DateTime.parse(rowarr[use_at_index].to_s).strftime('%Y-%m-%d')
               amount = rowarr[amount_index].blank? ? 0 : rowarr[amount_index].to_i
               sum = rowarr[sum_index].blank? ? 0.0 : rowarr[sum_index].to_f
               use_unit = rowarr[use_unit_index].blank? ? "" : to_string(rowarr[use_unit_index])
               location = rowarr[location_index].blank? ? "" : to_string(rowarr[location_index])
               use_user = rowarr[use_user_index].blank? ? "" : rowarr[use_user_index].to_s
-              desc = rowarr[desc_index].blank? ? "" : to_string(rowarr[desc_index])
+              # desc = rowarr[desc_index].blank? ? "" : to_string(rowarr[desc_index])
               brand_model = rowarr[brand_model_index].blank? ? "" : to_string(rowarr[brand_model_index])
               # @purchase_id = params[:purchase_id]
-              use_right_start =  rowarr[use_right_start_index].blank? ? nil : DateTime.parse(rowarr[use_right_start_index].to_s).strftime('%Y-%m-%d')
-              use_right_end =  rowarr[use_right_end_index].blank? ? nil : DateTime.parse(rowarr[use_right_end_index].to_s).strftime('%Y-%m-%d')
+              use_right_start =  rowarr[use_right_start_index].blank? ? nil : DateTime.parse(rowarr[use_right_start_index].to_s.split(".0")[0]).strftime('%Y-%m-%d')
+              use_right_end =  rowarr[use_right_end_index].blank? ? nil : DateTime.parse(rowarr[use_right_end_index].to_s.split(".0")[0]).strftime('%Y-%m-%d')
               area = rowarr[area_index].blank? ?  nil : rowarr[area_index].to_f
               pay_cycle = rowarr[pay_cycle_index].blank? ? "" : rowarr[pay_cycle_index].to_s
               license = rowarr[license_index].blank? ? "" : rowarr[license_index].to_s 
@@ -293,12 +296,12 @@ class PurchaseRentInfoController < ApplicationController
                 raise ActiveRecord::Rollback 
               end
 
-              if use_at.blank?
-                txt = "缺少启用日期_"
-                sheet_error << (rowarr << txt)
-                raise txt
-                raise ActiveRecord::Rollback 
-              end
+              # if use_at.blank?
+              #   txt = "缺少启用日期_"
+              #   sheet_error << (rowarr << txt)
+              #   raise txt
+              #   raise ActiveRecord::Rollback 
+              # end
               if brand_model.blank?
                 txt = "缺少结构/型号_"
                 sheet_error << (rowarr << txt)
@@ -354,23 +357,35 @@ class PurchaseRentInfoController < ApplicationController
                 raise ActiveRecord::Rollback 
               end
 
-              if  codes[catalog_name]== '01' and area.blank?
+              # if  codes[catalog_name]== '01' and area.blank?
+              #   txt = "缺少[建筑面积（平方米）]_"
+              #   sheet_error << (rowarr << txt)
+              #   raise txt
+              #   raise ActiveRecord::Rollback 
+              # end
+
+              # if  codes[catalog_name]== '04' and license.blank?
+              #   txt = "缺少[牌照]_"
+              #   sheet_error << (rowarr << txt)
+              #   raise txt
+              #   raise ActiveRecord::Rollback 
+              # end
+              if catalog[catalog_name].is_house? and area.blank?
                 txt = "缺少[建筑面积（平方米）]_"
                 sheet_error << (rowarr << txt)
                 raise txt
                 raise ActiveRecord::Rollback 
               end
 
-              if  codes[catalog_name]== '04' and license.blank?
+              if catalog[catalog_name].is_car? and license.blank?
                 txt = "缺少[牌照]_"
                 sheet_error << (rowarr << txt)
                 raise txt
                 raise ActiveRecord::Rollback 
               end
-
               
               while amount>0
-                rent_info = RentInfo.create!(asset_name: asset_name, fixed_asset_catalog_id: catalogs[catalog_name], amount: amount, relevant_unit_id: relevant_units[relevant_unit].blank? ? short_relevant_units[relevant_unit] : relevant_units[relevant_unit],  use_unit_id: use_units[use_unit], use_user: use_user, use_at: use_at, sum:sum, location: location, status: "waiting", print_times: 0, desc: desc, brand_model: brand_model, pay_cycle: pay_cycle, area: area, use_right_start: use_right_start, use_right_end: use_right_end, license: license, deposit: deposit, ori_asset_no: ori_asset_no, manage_unit_id: current_user.unit_id, purchase_id: @purchase_id)
+                rent_info = RentInfo.create!(asset_name: asset_name, fixed_asset_catalog_id: catalogs[catalog_name], amount: amount, relevant_unit_id: relevant_units[relevant_unit].blank? ? short_relevant_units[relevant_unit] : relevant_units[relevant_unit],  use_unit_id: use_units[use_unit], use_user: use_user, sum:sum, location: location, status: "waiting", print_times: 0, brand_model: brand_model, pay_cycle: pay_cycle, area: area, use_right_start: use_right_start, use_right_end: use_right_end, license: license, deposit: deposit, ori_asset_no: ori_asset_no, manage_unit_id: current_user.unit_id, purchase_id: @purchase_id)
                 # lvc_info.update asset_no: Sequence.generate_asset_no(lvc_info,lvc_info.buy_at)
 
                 amount = amount - 1
