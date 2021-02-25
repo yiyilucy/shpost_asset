@@ -55,6 +55,46 @@ class RentInventoryDetailsController < ApplicationController
     end
   end
 
+  def scan
+    @rent_inventory_detail = nil
+    @rent_inventory = nil
+    if !params.blank? and !params[:id].blank?
+      @rent_inventory_detail = RentInventoryDetail.find(params[:id].to_i)
+      @rent_inventory = @rent_inventory_detail.rent_inventory if !@rent_inventory_detail.blank?
+    end
+  end
+
+  def match
+    @rent_inventory_detail = nil
+    @rent_inventory = nil
+    if !params.blank? and !params[:id].blank?
+      @rent_inventory_detail = RentInventoryDetail.find(params[:id].to_i)
+      @rent_inventory = @rent_inventory_detail.rent_inventory if !@rent_inventory_detail.blank?
+      @rent_inventory_detail.update inventory_status: "match", inventory_user_id: current_user.id, end_date: Time.now
+
+    end
+    respond_to do |format|
+      format.html { redirect_to scan_rent_inventory_detail_path(@rent_inventory_detail) }
+      format.json { head :no_content }
+    end
+  end
+
+  def unmatch
+    @rent_inventory_detail = nil
+    @rent_inventory = nil
+    if !params.blank? and !params[:id].blank?
+      @rent_inventory_detail = RentInventoryDetail.find(params[:id].to_i)
+      if !@rent_inventory_detail.blank?
+        @rent_inventory = @rent_inventory_detail.rent_inventory 
+        @rent_inventory_detail.update inventory_status: "unmatch", desc: (params[:desc_content].blank? ? "" : params[:desc_content]), inventory_user_id: current_user.id, end_date: Time.now
+      end
+    end
+    respond_to do |format|
+      format.html { redirect_to scan_rent_inventory_detail_path(@rent_inventory_detail) }
+      format.json { head :no_content }
+    end
+  end
+
 
   private
     def set_rent_inventory_detail

@@ -1,0 +1,164 @@
+<%- model_class = RentInventoryDetail -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+<div>
+<%= form_tag('', :multipart => true, name: 'form1') %>
+<div>
+  <table>
+  <tr>
+    <td><%= label_tag(:asset_no, "资产编号:") %></td>
+    <td><%= @rent_inventory_detail.try :asset_no %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:asset_name, "资产名称:") %></td>
+    <td><%= @rent_inventory_detail.try :asset_name %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:brand_model, "结构/型号:") %></td>
+    <td><%= @rent_inventory_detail.try :brand_model %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:use_at, "启用日期:") %></td>
+    <td><%= @rent_inventory_detail.use_at.blank? ? "" : @rent_inventory_detail.use_at.strftime('%Y-%m-%d').to_s %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:use_unit_id, "使用部门:") %></td>
+    <td><%= @rent_inventory_detail.use_unit_id.blank? ? "" : Unit.find(@rent_inventory_detail.use_unit_id).name %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:location, "地点备注:") %></td>
+    <td><%= @rent_inventory_detail.try :location %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:use_user, "使用人:") %></td>
+    <td><%= @rent_inventory_detail.try :use_user %></td>
+  </tr>
+  <tr>
+    <td><%= label_tag(:desc, "备注:") %></td>
+    <td><%= @rent_inventory_detail.try :desc %></td>
+  </tr>
+</table>
+
+
+<% if @rent_inventory_detail.inventory_status.eql?"waiting" and @rent_inventory.status.eql?"doing" %>
+
+<br><br>
+<table>
+<tr>
+  <td><%= button_tag "匹配", onclick: "if(!confirm('确定匹配?')){return false;} form1.action='/shpost_asset/rent_inventory_details/#{@rent_inventory_detail.id}/match';form1.submit();", :class => 'btn btn-primary' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  <td><%= button_tag "不匹配",:class => 'btn btn-primary', :id => "unmatch", :type => "button" %></td>
+</tr>
+</table>
+<table>
+<tr>
+  <td>
+<div id="desc">
+   <%= label_tag 'desc_name', '备注:', class: 'control-group' %>
+   <%= text_field_tag 'desc_content', nil, class: "controls" %>
+   <%= button_tag "确定", onclick: "if(!confirm('确定不匹配?')){return false;} form1.action='/shpost_asset/rent_inventory_details/#{@rent_inventory_detail.id}/unmatch';form1.submit();", :class => 'btn btn-primary' %>
+</div>
+</td>
+</tr>
+</table>
+<% end %>
+
+
+</div>
+</form>
+
+<script language="javascript" type="text/javascript"> 
+
+$(document).ready(function(){
+  $("#desc").hide();
+  // $("#img").hide();
+
+  $("#unmatch").click(function() { 
+    $("#desc").show();
+  })
+
+
+var sizeLimit = 4998700
+// var sizeLimit = 102400;
+var widthLmit = 2590;
+var heightLmit = 1940;
+var allowType = ["jpg","png","gif","bmp"];
+
+function changePic(obj) {
+  var v = obj.value;
+  if (!checkFileExt(v)) {
+    alert("非法的图片格式");
+    $(obj).after($(obj).clone($(obj)));
+    $(obj).remove();
+      return;
+  }
+  if (obj.files) {
+    var f = obj.files[0];
+      var img = new Image();
+      img.file = f;
+      if (f.size > sizeLimit) {
+        alert('上传照片不能大于' + sizeLimit/1024 + 'k');
+        $(obj).after($(obj).clone($(obj)));
+      $(obj).remove();
+        return;
+      }
+    img.onload=function(){
+      var height = this.height;
+      var width = this.width;
+      if(width>widthLmit||height>heightLmit){
+        alert('上传照片不能大于' + widthLmit + '*' + heightLmit);
+        $(obj).after($(obj).clone($(obj)));
+        $(obj).remove();
+        return;
+      } else if(width==0&height==0) {
+        alert('非法图片');
+        $(obj).after($(obj).clone($(obj)));
+        $(obj).remove();
+        return;
+      } else {
+        $('#submit_button').removeAttr('disabled');
+      }
+    }
+    
+      var reader = new FileReader();
+      reader.onload = function(e){
+          img.src = e.target.result;
+      };
+      reader.readAsDataURL(f);
+  } else {
+    alert("不支持当前浏览器，请使用firefox或chrome");
+  }
+}
+
+function checkFileExt(filename)
+{
+  var flag = false; //状态
+  //取出上传文件的扩展名
+  var index = filename.lastIndexOf(".");
+  var ext = filename.substr(index+1);
+  //循环比较
+  for(var i=0;i<allowType.length;i++){
+    if(ext.toLowerCase() == allowType[i]){
+      flag = true; //一旦找到合适的，立即退出循环
+      break;
+    }
+  }
+  return flag;
+}
+})
+
+</script>
+
+<style>
+@media (max-width: 767px) {
+    .header-container {
+        display: none;
+    }
+    .main-container .container {
+        margin: 0 auto;
+    }
+    .main-container .left-slider {
+        display: none;
+    }
+}
+</style>

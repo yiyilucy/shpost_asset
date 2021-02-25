@@ -1,4 +1,4 @@
-<%- model_class = LowValueConsumptionInventory -%>
+<%- model_class = RentInventory -%>
 <div class="page-header">
   <h1>抽样盘点</h1>
 </div>
@@ -36,34 +36,21 @@
   </div>
 
   <div class="control-group">
-    <%= label_tag(:start_sum, "原值大于:") %>
-    <div class="controls">
-      <%= text_field("start_sum","start_sum", value: @start_sum.to_s) %>
-    </div>
-  </div>
-  <div class="control-group">
-    <%= label_tag(:end_sum, "原值小于:") %>
-    <div class="controls">
-    <%= text_field("end_sum","end_sum",value: @end_sum.to_s) %>
-    </div>
-  </div>
-
-  <div class="control-group">
-  	<%= label_tag(:low_value_consumption_catalog, "资产类别目录:") %>
+  	<%= label_tag(:fixed_asset_catalog, "资产类别目录:") %>
   	<div class="controls">
-      <%= low_value_consumption_catalog_select_autocom("lvc_info",@inventory.id) %>
+      <%= fixed_asset_catalog_select_autocom("rent_info",@inventory.id) %>
     </div>
   </div>
   
   <div class="control-group">
     <%= label_tag(:lv3_unit, "盘点单位:") %>
   	<div class="controls">
-      <%= lv3_unit_select_autocom("lvc_info",@inventory.id) %>
+      <%= lv3_unit_select_autocom("rent_info",@inventory.id) %>
     </div>
   </div>
   
   <%= f.submit nil, :class => 'btn btn-primary', onclick: "if(!confirm('确定创建?')){return false;}" %>
-  <% if can? :index, LowValueConsumptionInventory %>
+  <% if can? :index, RentInventory %>
     <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
                request.referer, :class => 'btn btn-default' %>
   <% end %>

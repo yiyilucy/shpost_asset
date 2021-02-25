@@ -193,4 +193,43 @@ class LowValueConsumptionInventory < ActiveRecord::Base
     return date
   end
 
+  def self.get_sample_infos(object, start_sum, end_sum, catalog_id, pd_unit, current_user)
+    infos = nil
+
+    if object.eql? LowValueConsumptionInventory
+      infos = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where("low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ? ", "in_use", start_sum)
+
+      if !end_sum.blank?
+        infos = infos.where("low_value_consumption_infos.sum <= ?", end_sum)
+      end
+
+      if !catalog_id.blank?
+        code = LowValueConsumptionCatalog.find(catalog_id).code
+        infos = infos.where("low_value_consumption_catalogs.code like ?", "#{code}%")
+      end
+    elsif object.eql? RentInventory
+      infos = RentInfo.joins(:fixed_asset_catalog).where("rent_infos.status = ?", "in_use")
+
+      if !catalog_id.blank?
+        code = FixedAssetCatalog.find(catalog_id).code
+        infos = infos.where("fixed_asset_catalogs.code like ?", "#{code}%")
+      end
+    end
+
+    if !pd_unit.blank?
+      if pd_unit.unit_level == 2
+        infos = infos.where("(use_unit_id = ? or manage_unit_id = ?)", pd_unit.id, pd_unit.id)
+      elsif pd_unit.unit_level == 3
+        lv4_unit_ids = Unit.where(parent_id: pd_unit.id).select(:id)
+        infos = infos.where("(use_unit_id = ? or use_unit_id in (?))", pd_unit.id, lv4_unit_ids)
+      end
+    end
+
+    if current_user.unit.unit_level == 3 && current_user.unit.is_facility_management_unit
+      infos = infos.where("relevant_unit_id = ?", current_user.unit.id)
+    end
+
+    return infos
+  end
+
 end

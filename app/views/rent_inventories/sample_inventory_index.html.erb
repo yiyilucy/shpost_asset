@@ -1,10 +1,10 @@
 <%- model_class = RentInventory -%>
 <div class="page-header">
-  <h1>创建其他租赁盘点单</h1>
+  <h1>创建抽样盘点单</h1>
   <div style="float:right">
-    <% if can? :new, RentInventory %>
+    <% if can? :to_sample_inventory, RentInventory %>
       <%= link_to t('.new', :default => t("helpers.links.new")),
-                  new_rent_inventory_path,
+                  to_sample_inventory_rent_inventories_path,
                   :class => 'btn btn-primary' %>
     <% end %>
   </div>

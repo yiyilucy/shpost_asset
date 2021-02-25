@@ -324,6 +324,7 @@ class LowValueConsumptionInventoriesController < ApplicationController
           end
           if !params[:lvc_info][:lv3_unit_id].blank?
             pd_unit_id = params[:lvc_info][:lv3_unit_id].to_i
+            pd_unit = Unit.find(pd_unit_id)
           end
         end
       end
@@ -341,31 +342,8 @@ class LowValueConsumptionInventoriesController < ApplicationController
         @end_sum = params[:end_sum]["end_sum"].to_f
       end
 
-      low_value_consumption_infos = LowValueConsumptionInfo.joins(:low_value_consumption_catalog).where("low_value_consumption_infos.status = ? and low_value_consumption_infos.sum >= ? ", "in_use", @start_sum)
-
-      if !@end_sum.blank?
-        low_value_consumption_infos = low_value_consumption_infos.where("low_value_consumption_infos.sum <= ?", @end_sum)
-      end
-
-      if !lvc_catalog_id.blank?
-        code = LowValueConsumptionCatalog.find(lvc_catalog_id).code
-        low_value_consumption_infos = low_value_consumption_infos.where("low_value_consumption_catalogs.code like ?", "#{code}%")
-      end
-# binding.pry
-      if !pd_unit_id.blank?
-        pd_unit = Unit.find(pd_unit_id)
-        if pd_unit.unit_level == 2
-          low_value_consumption_infos = low_value_consumption_infos.where("(low_value_consumption_infos.use_unit_id = ? or low_value_consumption_infos.manage_unit_id = ?)", pd_unit_id, pd_unit_id)
-        elsif pd_unit.unit_level == 3
-          lv4_unit_ids = Unit.where(parent_id: pd_unit_id).select(:id)
-          low_value_consumption_infos = low_value_consumption_infos.where("(low_value_consumption_infos.use_unit_id = ? or low_value_consumption_infos.use_unit_id in (?))", pd_unit_id, lv4_unit_ids)
-        end
-      end
-
-      if current_user.unit.unit_level == 3 && current_user.unit.is_facility_management_unit
-        low_value_consumption_infos = low_value_consumption_infos.where("low_value_consumption_infos.relevant_unit_id = ?", current_user.unit.id)
-      end
-    
+      low_value_consumption_infos = LowValueConsumptionInventory.get_sample_infos(LowValueConsumptionInventory, @start_sum, @end_sum, lvc_catalog_id, pd_unit, current_user)
+  
       if low_value_consumption_infos.blank?
         flash[:alert] = "没有符合条件的低值易耗品"
         redirect_to to_sample_inventory_low_value_consumption_inventories_url and return

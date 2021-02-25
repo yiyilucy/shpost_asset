@@ -20,7 +20,7 @@
     end
 
     g.column name: model_class.human_attribute_name(:lvc_catalog_id), attribute: 'name', assoc: :low_value_consumption_catalog do |low_value_consumption_inventory|
-      low_value_consumption_inventory.low_value_consumption_catalog.try :name
+      low_value_consumption_inventory.lvc_catalog_id.blank? ? "" : LowValueConsumptionCatalog.get_full_catalog_name(low_value_consumption_inventory.lvc_catalog_id)
     end
 
     g.column name: model_class.human_attribute_name(:sample_unit_id), assoc: :sample_unit, attribute: 'name'

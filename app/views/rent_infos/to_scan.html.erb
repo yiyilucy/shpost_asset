@@ -27,7 +27,7 @@
     <td><%= @rent_info.use_unit_id.blank? ? "" : Unit.find(@rent_info.use_unit_id).name %></td>
   </tr>
   <tr>
-    <td><%= label_tag(:location, "所在地点:") %></td>
+    <td><%= label_tag(:location, "地点备注:") %></td>
     <td><%= @rent_info.try :location %></td>
   </tr>
   <tr>
