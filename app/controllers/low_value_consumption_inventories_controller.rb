@@ -533,9 +533,21 @@ class LowValueConsumptionInventoriesController < ApplicationController
       if !params[:end_date].blank? && !params[:end_date]["end_date"].blank?
         @end_date = LowValueConsumptionInventory.to_date(params[:end_date]["end_date"])
       end
+
+      if (current_user.unit.unit_level == 1) || (current_user.unit.is_facility_management_unit)
+        details = LowValueConsumptionInventoryDetail.where("lvc_inventory_id = ?", params[:id].to_i)
+      elsif current_user.unit.unit_level == 2
+        details = LowValueConsumptionInventoryDetail.where("lvc_inventory_id = ? and manage_unit_id = ?", params[:id].to_i, current_user.unit_id)
+      elsif (current_user.unit.unit_level == 3) && !(current_user.unit.is_facility_management_unit)
+        child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
+        details = LowValueConsumptionInventoryDetail.where("lvc_inventory_id = ? and (use_unit_id = ? or use_unit_id in (?))", params[:id].to_i, current_user.unit_id, current_user.unit_id)
+      elsif current_user.unit.unit_level == 4
+        details = LowValueConsumptionInventoryDetail.where("lvc_inventory_id = ? and use_unit_id = ?", params[:id].to_i, current_user.unit_id)
+      end
       
-      sum_amount = LowValueConsumptionInventoryDetail.where("lvc_inventory_id = ?", params[:id].to_i).group(:use_unit_id).order(:use_unit_id).count
-      status_amount = LowValueConsumptionInventoryDetail.where("lvc_inventory_id = ? and end_date <= ?", params[:id].to_i,@end_date.blank? ? nil : (@end_date+1)).group(:use_unit_id).group(:inventory_status).order(:use_unit_id, :inventory_status).count
+      sum_amount = details.group(:use_unit_id).order(:use_unit_id).count
+      status_amount = details.where("end_date <= ?", @end_date.blank? ? nil : (@end_date+1)).group(:use_unit_id).group(:inventory_status).order(:use_unit_id, :inventory_status).count
+
 
       sum_amount.each do |k,v|
         match_am = status_amount[[k, "match"]].blank? ? 0 : status_amount[[k, "match"]]
@@ -544,13 +556,13 @@ class LowValueConsumptionInventoriesController < ApplicationController
         waiting_am = v-match_am-unmatch_am-no_scan_am
         @results[k]=[v, match_am, unmatch_am, no_scan_am, waiting_am]
       end
-      total_amount = LowValueConsumptionInventoryDetail.where("lvc_inventory_id = ?", params[:id].to_i).count
+      total_amount = details.count
       @totals["total_amount"] = total_amount
-      match_amount = LowValueConsumptionInventoryDetail.where("lvc_inventory_id = ? and end_date <= ? and inventory_status = ?", params[:id].to_i, @end_date.blank? ? nil : (@end_date+1), "match").count
+      match_amount = details.where("end_date <= ? and inventory_status = ?", @end_date.blank? ? nil : (@end_date+1), "match").count
       @totals["match_amount"] = match_amount
-      unmatch_amount = LowValueConsumptionInventoryDetail.where("lvc_inventory_id = ? and end_date <= ? and inventory_status = ?", params[:id].to_i,@end_date.blank? ? nil : (@end_date+1), "unmatch").count
+      unmatch_amount = details.where("end_date <= ? and inventory_status = ?" ,@end_date.blank? ? nil : (@end_date+1), "unmatch").count
       @totals["unmatch_amount"] = unmatch_amount
-      no_scan_amount = LowValueConsumptionInventoryDetail.where("lvc_inventory_id = ? and end_date <= ? and inventory_status = ?", params[:id].to_i,@end_date.blank? ? nil : (@end_date+1), "no_scan").count
+      no_scan_amount = details.where("end_date <= ? and inventory_status = ?" ,@end_date.blank? ? nil : (@end_date+1), "no_scan").count
       @totals["no_scan_amount"] = no_scan_amount
       waiting_amount = total_amount - match_amount - unmatch_amount - no_scan_amount
       @totals["waiting_amount"] = waiting_amount
