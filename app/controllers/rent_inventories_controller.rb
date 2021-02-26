@@ -133,6 +133,123 @@ class RentInventoriesController < ApplicationController
     book.write xls_report  
     xls_report.string  
   end
+
+  def sample_report
+    @end_date = nil
+    sum_amount = Hash.new
+    status_amount = Hash.new
+    @results = Hash.new
+    @totals = Hash.new
+    
+
+    @inventory = RentInventory.find(params[:id].to_i)
+
+    unless request.get?
+      if !params[:end_date].blank? && !params[:end_date]["end_date"].blank?
+        @end_date = LowValueConsumptionInventory.to_date(params[:end_date]["end_date"])
+      end
+
+      if (current_user.unit.unit_level == 1) || (current_user.unit.is_facility_management_unit)
+        details = RentInventoryDetail.where("rent_inventory_id = ?", params[:id].to_i)
+      elsif current_user.unit.unit_level == 2
+        details = RentInventoryDetail.where("rent_inventory_id = ? and manage_unit_id = ?", params[:id].to_i, current_user.unit_id)
+      elsif (current_user.unit.unit_level == 3) && !(current_user.unit.is_facility_management_unit)
+        child_ids = Unit.where(parent_id: current_user.unit_id).select(:id)
+        details = RentInventoryDetail.where("rent_inventory_id = ? and (use_unit_id = ? or use_unit_id in (?))", params[:id].to_i, current_user.unit_id, current_user.unit_id)
+      elsif current_user.unit.unit_level == 4
+        details = RentInventoryDetail.where("rent_inventory_id = ? and use_unit_id = ?", params[:id].to_i, current_user.unit_id)
+      end
+      
+      sum_amount = details.group(:use_unit_id).order(:use_unit_id).count
+      status_amount = details.where("end_date <= ?", @end_date.blank? ? nil : (@end_date+1)).group(:use_unit_id).group(:inventory_status).order(:use_unit_id, :inventory_status).count
+
+
+      sum_amount.each do |k,v|
+        match_am = status_amount[[k, "match"]].blank? ? 0 : status_amount[[k, "match"]]
+        unmatch_am = status_amount[[k, "unmatch"]].blank? ? 0 : status_amount[[k, "unmatch"]]
+        no_scan_am = status_amount[[k, "no_scan"]].blank? ? 0 : status_amount[[k, "no_scan"]]
+        waiting_am = v-match_am-unmatch_am-no_scan_am
+        @results[k]=[v, match_am, unmatch_am, no_scan_am, waiting_am]
+      end
+      total_amount = details.count
+      @totals["total_amount"] = total_amount
+      match_amount = details.where("end_date <= ? and inventory_status = ?", @end_date.blank? ? nil : (@end_date+1), "match").count
+      @totals["match_amount"] = match_amount
+      unmatch_amount = details.where("end_date <= ? and inventory_status = ?" ,@end_date.blank? ? nil : (@end_date+1), "unmatch").count
+      @totals["unmatch_amount"] = unmatch_amount
+      no_scan_amount = details.where("end_date <= ? and inventory_status = ?" ,@end_date.blank? ? nil : (@end_date+1), "no_scan").count
+      @totals["no_scan_amount"] = no_scan_amount
+      waiting_amount = total_amount - match_amount - unmatch_amount - no_scan_amount
+      @totals["waiting_amount"] = waiting_amount
+
+
+      if !params[:is_query].blank? and params[:is_query].eql?"true"
+        if @results.blank?
+          flash[:alert] = "无数据"
+        end
+        render '/low_value_consumption_inventories/sample_report'
+      elsif !params[:is_query].blank? and params[:is_query].eql?"false"
+        if @results.blank?
+          flash[:alert] = "无数据"
+          redirect_to :action => 'sample_report'
+        else
+          send_data(sample_report_xls_content_for(@end_date, @results, @totals),:type => "text/excel;charset=utf-8; header=present",:filename => "报表_#{Time.now.strftime("%Y%m%d")}.xls")  
+        end
+      end
+    end  
+
+  end
+
+  def sample_report_xls_content_for(end_date, results, totals)  
+    xls_report = StringIO.new  
+    book = Spreadsheet::Workbook.new  
+    sheet1 = book.create_worksheet :name => "报表"  
+  
+    filter = Spreadsheet::Format.new :size => 10
+    title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :weight => :bold
+    body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center
+
+    sheet1.column(0).width = 60
+    1.upto(5) do |i|
+      sheet1.column(i).width = 20
+    end
+
+    sheet1[0,0] = "截止时间: #{end_date.strftime("%Y-%m-%d")}"
+    sheet1.row(0).default_format = filter 
+    
+    sheet1.row(2).concat %w{单位 总数 匹配数 不匹配数 未扫描数 待扫描数}  
+    0.upto(5) do |i|
+      sheet1.row(2).set_format(i, title)
+    end
+    count_row = 3
+    results.each do |k,v|   
+      sheet1[count_row,0]=Unit.find(k).try(:name)
+      sheet1[count_row,1]=v[0]
+      sheet1[count_row,2]=v[1]
+      sheet1[count_row,3]=v[2]
+      sheet1[count_row,4]=v[3]
+      sheet1[count_row,5]=v[4]
+      0.upto(5) do |i|
+        sheet1.row(count_row).set_format(i, body)
+      end
+
+      count_row += 1
+    end 
+
+    sheet1[count_row,0]="总计"
+    sheet1[count_row,1]=totals["total_amount"]
+    sheet1[count_row,2]=totals["match_amount"]
+    sheet1[count_row,3]=totals["unmatch_amount"]
+    sheet1[count_row,4]=totals["no_scan_amount"]
+    sheet1[count_row,5]=totals["waiting_amount"]
+
+    0.upto(5) do |i|
+      sheet1.row(count_row).set_format(i, body)
+    end
+
+    book.write xls_report  
+    xls_report.string  
+  end
   def create
     ActiveRecord::Base.transaction do
       if !params[:g1].nil?
