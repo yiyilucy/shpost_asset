@@ -170,9 +170,9 @@ class RentInfosController < ApplicationController
               use_units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit.id, current_user.unit.id, lv3children).order(:no).all
             else
               use_units = Unit.all.group(:name).size
-              use_units.each do |key, value|
-                use_units[key] = Unit.find_by(name: key).id
-             end
+            end
+            use_units.each do |key, value|
+              use_units[key] = Unit.find_by(name: key).id
             end
             asset_no_ori = RentInfo.all.group(:ori_asset_no).size
             # codes = FixedAssetCatalog.all.group(:name).size

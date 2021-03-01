@@ -171,10 +171,11 @@ class PurchaseRentInfoController < ApplicationController
               use_units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit.id, current_user.unit.id, lv3children).order(:no).all
             else
               use_units = Unit.all.group(:name).size
-              use_units.each do |key, value|
-                use_units[key] = Unit.find_by(name: key).id
-             end
             end
+            use_units.each do |key, value|
+              use_units[key] = Unit.find_by(name: key).id
+            end
+            
             catalog = FixedAssetCatalog.all.group(:name).size
             catalog.each do |key, value|
               catalog[key]= FixedAssetCatalog.find_by(name: key)      
@@ -392,7 +393,7 @@ class PurchaseRentInfoController < ApplicationController
                 raise txt
                 raise ActiveRecord::Rollback 
               end
-              
+
               if !use_units.has_key?use_unit and current_user.unit.unit_level == 2
                 txt = "使用单位只可为本单位及其下级单位_"
                 sheet_error << (rowarr << txt)
