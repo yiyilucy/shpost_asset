@@ -63,8 +63,13 @@
       (link_to t('.done', :default => t("helpers.links.done")), "/shpost_asset/rent_inventories/" + rent_inventory.id.to_s + "/done", :data => { :confirm => "#{done_alert}" }, :class => 'btn btn-xs btn-primary' if (can? :done, rent_inventory) and ((rent_inventory.create_user_id == current_user.id) || (current_user.unit.unit_level == 1)) and (rent_inventory.status.eql?"doing") )<< ' ' <<
       (link_to '盘点单明细',
                 rent_inventory_rent_inventory_details_path(rent_inventory), :class => 'btn btn-xs btn-primary' )<< ' ' <<
-      (link_to '盘点报表',
+      if rent_inventory.is_sample
+        (link_to '盘点报表',
                 sample_report_rent_inventory_path(rent_inventory), :class => 'btn btn-xs btn-primary' )
+      else
+        (link_to '盘点报表',
+                to_report_rent_inventory_path(rent_inventory), :class => 'btn btn-xs btn-primary' )
+      end
     end
 
 
