@@ -165,6 +165,11 @@ class RentInfosController < ApplicationController
             catalogs.each do |key, value|
               catalogs[key] = FixedAssetCatalog.find_by(name: key).id
             end
+            if current_user.unit.unit_level == 2
+              lv3children = current_user.unit.children.select(:id)
+              use_units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit.id, current_user.unit.id, lv3children).order(:no).all
+            end
+            asset_no_ori = RentInfo.all.group(:ori_asset_no).size
             # codes = FixedAssetCatalog.all.group(:name).size
             # codes.each do |key, value|
             #   codes[key] = FixedAssetCatalog.find_by(name: key).code[0,2]
@@ -357,6 +362,22 @@ class RentInfosController < ApplicationController
                 raise txt
                 raise ActiveRecord::Rollback 
               end
+              if asset_no_ori.has_key?ori_asset_no
+                txt = "原资产编码已存在_"
+                sheet_error << (rowarr << txt)
+                raise txt
+                raise ActiveRecord::Rollback 
+              end
+
+              if !use_units.has_key?use_unit and current_user.unit.unit_level == 2
+                txt = "使用单位不符合条件_"
+                sheet_error << (rowarr << txt)
+                raise txt
+                raise ActiveRecord::Rollback 
+              end
+
+
+              
 
               # if  codes[catalog_name]== '01' and area.blank?
               #   txt = "缺少[建筑面积（平方米）]_"
@@ -388,12 +409,12 @@ class RentInfosController < ApplicationController
 
 
               
-              while amount>0
+              # while amount>0
                 rent_info = RentInfo.create!(asset_name: asset_name, fixed_asset_catalog_id: catalogs[catalog_name], amount: amount, relevant_unit_id: relevant_units[relevant_unit].blank? ? short_relevant_units[relevant_unit] : relevant_units[relevant_unit],  use_unit_id: use_units[use_unit], use_user: use_user, use_at: use_at, sum:sum, location: location, status: "in_use", print_times: 0, brand_model: brand_model, pay_cycle: pay_cycle, area: area, use_right_start: use_right_start, use_right_end: use_right_end, license: license, deposit: deposit, ori_asset_no: ori_asset_no, manage_unit_id: current_user.unit_id)
                 rent_info.update asset_no: Sequence.generate_asset_no(rent_info,rent_info.use_at)
 
-                amount = amount - 1
-              end
+                # amount = amount - 1
+              # end
             end
 
             if !sheet_error.blank?
