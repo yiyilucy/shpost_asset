@@ -130,6 +130,9 @@ class RentInventoryDetailsController < ApplicationController
   def rent_info_img_upload_path(file, inventory_detail)
     fname = Digest::MD5.hexdigest(inventory_detail.asset_name + "_" + inventory_detail.asset_no) + ".jpg"
     direct = "#{Rails.root}/public/shpost_asset/rent_info/"
+    if !File.exist?(direct)
+      Dir.mkdir(direct)          
+    end
     @filename = "#{Time.now.to_f}_#{fname}"
     file_path = direct + @filename
     # binding.pry 

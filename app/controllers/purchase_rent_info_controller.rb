@@ -166,15 +166,24 @@ class PurchaseRentInfoController < ApplicationController
             # codes.each do |key, value|
             #   codes[key] = FixedAssetCatalog.find_by(name: key).code[0,2]
             # end
+            if current_user.unit.unit_level == 2
+              lv3children = current_user.unit.children.select(:id)
+              use_units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit.id, current_user.unit.id, lv3children).order(:no).all
+            else
+              use_units = Unit.all.group(:name).size
+              use_units.each do |key, value|
+                use_units[key] = Unit.find_by(name: key).id
+             end
+            end
             catalog = FixedAssetCatalog.all.group(:name).size
             catalog.each do |key, value|
               catalog[key]= FixedAssetCatalog.find_by(name: key)      
             end         
 
-            use_units = Unit.all.group(:name).size
-            use_units.each do |key, value|
-              use_units[key] = Unit.find_by(name: key).id
-            end
+            # use_units = Unit.all.group(:name).size
+            # use_units.each do |key, value|
+            #   use_units[key] = Unit.find_by(name: key).id
+            # end
 
             relevant_units = Unit.where(is_facility_management_unit: true).group(:name).size
             relevant_units.each do |key, value|
@@ -202,7 +211,7 @@ class PurchaseRentInfoController < ApplicationController
             end
             instance.default_sheet = instance.sheets.first
             title_row = instance.row(1)
-            ori_asset_no_index = title_row.index("资产编号")            
+            # ori_asset_no_index = title_row.index("资产编号")            
             asset_name_index = title_row.index("资产名称")
             catalog_name_index = title_row.index("资产类别名称")
             # use_at_index = title_row.index("启用日期")
@@ -232,7 +241,7 @@ class PurchaseRentInfoController < ApplicationController
               if (rowarr[0].blank? and rowarr[1].blank?) or rowarr[0].eql?"合计"
                 break
               end
-              ori_asset_no = rowarr[ori_asset_no_index].blank? ? "" : to_string(rowarr[ori_asset_no_index])
+              # ori_asset_no = rowarr[ori_asset_no_index].blank? ? "" : to_string(rowarr[ori_asset_no_index])
               asset_name = rowarr[asset_name_index].blank? ? "" : to_string(rowarr[asset_name_index])
               catalog_name = rowarr[catalog_name_index].blank? ? "" : rowarr[catalog_name_index].to_s.split(".").last.strip
               relevant_unit =rowarr[relevant_unit_index].blank? ? "" : to_string(rowarr[relevant_unit_index])
@@ -384,8 +393,15 @@ class PurchaseRentInfoController < ApplicationController
                 raise ActiveRecord::Rollback 
               end
               
+              if !use_units.has_key?use_unit and current_user.unit.unit_level == 2
+                txt = "使用单位只可为本单位及其下级单位_"
+                sheet_error << (rowarr << txt)
+                raise txt
+                raise ActiveRecord::Rollback 
+              end
+              
               while amount>0
-                rent_info = RentInfo.create!(asset_name: asset_name, fixed_asset_catalog_id: catalogs[catalog_name], amount: amount, relevant_unit_id: relevant_units[relevant_unit].blank? ? short_relevant_units[relevant_unit] : relevant_units[relevant_unit],  use_unit_id: use_units[use_unit], use_user: use_user, sum:sum, location: location, status: "waiting", print_times: 0, brand_model: brand_model, pay_cycle: pay_cycle, area: area, use_right_start: use_right_start, use_right_end: use_right_end, license: license, deposit: deposit, ori_asset_no: ori_asset_no, manage_unit_id: current_user.unit_id, purchase_id: @purchase_id)
+                rent_info = RentInfo.create!(asset_name: asset_name, fixed_asset_catalog_id: catalogs[catalog_name], amount: 1, relevant_unit_id: relevant_units[relevant_unit].blank? ? short_relevant_units[relevant_unit] : relevant_units[relevant_unit],  use_unit_id: use_units[use_unit], use_user: use_user, sum:sum, location: location, status: "waiting", print_times: 0, brand_model: brand_model, pay_cycle: pay_cycle, area: area, use_right_start: use_right_start, use_right_end: use_right_end, license: license, deposit: deposit,  manage_unit_id: current_user.unit_id, purchase_id: @purchase_id)
                 # lvc_info.update asset_no: Sequence.generate_asset_no(lvc_info,lvc_info.buy_at)
 
                 amount = amount - 1

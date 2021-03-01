@@ -30,9 +30,14 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
               catalogs[key] = LowValueConsumptionCatalog.find_by(code: key).id
             end
 
-            use_units = Unit.all.group(:name).size
-            use_units.each do |key, value|
-              use_units[key] = Unit.find_by(name: key).id
+            if current_user.unit.unit_level == 2
+              lv3children = current_user.unit.children.select(:id)
+              use_units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit.id, current_user.unit.id, lv3children).order(:no).all
+            else
+              use_units = Unit.all.group(:name).size
+              use_units.each do |key, value|
+               use_units[key] = Unit.find_by(name: key).id
+             end
             end
 
             relevant_units = Unit.where(is_facility_management_unit: true).group(:name).size
@@ -175,6 +180,13 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
 
               if use_unit.blank?
                 txt = "缺少使用部门_"
+                sheet_error << (rowarr << txt)
+                raise txt
+                raise ActiveRecord::Rollback 
+              end
+
+              if !use_units.has_key?use_unit and current_user.unit.unit_level == 2
+                txt = "使用单位只可为本单位及其下级单位_"
                 sheet_error << (rowarr << txt)
                 raise txt
                 raise ActiveRecord::Rollback 
