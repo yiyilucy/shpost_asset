@@ -24,8 +24,9 @@
     g.column name: model_class.human_attribute_name(:location), attribute: 'location'
 
     g.column name: model_class.human_attribute_name(:area), attribute: 'area'
-  
 
+    g.column name: model_class.human_attribute_name(:annual_rent), attribute: 'annual_rent', filter_type: :range 
+  
     g.column name: model_class.human_attribute_name(:sum), attribute: 'sum', filter_type: :range
 
     g.column name: model_class.human_attribute_name(:use_right_start), attribute: 'use_right_start', filter_type: :range do |rent_info|

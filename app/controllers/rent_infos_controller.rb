@@ -167,7 +167,7 @@ class RentInfosController < ApplicationController
             end
             if current_user.unit.unit_level == 2
               lv3children = current_user.unit.children.select(:id)
-              use_units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit.id, current_user.unit.id, lv3children).order(:no).all
+              use_units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit.id, current_user.unit.id, lv3children).group(:name).size
             else
               use_units = Unit.all.group(:name).size
             end
@@ -628,6 +628,6 @@ class RentInfosController < ApplicationController
       end
     end  
     def rent_info_params
-      params.require(:rent_info).permit(:asset_name, :asset_no, :fixed_asset_catalog_id, :use_at, :amount, :brand_model, :use_user, :use_unit_id, :location, :area, :sum, :use_right_start, :use_right_end, :pay_cycle, :license, :deposit, :relevant_unit_id, :manage_unit_id, :desc, :is_rent, :is_reprint, :change_log)
+      params.require(:rent_info).permit(:asset_name, :asset_no, :fixed_asset_catalog_id, :use_at, :amount, :brand_model, :use_user, :use_unit_id, :location, :area, :sum, :use_right_start, :use_right_end, :pay_cycle, :license, :deposit, :relevant_unit_id, :manage_unit_id, :desc, :is_rent, :is_reprint, :change_log, :annual_rent)
     end
 end

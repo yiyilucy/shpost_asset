@@ -677,6 +677,7 @@ zh-CN:
         ori_asset_no: "原资产编号"
         desc: "备注"
         change_log: "变动记录"
+        annual_rent: "年租金"
       rent_inventory:
         no: "盘点单号"
         name: "盘点单名称"

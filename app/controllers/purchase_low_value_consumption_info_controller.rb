@@ -32,7 +32,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
 
             if current_user.unit.unit_level == 2
               lv3children = current_user.unit.children.select(:id)
-              use_units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit.id, current_user.unit.id, lv3children).order(:no).all
+              use_units = Unit.where("units.id = ? or units.parent_id = ? or units.parent_id in (?)", current_user.unit.id, current_user.unit.id, lv3children).group(:name).size
             else
               use_units = Unit.all.group(:name).size
             end
