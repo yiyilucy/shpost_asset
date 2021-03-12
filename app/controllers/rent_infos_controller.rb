@@ -187,7 +187,6 @@ class RentInfosController < ApplicationController
             # use_units.each do |key, value|
             #   use_units[key] = Unit.find_by(name: key).id
             # end
-
             relevant_units = Unit.where(is_facility_management_unit: true).group(:name).size
             relevant_units.each do |key, value|
               relevant_units[key] = Unit.find_by(name: key).id
@@ -224,9 +223,10 @@ class RentInfosController < ApplicationController
             use_unit_index = title_row.index("使用部门")
             location_index = title_row.index("地点备注")
             area_index = title_row.index("[建筑面积（平方米）]")
+            annual_rent_index = title_row.index("年租金")
             sum_index = title_row.index("[租金总金额]")
-            use_right_start_index = title_row.index("[使用权取得日期]")
-            use_right_end_index = title_row.index("[使用权终止日期]")
+            use_right_start_index = title_row.index("[租赁取得日期]")
+            use_right_end_index = title_row.index("[租赁终止日期]")
             pay_cycle_index = title_row.index("[租赁费支付周期]")
             license_index = title_row.index("[牌照]")
             deposit_index = title_row.index("[租赁押金]")
@@ -250,6 +250,7 @@ class RentInfosController < ApplicationController
               relevant_unit =rowarr[relevant_unit_index].blank? ? "" : to_string(rowarr[relevant_unit_index])
               use_at = rowarr[use_at_index].blank? ? nil : DateTime.parse(rowarr[use_at_index].to_s.split(".0")[0]).strftime('%Y-%m-%d')
               amount = rowarr[amount_index].blank? ? 0 : rowarr[amount_index].to_i
+              annual_rent = rowarr[annual_rent_index].blank? ? 0.0 : rowarr[annual_rent_index].to_f
               sum = rowarr[sum_index].blank? ? 0.0 : rowarr[sum_index].to_f
               use_unit = rowarr[use_unit_index].blank? ? "" : to_string(rowarr[use_unit_index])
               location = rowarr[location_index].blank? ? "" : to_string(rowarr[location_index])
@@ -263,6 +264,7 @@ class RentInfosController < ApplicationController
               pay_cycle = rowarr[pay_cycle_index].blank? ? "" : rowarr[pay_cycle_index].to_s
               license = rowarr[license_index].blank? ? "" : rowarr[license_index].to_s 
               deposit = rowarr[deposit_index].blank? ? 0.0 : rowarr[deposit_index].to_f
+              
               if asset_name.blank?
                 txt = "缺少资产名称_"
                 sheet_error << (rowarr << txt)
@@ -319,6 +321,12 @@ class RentInfosController < ApplicationController
                 raise txt
                 raise ActiveRecord::Rollback 
               end
+              if annual_rent.blank?
+                txt = "缺少年租金_"
+                sheet_error << (rowarr << txt)
+                raise txt
+                raise ActiveRecord::Rollback 
+              end
               if sum.blank?
                 txt = "缺少租金总金额_"
                 sheet_error << (rowarr << txt)
@@ -341,14 +349,14 @@ class RentInfosController < ApplicationController
               end
 
               if use_right_start.blank?
-                txt = "缺少[使用权取得日期]_"
+                txt = "缺少[租赁取得日期]_"
                 sheet_error << (rowarr << txt)
                 raise txt
                 raise ActiveRecord::Rollback 
               end 
 
               if use_right_end.blank?
-                txt = "缺少[使用权终止日期]_"
+                txt = "缺少[租赁终止日期]_"
                 sheet_error << (rowarr << txt)
                 raise txt
                 raise ActiveRecord::Rollback 
@@ -361,6 +369,12 @@ class RentInfosController < ApplicationController
                 raise ActiveRecord::Rollback 
               end
 
+              if !pay_cycle.in?(['一月','两月','一季','半年','一年','一次性付清'])
+                txt = "请填写“一月，两月，一季，半年，一年或一次性付清”_"
+                sheet_error << (rowarr << txt)
+                raise txt
+                raise ActiveRecord::Rollback 
+              end
               if deposit.blank?
                 txt = "缺少[租赁押金]_"
                 sheet_error << (rowarr << txt)
@@ -415,7 +429,7 @@ class RentInfosController < ApplicationController
 
               
               # while amount>0
-                rent_info = RentInfo.create!(asset_name: asset_name, fixed_asset_catalog_id: catalogs[catalog_name], amount: amount, relevant_unit_id: relevant_units[relevant_unit].blank? ? short_relevant_units[relevant_unit] : relevant_units[relevant_unit],  use_unit_id: use_units[use_unit], use_user: use_user, use_at: use_at, sum:sum, location: location, status: "in_use", print_times: 0, brand_model: brand_model, pay_cycle: pay_cycle, area: area, use_right_start: use_right_start, use_right_end: use_right_end, license: license, deposit: deposit, ori_asset_no: ori_asset_no, manage_unit_id: current_user.unit_id)
+                rent_info = RentInfo.create!(asset_name: asset_name, fixed_asset_catalog_id: catalogs[catalog_name], amount: amount, relevant_unit_id: relevant_units[relevant_unit].blank? ? short_relevant_units[relevant_unit] : relevant_units[relevant_unit],  use_unit_id: use_units[use_unit], use_user: use_user, use_at: use_at, annual_rent: annual_rent, sum:sum, location: location, status: "in_use", print_times: 0, brand_model: brand_model, pay_cycle: pay_cycle, area: area, use_right_start: use_right_start, use_right_end: use_right_end, license: license, deposit: deposit, ori_asset_no: ori_asset_no, manage_unit_id: current_user.unit_id)
                 rent_info.update asset_no: Sequence.generate_asset_no(rent_info,rent_info.use_at)
 
                 # amount = amount - 1
