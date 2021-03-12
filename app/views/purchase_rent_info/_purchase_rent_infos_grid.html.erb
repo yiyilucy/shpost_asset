@@ -26,7 +26,8 @@
 
     g.column name: model_class.human_attribute_name(:area), attribute: 'area'
   
-
+    g.column name: model_class.human_attribute_name(:annual_rent), attribute: 'annual_rent', filter_type: :range 
+    
     g.column name: model_class.human_attribute_name(:sum), attribute: 'sum', filter_type: :range
 
     g.column name: model_class.human_attribute_name(:use_right_start), attribute: 'use_right_start', filter_type: :range do |rent_info|
@@ -37,7 +38,9 @@
       rent_info.use_right_end.blank? ? "" : DateTime.parse(rent_info.use_right_end.to_s).strftime('%Y-%m-%d').to_s
     end
 
-    g.column name: model_class.human_attribute_name(:pay_cycle), attribute: 'pay_cycle'
+    g.column name: model_class.human_attribute_name(:pay_cycle), attribute: 'pay_cycle',custom_filter: RentInfo.pay_cycle_select do |rent_info| 
+      rent_info.pay_cycle
+    end
 
     g.column name: model_class.human_attribute_name(:license), attribute: 'license'
 

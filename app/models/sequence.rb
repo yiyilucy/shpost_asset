@@ -32,7 +32,12 @@ class Sequence < ActiveRecord::Base
   end
 
   def self.generate_initial(unit, _class)
-    unit.short_name.blank? ? "000": unit.short_name.rjust(3, '0')
+    initial = ""
+    if _class.eql?RentInfo
+      initial = "Q"
+    end
+
+    initial += unit.short_name.blank? ? "000": unit.short_name.rjust(3, '0')
   end
 
   
