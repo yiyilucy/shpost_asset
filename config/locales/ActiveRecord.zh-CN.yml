@@ -153,7 +153,7 @@ zh-CN:
       to_send: 下发
       to_check: 送审
       low_value_consumption_infos: 低值易耗品信息
-      rent_infos: 其他租赁资产信息
+      rent_infos: 其他固定资产信息
       approve: 通过
       decline: 拒绝
       revoke: 撤回
@@ -359,17 +359,17 @@ zh-CN:
         one: 上传下载模板
         other: 上传下载模板
       rent_info:
-        one: 其他租赁资产信息
-        other: 其他租赁资产信息
+        one: 其他固定资产信息
+        other: 其他固定资产信息
       rent_inventory:
-        one: 其他租赁资产盘点
-        other: 其他租赁资产盘点
+        one: 其他固定资产盘点
+        other: 其他固定资产盘点
       rent_inventory_detail:
-        one: 其他租赁资产盘点明细
-        other: 其他租赁资产盘点明细
+        one: 其他固定资产盘点明细
+        other: 其他固定资产盘点明细
       rent_inventory_unit:
-        one: 其他租赁资产盘点单位
-        other: 其他租赁资产盘点单位
+        one: 其他固定资产盘点单位
+        other: 其他固定资产盘点单位
     attributes:
       user:
         email: "电子邮件"
@@ -481,8 +481,8 @@ zh-CN:
         is_rent: "是否租赁"
         is_reprint: "是否补打"
       purchase:
-        no: "采购单号"
-        name: "采购单名称"
+        no: "单号"
+        name: "名称"
         status: "状态"
         create_user_id: "创建人"
         create_unit_id: "创建单位"
@@ -634,7 +634,7 @@ zh-CN:
       lvc_discard_detail:
         lvc_discard_id: "低值易耗品报废单"
         low_value_consumption_info_id: "低值易耗品"
-        rent_info_id: "其他租赁资产"
+        rent_info_id: "其他固定资产"
       up_download:
         name: "名字"
         use: "用途"
@@ -699,7 +699,7 @@ zh-CN:
         sample_unit_id: "抽样单位"
       rent_inventory_unit:
         unit_id: "单位"
-        rent_inventory_id: "其他租赁资产盘点单"
+        rent_inventory_id: "其他固定资产盘点单"
         status: "状态"
         status_unfinished: "未完成"
         status_finished: "完成"
@@ -721,15 +721,15 @@ zh-CN:
         license: "[牌照]"
         deposit: "[租赁押金]"
         relevant_unit_id: "归口管理部门"
-        rent_status: "其他租赁资产状态"
+        rent_status: "其他固定资产状态"
         print_times: "标签打印次数"
         purchase_id: "采购单号"
         manage_unit_id: "管理单位"
         ori_asset_no: "原资产编号"
         desc: "备注"
         change_log: "变动记录"
-        rent_info_id: "其他租赁资产"
-        rent_inventory_id: "其他租赁资产盘点单"
+        rent_info_id: "其他固定资产"
+        rent_inventory_id: "其他固定资产盘点单"
         inventory_status: "盘点状态"
         is_check: "是否复核"
         rent_inventory_unit_id: "盘点单位"
@@ -739,6 +739,7 @@ zh-CN:
         inventory_status_no_scan: "未扫描"
         inventory_user_id: "盘点人"
         end_date: "截止日期"
+        annual_rent: "年租金"
   menu:
     permission:
       name: "权限管理"
@@ -985,27 +986,27 @@ zh-CN:
             can: :sample_inventory_doing_index
             role: :LowValueConsumptionInventory
     rent_infos:
-      name: "其他租赁资产"
+      name: "其他固定资产"
       needrole:
         can: :read
         role: :RentInfo
       submenu:
         rent_info_inuse:
-          name: "在用其他租赁资产"
+          name: "在用其他固定资产"
           link: "/rent_infos"
           need_count: false
           needrole:
             can: :read
             role: :RentInfo
         rent_info_discard:
-          name: "报废其他租赁资产"
+          name: "报废其他固定资产"
           link: "/rent_infos/discard_index"
           need_count: false
           needrole:
             can: :read
             role: :RentInfo
         rent_info_report:
-          name: "其他租赁资产报表"
+          name: "其他固定资产报表"
           link: "/low_value_consumption_infos/low_value_consumption_report?object=RentInfo"
           need_count: false
           needrole:
@@ -1019,60 +1020,60 @@ zh-CN:
             can: :rent_report
             role: :RentInfo
     rent_purchases:
-      name: "其他租赁采购单"  
+      name: "新增其他固定资产"  
       needrole:
         can: :read
         role: :Purchase  
       submenu:
         new_rent_purchase:
-          name: "创建采购单"
+          name: "创建其他固定资产"
           link: "/purchases?atype=rent"
           need_count: false
           needrole:
             can: :new
             role: :Purchase
         to_do_rent_purchase:
-          name: "待处理采购单"
+          name: "待处理其他固定资产"
           link: "/purchases/to_do_index?atype=rent"
           need_count: false
           needrole:
             can: :read
             role: :Purchase
         doing_rent_purchase:
-          name: "处理中采购单"
+          name: "处理中其他固定资产"
           link: "/purchases/doing_index?atype=rent"
           need_count: false
           needrole:
             can: :read
             role: :Purchase
         done_rent_purchase:
-          name: "已完成采购单"
+          name: "已完成其他固定资产"
           link: "/purchases/done_index?atype=rent"
           need_count: false
           needrole:
             can: :read
             role: :Purchase
     rent_lvc_discards:
-      name: "其他租赁报废单"    
+      name: "其他固定资产报废单"    
       needrole:
         can: :read
         role: :LvcDiscard
       submenu:
         lvc_discard:
-          name: "其他租赁报废单"
+          name: "其他固定资产报废单"
           link: "/lvc_discards?atype=rent"
           need_count: false
           needrole:
             can: :read
             role: :LvcDiscard
     rent_inventory:    
-      name: "其他租赁盘点单" 
+      name: "其他固定资产盘点单" 
       needrole:
         can: :read
         role: :RentInventory   
       submenu:    
         new_rent_inventory:
-          name: "创建其他租赁盘点单"
+          name: "创建其他固定资产盘点单"
           link: "/rent_inventories"
           need_count: false
           needrole:
@@ -1086,7 +1087,7 @@ zh-CN:
             can: :level2_index
             role: :RentInventory
         doing_rent_inventory:
-          name: "待处理其他租赁盘点单"
+          name: "待处理其他固定资产盘点单"
           link: "/rent_inventories/doing_index"
           need_count: false
           needrole:

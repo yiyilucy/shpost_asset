@@ -300,7 +300,7 @@ class RentInventoriesController < ApplicationController
       end
 
       if rent_infos.blank?
-        flash[:alert] = "没有符合条件的其他租赁资产"
+        flash[:alert] = "没有符合条件的其他固定资产"
         redirect_to rent_inventories_url and return
       end
 
@@ -346,7 +346,7 @@ class RentInventoriesController < ApplicationController
             inventory_unit_id = RentInventoryUnit.find_by(rent_inventory_id: @rent_inventory.id, unit_id: x.manage_unit_id).blank? ? nil : RentInventoryUnit.find_by(rent_inventory_id: @rent_inventory.id, unit_id: x.manage_unit_id).id
           end
 
-          @rent_inventory.rent_inventory_details.create(asset_no: x.asset_no, asset_name: x.asset_name, fixed_asset_catalog_id: x.fixed_asset_catalog_id, use_at: x.use_at, amount: x.amount, brand_model: x.brand_model, use_user: x.use_user, use_unit_id: x.use_unit_id, location: x.location, area: x.area, sum: x.sum, use_right_start: x.use_right_start, use_right_end: x.use_right_end, pay_cycle: x.pay_cycle, license: x.license, deposit: x.deposit, relevant_unit_id: x.relevant_unit_id, rent_status: x.status, print_times: x.print_times, purchase_id: x.purchase_id, manage_unit_id: x.manage_unit_id, ori_asset_no: x.ori_asset_no, desc: x.desc, change_log: x.change_log, rent_info_id: x.id, inventory_status: "waiting", rent_inventory_unit_id: inventory_unit_id)
+          @rent_inventory.rent_inventory_details.create(asset_no: x.asset_no, asset_name: x.asset_name, fixed_asset_catalog_id: x.fixed_asset_catalog_id, use_at: x.use_at, amount: x.amount, brand_model: x.brand_model, use_user: x.use_user, use_unit_id: x.use_unit_id, location: x.location, area: x.area, sum: x.sum, use_right_start: x.use_right_start, use_right_end: x.use_right_end, pay_cycle: x.pay_cycle, license: x.license, deposit: x.deposit, relevant_unit_id: x.relevant_unit_id, rent_status: x.status, print_times: x.print_times, purchase_id: x.purchase_id, manage_unit_id: x.manage_unit_id, ori_asset_no: x.ori_asset_no, desc: x.desc, change_log: x.change_log, rent_info_id: x.id, inventory_status: "waiting", rent_inventory_unit_id: inventory_unit_id, annual_rent: x.annual_rent)
         end
 
         
@@ -465,7 +465,7 @@ class RentInventoriesController < ApplicationController
       rent_infos = LowValueConsumptionInventory.get_sample_infos(RentInventory, nil, nil, catalog_id, pd_unit, current_user)
   
       if rent_infos.blank?
-        flash[:alert] = "没有符合条件的其他租赁资产"
+        flash[:alert] = "没有符合条件的其他固定资产"
         redirect_to to_sample_inventory_rent_inventories_url and return
       end
 
@@ -525,7 +525,7 @@ class RentInventoriesController < ApplicationController
           inventory_unit_id = RentInventoryUnit.find_by(rent_inventory_id: @rent_inventory.id, unit_id: x.use_unit_id).try :id
         end
 
-        @rent_inventory.rent_inventory_details.create(asset_no: x.asset_no, asset_name: x.asset_name, fixed_asset_catalog_id: x.fixed_asset_catalog_id, use_at: x.use_at, amount: x.amount, brand_model: x.brand_model, use_user: x.use_user, use_unit_id: x.use_unit_id, location: x.location, area: x.area, sum: x.sum, use_right_start: x.use_right_start, use_right_end: x.use_right_end, pay_cycle: x.pay_cycle, license: x.license, deposit: x.deposit, relevant_unit_id: x.relevant_unit_id, rent_status: x.status, print_times: x.print_times, purchase_id: x.purchase_id, manage_unit_id: x.manage_unit_id, ori_asset_no: x.ori_asset_no, change_log: x.change_log, rent_info_id: x.id, inventory_status: "waiting", rent_inventory_unit_id: inventory_unit_id)
+        @rent_inventory.rent_inventory_details.create(asset_no: x.asset_no, asset_name: x.asset_name, fixed_asset_catalog_id: x.fixed_asset_catalog_id, use_at: x.use_at, amount: x.amount, brand_model: x.brand_model, use_user: x.use_user, use_unit_id: x.use_unit_id, location: x.location, area: x.area, sum: x.sum, use_right_start: x.use_right_start, use_right_end: x.use_right_end, pay_cycle: x.pay_cycle, license: x.license, deposit: x.deposit, relevant_unit_id: x.relevant_unit_id, rent_status: x.status, print_times: x.print_times, purchase_id: x.purchase_id, manage_unit_id: x.manage_unit_id, ori_asset_no: x.ori_asset_no, change_log: x.change_log, rent_info_id: x.id, inventory_status: "waiting", rent_inventory_unit_id: inventory_unit_id, annual_rent: x.annual_rent)
       end
 
       respond_to do |format|

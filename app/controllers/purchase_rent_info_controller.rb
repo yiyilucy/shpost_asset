@@ -61,6 +61,8 @@ class PurchaseRentInfoController < ApplicationController
         notice = "使用部门不能为空" 
       elsif params["rent_info"].blank? or params["rent_info"]["location"].blank?
         notice = "地点备注不能为空"
+      elsif params["rent_info"].blank? or params["rent_info"]["annual_rent"].blank?
+        notice = "年租金不能为空"
       elsif params["rent_info"].blank? or params["rent_info"]["sum"].blank?
         notice = "租金总金额不能为空"
       elsif params["rent_info"].blank? or params["rent_info"]["use_right_start"].blank?
@@ -74,7 +76,7 @@ class PurchaseRentInfoController < ApplicationController
       elsif params["rent_info"].blank? or params["rent_info"]["relevant_unit_id"].blank?
         notice = "归口管理部门不能为空"          
       elsif params[:amount].blank? or params[:amount][:amount].blank? or params[:amount][:amount].to_i <= 0
-        notice = I18n.t('controller.purchase_low_value_consumption_info_no_amount_notice', model: '其他租赁资产信息')
+        notice = "数量不能为空且必须大于0"
       else
         catalog = FixedAssetCatalog.find(params["rent_info"]["fixed_asset_catalog_id"])
         if !catalog.blank? && catalog.is_house? && (params["rent_info"].blank? or params["rent_info"]["area"].blank?)
@@ -110,6 +112,7 @@ class PurchaseRentInfoController < ApplicationController
             manage_unit_id: @purchase.manage_unit_id,
             desc: params[:rent_info][:desc],
             change_log: params[:rent_info][:change_log], 
+            annual_rent: params[:rent_info][:annual_rent]
             )
           
           amount = amount-1
@@ -118,7 +121,7 @@ class PurchaseRentInfoController < ApplicationController
 
         respond_to do |format|   
           if success           
-            format.html { redirect_to purchase_rent_infos_path(@purchase), notice: I18n.t('controller.create_success_notice', model: '其他租赁资产信息')}
+            format.html { redirect_to purchase_rent_infos_path(@purchase), notice: I18n.t('controller.create_success_notice', model: '其他固定资产信息')}
             format.json { head :no_content }
           else
             format.html { render action: 'new' }
@@ -137,7 +140,7 @@ class PurchaseRentInfoController < ApplicationController
   def update
     respond_to do |format|
       if @rent_info.update(rent_info_params)
-        format.html { redirect_to purchase_rent_info_path(@purchase,@rent_info), notice: I18n.t('controller.update_success_notice', model: '其他租赁资产信息')}
+        format.html { redirect_to purchase_rent_info_path(@purchase,@rent_info), notice: I18n.t('controller.update_success_notice', model: '其他固定资产信息')}
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -468,7 +471,7 @@ class PurchaseRentInfoController < ApplicationController
       @fixed_asset_catalog = FixedAssetCatalog.find_by(id: @rent_info.fixed_asset_catalog_id).try(:name)
     else
       respond_to do |format|
-          format.html { redirect_to purchase_rent_infos_url, alert: "请勾选其他租赁资产" }
+          format.html { redirect_to purchase_rent_infos_url, alert: "请勾选其他固定资产" }
           format.json { head :no_content }
       end
     end
@@ -491,7 +494,7 @@ class PurchaseRentInfoController < ApplicationController
           if !params[:rent_info][:use_unit_id].blank?
             @rent_info.use_unit_id = params[:rent_info][:use_unit_id]
           end
-          @rent_info.update log: (@rent_info.log.blank? ? "" : @rent_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"低值易耗品信息批量修改" + ","
+          @rent_info.update log: (@rent_info.log.blank? ? "" : @rent_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"其他固定资产信息批量修改" + ","
           if !params[:desc].blank? && !params[:desc].strip.blank?
             @rent_info.desc = params[:desc]
           end
@@ -503,7 +506,7 @@ class PurchaseRentInfoController < ApplicationController
         flash[:notice] = "批量修改成功"
         redirect_to purchase_rent_infos_path(@purchase)
       else
-        flash[:alert] = "请勾选其他租赁资产"
+        flash[:alert] = "请勾选其他固定资产"
         redirect_to purchase_rent_infos_path(@purchase)
       end
     end
@@ -537,7 +540,7 @@ class PurchaseRentInfoController < ApplicationController
         @result = @result + RentInfo.where(id:@selected.pop(1000))
       end
     else
-      flash[:alert] = "请勾选需要打印的其他租赁资产"
+      flash[:alert] = "请勾选需要打印的其他固定资产"
       respond_to do |format|
         format.html { redirect_to purchase_rent_infos_path(@purchase) }
         format.json { head :no_content }
@@ -569,7 +572,7 @@ class PurchaseRentInfoController < ApplicationController
   end  
 
   def rent_info_params
-    params.require(:rent_info).permit(:asset_name, :asset_no, :fixed_asset_catalog_id, :use_at, :amount, :brand_model, :use_user, :use_unit_id, :location, :area, :sum, :use_right_start, :use_right_end, :pay_cycle, :license, :deposit, :relevant_unit_id, :manage_unit_id, :desc, :is_rent, :is_reprint, :change_log)
+    params.require(:rent_info).permit(:asset_name, :asset_no, :fixed_asset_catalog_id, :use_at, :amount, :brand_model, :use_user, :use_unit_id, :location, :area, :sum, :use_right_start, :use_right_end, :pay_cycle, :license, :deposit, :relevant_unit_id, :manage_unit_id, :desc, :is_rent, :is_reprint, :change_log, :annual_rent)
   end
 
 end

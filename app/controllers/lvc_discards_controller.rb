@@ -52,7 +52,7 @@ class LvcDiscardsController < ApplicationController
           if params[:atype].eql? "lvc"
             l.low_value_consumption_info.update status: "discard", discard_at: Time.now, log: (l.low_value_consumption_info.log.blank? ? "" : l.low_value_consumption_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + User.find(@lvc_discard.create_user_id).name + " " +"低值易耗品信息报废" + ","
           elsif params[:atype].eql? "rent"
-            l.rent_info.update status: "discard", discard_at: Time.now, log: (l.rent_info.log.blank? ? "" : l.rent_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + User.find(@lvc_discard.create_user_id).name + " " +"其他租赁资产信息报废" + ","
+            l.rent_info.update status: "discard", discard_at: Time.now, log: (l.rent_info.log.blank? ? "" : l.rent_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + User.find(@lvc_discard.create_user_id).name + " " +"其他固定资产信息报废" + ","
           end
         end
 

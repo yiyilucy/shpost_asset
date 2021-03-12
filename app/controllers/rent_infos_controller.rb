@@ -43,9 +43,9 @@ class RentInfosController < ApplicationController
     respond_to do |format|
       if @rent_info.update(rent_info_params)
         if @rent_info.status.eql?"in_use"
-          @rent_info.update log: (@rent_info.log.blank? ? "" : @rent_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"其他租赁资产信息修改" + ","
+          @rent_info.update log: (@rent_info.log.blank? ? "" : @rent_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"其他固定资产信息修改" + ","
         end
-        format.html { redirect_to @rent_info, notice: I18n.t('controller.update_success_notice', model: '其他租赁资产信息')}
+        format.html { redirect_to @rent_info, notice: I18n.t('controller.update_success_notice', model: '其他固定资产信息')}
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -104,7 +104,7 @@ class RentInfosController < ApplicationController
       @fixed_asset_catalog = FixedAssetCatalog.find_by(id: @rent_info.fixed_asset_catalog_id).try(:name)
     else
       respond_to do |format|
-          format.html { redirect_to rent_infos_url, alert: "请勾选其他租赁资产" }
+          format.html { redirect_to rent_infos_url, alert: "请勾选其他固定资产" }
           format.json { head :no_content }
       end
     end
@@ -139,7 +139,7 @@ class RentInfosController < ApplicationController
         flash[:notice] = "批量修改成功"
         redirect_to rent_infos_path
       else
-        flash[:alert] = "请勾选其他租赁资产"
+        flash[:alert] = "请勾选其他固定资产"
         redirect_to rent_infos_path
       end
     end
@@ -489,7 +489,7 @@ class RentInfosController < ApplicationController
         @result = @result + RentInfo.where(id:@selected.pop(1000))
       end
     else
-      flash[:alert] = "请勾选需要打印的其他租赁资产"
+      flash[:alert] = "请勾选需要打印的其他固定资产"
       respond_to do |format|
         format.html { redirect_to rent_infos_url }
         format.json { head :no_content }

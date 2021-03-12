@@ -40,6 +40,10 @@
         lvc_discard_detail.rent_info.try :area
     end
 
+    g.column name: model_class.human_attribute_name(:annual_rent), attribute: 'annual_rent', assoc: :rent_info do |lvc_discard_detail|
+        lvc_discard_detail.rent_info.try :annual_rent
+    end
+
     g.column name: model_class.human_attribute_name(:sum), attribute: 'sum', assoc: :rent_info do |lvc_discard_detail|
         lvc_discard_detail.rent_info.try :sum
     end
@@ -52,7 +56,7 @@
         lvc_discard_detail.rent_info.use_right_end.blank? ? "" : DateTime.parse(lvc_discard_detail.rent_info.use_right_end.to_s).strftime('%Y-%m-%d').to_s
     end
 
-    g.column name: model_class.human_attribute_name(:pay_cycle), attribute: 'pay_cycle', assoc: :rent_info do |lvc_discard_detail|
+    g.column name: model_class.human_attribute_name(:pay_cycle), attribute: 'pay_cycle', assoc: :rent_info, custom_filter: RentInfo.pay_cycle_select do |lvc_discard_detail|
         lvc_discard_detail.rent_info.try :pay_cycle
     end
 

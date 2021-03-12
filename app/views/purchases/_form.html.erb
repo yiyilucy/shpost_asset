@@ -1,7 +1,7 @@
 <%= form_for @purchase, :html => { :class => 'form-horizontal' } do |f| %>
   <%= f.error_messages %>
   <div class="control-group">
-    <%= f.label "采购单号", :class => 'control-label' %>
+    <%= f.label "单号", :class => 'control-label' %>
     <div class="controls">
       <%= f.text_field :no, :class => 'text_field' %>
     </div>
@@ -21,7 +21,7 @@
  
   <%= hidden_field_tag('atype',@atype) %>
   <%= hidden_field_tag('source',@source) %>
-  <%= f.submit nil, :class => 'btn btn-primary', onclick: "if($('#purchase_no').val() == ''){ alert('请输入采购单号'); return false;}; " %>
+  <%= f.submit nil, :class => 'btn btn-primary', onclick: "if($('#purchase_no').val() == ''){ alert('请输入单号'); return false;}; " %>
   <% if can? :index, Purchase %>
     <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
               request.referer, :class => 'btn btn-default' %>

@@ -17,4 +17,8 @@ class RentInfo < ActiveRecord::Base
 	    name = "否"
 	  end
 	end
+
+	def self.pay_cycle_select
+		[["一月", "一月"], ["二月", "二月"], ["一季", "一季"], ["半年", "半年"], ["一年", "一年"], ["一次性付清", "一次性付清"]] 
+	end
 end

@@ -463,6 +463,9 @@ class LowValueConsumptionInfosController < ApplicationController
       if object.eql? LowValueConsumptionInfo
         @sums = object.where(status: "in_use").group(:manage_unit_id).order(:manage_unit_id).sum(:sum)
         @total_sum = object.where(status: "in_use").sum(:sum)
+      elsif object.eql? RentInfo
+        @sums = object.where(status: "in_use").group(:manage_unit_id).order(:manage_unit_id).sum(:annual_rent)
+        @total_sum = object.where(status: "in_use").sum(:annual_rent)
       end
       @counts = object.where(status: "in_use").group(:manage_unit_id).order(:manage_unit_id).count      
       @total_count = object.where(status: "in_use").size
@@ -471,6 +474,9 @@ class LowValueConsumptionInfosController < ApplicationController
       if object.eql? LowValueConsumptionInfo
         @sums = object.where(relevant_unit_id: current_user.unit_id, status: "in_use").group(:manage_unit_id).order(:manage_unit_id).sum(:sum)
         @total_sum = object.where(relevant_unit_id: current_user.unit_id, status: "in_use").sum(:sum)
+      elsif object.eql? RentInfo
+        @sums = object.where(relevant_unit_id: current_user.unit_id, status: "in_use").group(:manage_unit_id).order(:manage_unit_id).sum(:annual_rent)
+        @total_sum = object.where(relevant_unit_id: current_user.unit_id, status: "in_use").sum(:annual_rent)
       end
       @counts = object.where(relevant_unit_id: current_user.unit_id, status: "in_use").group(:manage_unit_id).order(:manage_unit_id).count      
       @total_count = object.where(relevant_unit_id: current_user.unit_id, status: "in_use").size
@@ -479,6 +485,9 @@ class LowValueConsumptionInfosController < ApplicationController
       if object.eql? LowValueConsumptionInfo
         @sums = object.where(manage_unit_id: current_user.unit_id, status: "in_use").group(:use_unit_id).order(:use_unit_id).sum(:sum)
         @total_sum = object.where(manage_unit_id: current_user.unit_id, status: "in_use").sum(:sum)
+      elsif object.eql? RentInfo
+        @sums = object.where(manage_unit_id: current_user.unit_id, status: "in_use").group(:use_unit_id).order(:use_unit_id).sum(:annual_rent)
+        @total_sum = object.where(manage_unit_id: current_user.unit_id, status: "in_use").sum(:annual_rent)
       end
       @counts = object.where(manage_unit_id: current_user.unit_id, status: "in_use").group(:use_unit_id).order(:use_unit_id).count     
       @total_count = object.where(manage_unit_id: current_user.unit_id, status: "in_use").size

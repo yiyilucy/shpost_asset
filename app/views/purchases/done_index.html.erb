@@ -1,6 +1,10 @@
 <%- model_class = Purchase -%>
 <div class="page-header">
+  <% if @atype.eql?"lvc" %>
   <h1>已完成采购单</h1>
+  <% else %>
+  <h1>已完成其他固定资产</h1>
+  <% end %>
 </div>
 
 <%= grid(@purchases_grid) do |g|
@@ -16,7 +20,7 @@
       end
     end
 
-    g.column name: '采购单号', attribute: 'no'
+    g.column name: '单号', attribute: 'no'
 
     g.column name: model_class.human_attribute_name(:name), attribute: 'name'
 
