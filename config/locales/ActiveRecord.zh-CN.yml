@@ -1078,7 +1078,7 @@ zh-CN:
             role: :LvcDiscard
           submenu:
             lvc_discard:
-              name: "其他固定资产报废单"
+              name: "报废单"
               link: "/lvc_discards?atype=rent"
               need_count: false
               needrole:
@@ -1091,7 +1091,7 @@ zh-CN:
             role: :RentInventory   
           submenu:    
             new_rent_inventory:
-              name: "创建其他固定资产盘点单"
+              name: "创建盘点单"
               link: "/rent_inventories"
               need_count: false
               needrole:
@@ -1105,7 +1105,7 @@ zh-CN:
                 can: :level2_index
                 role: :RentInventory
             doing_rent_inventory:
-              name: "待处理其他固定资产盘点单"
+              name: "待处理盘点单"
               link: "/rent_inventories/doing_index"
               need_count: false
               needrole:
