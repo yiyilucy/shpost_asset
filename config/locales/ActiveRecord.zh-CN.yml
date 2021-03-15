@@ -779,341 +779,359 @@ zh-CN:
       needrole:
         can: :read
         role: :FixedAssetCatalog
-      submenu:
-        fixed_asset_catalog:
-          name: "固定资产目录"
-          link: "/fixed_asset_catalogs"
-          need_count: false
+      lv2menu:
+        fixed_infos:
+          name: "固定资产基础信息"
           needrole:
             can: :read
             role: :FixedAssetCatalog
-        fixed_asset_info:
-          name: "固定资产信息"
-          link: "/fixed_asset_infos"
-          need_count: false
+          submenu:
+            fixed_asset_catalog:
+              name: "固定资产目录"
+              link: "/fixed_asset_catalogs"
+              need_count: false
+              needrole:
+                can: :read
+                role: :FixedAssetCatalog
+            fixed_asset_info:
+              name: "固定资产信息"
+              link: "/fixed_asset_infos"
+              need_count: false
+              needrole:
+                can: :read
+                role: :FixedAssetInfo
+            fixed_asset_report:
+              name: "固定资产报表"
+              link: "/fixed_asset_infos/fixed_asset_report"
+              need_count: false
+              needrole:
+                can: :fixed_asset_report
+                role: :FixedAssetInfo
+        fixed_asset_inventory:    
+          name: "固定资产盘点单"    
           needrole:
             can: :read
-            role: :FixedAssetInfo
-        fixed_asset_report:
-          name: "固定资产报表"
-          link: "/fixed_asset_infos/fixed_asset_report"
-          need_count: false
-          needrole:
-            can: :fixed_asset_report
-            role: :FixedAssetInfo
-    fixed_asset_inventory:    
-      name: "固定资产盘点单"    
-      needrole:
-        can: :read
-        role: :FixedAssetInventory
-      submenu:    
-        new_fixed_asset_inventory:
-          name: "创建固定资产盘点单"
-          link: "/fixed_asset_inventories"
-          need_count: false
-          needrole:
-            can: :create
             role: :FixedAssetInventory
-        level2_fixed_asset_inventory:
-          name: "其他单位创建盘点单"
-          link: "/fixed_asset_inventories/level2_index"
-          need_count: false
-          needrole:
-            can: :level2_index
-            role: :FixedAssetInventory
-        doing_fixed_asset_inventory:
-          name: "待处理固定资产盘点单"
-          link: "/fixed_asset_inventories/doing_index"
-          need_count: false
-          needrole:
-            can: :doing_index
-            role: :FixedAssetInventory
-        sample_fixed_asset_inventory:
-          name: "创建抽样盘点单"
-          link: "/fixed_asset_inventories/sample_inventory_index"
-          need_count: false
-          needrole:
-            can: :sample_inventory_index
-            role: :FixedAssetInventory
-        level2_sample_fixed_asset_inventory:
-          name: "其他创建抽样盘点单"
-          link: "/fixed_asset_inventories/sample_level2_index"
-          need_count: false
-          needrole:
-            can: :sample_level2_index
-            role: :FixedAssetInventory
-        sample_doing_fixed_asset_inventory:
-          name: "待处理抽样盘点单"
-          link: "/fixed_asset_inventories/sample_inventory_doing_index"
-          need_count: false
-          needrole:
-            can: :sample_inventory_doing_index
-            role: :FixedAssetInventory
-    low_value_consumptions:
+          submenu:    
+            new_fixed_asset_inventory:
+              name: "创建固定资产盘点单"
+              link: "/fixed_asset_inventories"
+              need_count: false
+              needrole:
+                can: :create
+                role: :FixedAssetInventory
+            level2_fixed_asset_inventory:
+              name: "其他单位创建盘点单"
+              link: "/fixed_asset_inventories/level2_index"
+              need_count: false
+              needrole:
+                can: :level2_index
+                role: :FixedAssetInventory
+            doing_fixed_asset_inventory:
+              name: "待处理固定资产盘点单"
+              link: "/fixed_asset_inventories/doing_index"
+              need_count: false
+              needrole:
+                can: :doing_index
+                role: :FixedAssetInventory
+            sample_fixed_asset_inventory:
+              name: "创建抽样盘点单"
+              link: "/fixed_asset_inventories/sample_inventory_index"
+              need_count: false
+              needrole:
+                can: :sample_inventory_index
+                role: :FixedAssetInventory
+            level2_sample_fixed_asset_inventory:
+              name: "其他创建抽样盘点单"
+              link: "/fixed_asset_inventories/sample_level2_index"
+              need_count: false
+              needrole:
+                can: :sample_level2_index
+                role: :FixedAssetInventory
+            sample_doing_fixed_asset_inventory:
+              name: "待处理抽样盘点单"
+              link: "/fixed_asset_inventories/sample_inventory_doing_index"
+              need_count: false
+              needrole:
+                can: :sample_inventory_doing_index
+                role: :FixedAssetInventory
+    lvc_infos:
       name: "低值易耗品"
       needrole:
         can: :read
         role: :LowValueConsumptionCatalog
-      submenu:
-        low_value_consumption_catalog:
-          name: "低值易耗品目录"
-          link: "/low_value_consumption_catalogs"
-          need_count: false
+      lv2menu:
+        low_value_consumptions:
+          name: "低值易耗基础信息"
           needrole:
             can: :read
             role: :LowValueConsumptionCatalog
-        low_value_consumption_info_inuse:
-          name: "在用低值易耗品信息"
-          link: "/low_value_consumption_infos"
-          need_count: false
+          submenu:
+            low_value_consumption_catalog:
+              name: "低值易耗品目录"
+              link: "/low_value_consumption_catalogs"
+              need_count: false
+              needrole:
+                can: :read
+                role: :LowValueConsumptionCatalog
+            low_value_consumption_info_inuse:
+              name: "在用低值易耗品信息"
+              link: "/low_value_consumption_infos"
+              need_count: false
+              needrole:
+                can: :read
+                role: :LowValueConsumptionInfo
+            low_value_consumption_info_discard:
+              name: "报废低值易耗品信息"
+              link: "/low_value_consumption_infos/discard_index"
+              need_count: false
+              needrole:
+                can: :read
+                role: :LowValueConsumptionInfo
+            low_value_consumption_report:
+              name: "低值易耗品报表"
+              link: "/low_value_consumption_infos/low_value_consumption_report?object=LowValueConsumptionInfo"
+              need_count: false
+              needrole:
+                can: :low_value_consumption_report
+                role: :LowValueConsumptionInfo
+            lvc_report:
+              name: "资产汇总报表"
+              link: "/low_value_consumption_infos/lvc_report"
+              need_count: false
+              needrole:
+                can: :lvc_report
+                role: :LowValueConsumptionInfo
+        purchases:
+          name: "低值易耗品采购单"  
           needrole:
             can: :read
-            role: :LowValueConsumptionInfo
-        low_value_consumption_info_discard:
-          name: "报废低值易耗品信息"
-          link: "/low_value_consumption_infos/discard_index"
-          need_count: false
-          needrole:
-            can: :read
-            role: :LowValueConsumptionInfo
-        low_value_consumption_report:
-          name: "低值易耗品报表"
-          link: "/low_value_consumption_infos/low_value_consumption_report?object=LowValueConsumptionInfo"
-          need_count: false
-          needrole:
-            can: :low_value_consumption_report
-            role: :LowValueConsumptionInfo
-        lvc_report:
-          name: "资产汇总报表"
-          link: "/low_value_consumption_infos/lvc_report"
-          need_count: false
-          needrole:
-            can: :lvc_report
-            role: :LowValueConsumptionInfo
-    purchases:
-      name: "低值易耗品采购单"  
-      needrole:
-        can: :read
-        role: :Purchase  
-      submenu:
-        new_purchase:
-          name: "创建采购单"
-          link: "/purchases?atype=lvc"
-          need_count: false
-          needrole:
-            can: :new
-            role: :Purchase
-        to_do_purchase:
-          name: "待处理采购单"
-          link: "/purchases/to_do_index?atype=lvc"
-          need_count: false
-          needrole:
-            can: :read
-            role: :Purchase
-        doing_purchase:
-          name: "处理中采购单"
-          link: "/purchases/doing_index?atype=lvc"
-          need_count: false
-          needrole:
-            can: :read
-            role: :Purchase
-        done_purchase:
-          name: "已完成采购单"
-          link: "/purchases/done_index?atype=lvc"
-          need_count: false
-          needrole:
-            can: :read
-            role: :Purchase
-    lvc_discards:
-      name: "低值易耗品报废单"    
-      needrole:
-        can: :read
-        role: :LvcDiscard
-      submenu:
-        lvc_discard:
-          name: "低值易耗品报废单"
-          link: "/lvc_discards?atype=lvc"
-          need_count: false
+            role: :Purchase  
+          submenu:
+            new_purchase:
+              name: "创建采购单"
+              link: "/purchases?atype=lvc"
+              need_count: false
+              needrole:
+                can: :new
+                role: :Purchase
+            to_do_purchase:
+              name: "待处理采购单"
+              link: "/purchases/to_do_index?atype=lvc"
+              need_count: false
+              needrole:
+                can: :read
+                role: :Purchase
+            doing_purchase:
+              name: "处理中采购单"
+              link: "/purchases/doing_index?atype=lvc"
+              need_count: false
+              needrole:
+                can: :read
+                role: :Purchase
+            done_purchase:
+              name: "已完成采购单"
+              link: "/purchases/done_index?atype=lvc"
+              need_count: false
+              needrole:
+                can: :read
+                role: :Purchase
+        lvc_discards:
+          name: "低值易耗品报废单"    
           needrole:
             can: :read
             role: :LvcDiscard
-    low_value_consumption_inventory:    
-      name: "低值易耗品盘点单" 
-      needrole:
-        can: :read
-        role: :LowValueConsumptionInventory   
-      submenu:    
-        new_low_value_consumption_inventory:
-          name: "创建低值易耗品盘点单"
-          link: "/low_value_consumption_inventories"
-          need_count: false
+          submenu:
+            lvc_discard:
+              name: "低值易耗品报废单"
+              link: "/lvc_discards?atype=lvc"
+              need_count: false
+              needrole:
+                can: :read
+                role: :LvcDiscard
+        low_value_consumption_inventory:    
+          name: "低值易耗品盘点单" 
           needrole:
-            can: :create
-            role: :LowValueConsumptionInventory
-        level2_low_value_consumption_inventory:
-          name: "其他单位创建盘点单"
-          link: "/low_value_consumption_inventories/level2_index"
-          need_count: false
-          needrole:
-            can: :level2_index
-            role: :LowValueConsumptionInventory
-        doing_low_value_consumption_inventory:
-          name: "待处理低值易耗品盘点单"
-          link: "/low_value_consumption_inventories/doing_index"
-          need_count: false
-          needrole:
-            can: :doing_index
-            role: :LowValueConsumptionInventory
-        sample_low_value_consumption_inventory:
-          name: "创建抽样盘点单"
-          link: "/low_value_consumption_inventories/sample_inventory_index"
-          need_count: false
-          needrole:
-            can: :sample_inventory_index
-            role: :LowValueConsumptionInventory
-        level2_sample_low_value_consumption_inventory:
-          name: "其他创建抽样盘点单"
-          link: "/low_value_consumption_inventories/sample_level2_index"
-          need_count: false
-          needrole:
-            can: :sample_level2_index
-            role: :LowValueConsumptionInventory
-        sample_doing_low_value_consumption_inventory:
-          name: "待处理抽样盘点单"
-          link: "/low_value_consumption_inventories/sample_inventory_doing_index"
-          need_count: false
-          needrole:
-            can: :sample_inventory_doing_index
-            role: :LowValueConsumptionInventory
-    rent_infos:
+            can: :read
+            role: :LowValueConsumptionInventory   
+          submenu:    
+            new_low_value_consumption_inventory:
+              name: "创建盘点单"
+              link: "/low_value_consumption_inventories"
+              need_count: false
+              needrole:
+                can: :create
+                role: :LowValueConsumptionInventory
+            level2_low_value_consumption_inventory:
+              name: "其他单位创建盘点单"
+              link: "/low_value_consumption_inventories/level2_index"
+              need_count: false
+              needrole:
+                can: :level2_index
+                role: :LowValueConsumptionInventory
+            doing_low_value_consumption_inventory:
+              name: "待处理盘点单"
+              link: "/low_value_consumption_inventories/doing_index"
+              need_count: false
+              needrole:
+                can: :doing_index
+                role: :LowValueConsumptionInventory
+            sample_low_value_consumption_inventory:
+              name: "创建抽样盘点单"
+              link: "/low_value_consumption_inventories/sample_inventory_index"
+              need_count: false
+              needrole:
+                can: :sample_inventory_index
+                role: :LowValueConsumptionInventory
+            level2_sample_low_value_consumption_inventory:
+              name: "其他创建抽样盘点单"
+              link: "/low_value_consumption_inventories/sample_level2_index"
+              need_count: false
+              needrole:
+                can: :sample_level2_index
+                role: :LowValueConsumptionInventory
+            sample_doing_low_value_consumption_inventory:
+              name: "待处理抽样盘点单"
+              link: "/low_value_consumption_inventories/sample_inventory_doing_index"
+              need_count: false
+              needrole:
+                can: :sample_inventory_doing_index
+                role: :LowValueConsumptionInventory
+    rinfos:
       name: "其他固定资产"
       needrole:
         can: :read
-        role: :RentInfo
-      submenu:
-        rent_info_inuse:
-          name: "在用其他固定资产"
-          link: "/rent_infos"
-          need_count: false
+        role: :RentInfo  
+      lv2menu:
+        rent_infos:
+          name: "其他固定基础信息"
           needrole:
             can: :read
             role: :RentInfo
-        rent_info_discard:
-          name: "报废其他固定资产"
-          link: "/rent_infos/discard_index"
-          need_count: false
+          submenu:
+            rent_info_inuse:
+              name: "在用其他固定资产"
+              link: "/rent_infos"
+              need_count: false
+              needrole:
+                can: :read
+                role: :RentInfo
+            rent_info_discard:
+              name: "报废其他固定资产"
+              link: "/rent_infos/discard_index"
+              need_count: false
+              needrole:
+                can: :read
+                role: :RentInfo
+            rent_info_report:
+              name: "其他固定资产报表"
+              link: "/low_value_consumption_infos/low_value_consumption_report?object=RentInfo"
+              need_count: false
+              needrole:
+                can: :low_value_consumption_report
+                role: :LowValueConsumptionInfo
+            rent_report:
+              name: "资产汇总报表"
+              link: "/rent_infos/rent_report"
+              need_count: false
+              needrole:
+                can: :rent_report
+                role: :RentInfo
+        rent_purchases:
+          name: "新增其他固定资产"  
           needrole:
             can: :read
-            role: :RentInfo
-        rent_info_report:
-          name: "其他固定资产报表"
-          link: "/low_value_consumption_infos/low_value_consumption_report?object=RentInfo"
-          need_count: false
-          needrole:
-            can: :low_value_consumption_report
-            role: :LowValueConsumptionInfo
-        rent_report:
-          name: "资产汇总报表"
-          link: "/rent_infos/rent_report"
-          need_count: false
-          needrole:
-            can: :rent_report
-            role: :RentInfo
-    rent_purchases:
-      name: "新增其他固定资产"  
-      needrole:
-        can: :read
-        role: :Purchase  
-      submenu:
-        new_rent_purchase:
-          name: "创建其他固定资产"
-          link: "/purchases?atype=rent"
-          need_count: false
-          needrole:
-            can: :new
-            role: :Purchase
-        to_do_rent_purchase:
-          name: "待处理其他固定资产"
-          link: "/purchases/to_do_index?atype=rent"
-          need_count: false
-          needrole:
-            can: :read
-            role: :Purchase
-        doing_rent_purchase:
-          name: "处理中其他固定资产"
-          link: "/purchases/doing_index?atype=rent"
-          need_count: false
-          needrole:
-            can: :read
-            role: :Purchase
-        done_rent_purchase:
-          name: "已完成其他固定资产"
-          link: "/purchases/done_index?atype=rent"
-          need_count: false
-          needrole:
-            can: :read
-            role: :Purchase
-    rent_lvc_discards:
-      name: "其他固定资产报废单"    
-      needrole:
-        can: :read
-        role: :LvcDiscard
-      submenu:
-        lvc_discard:
-          name: "其他固定资产报废单"
-          link: "/lvc_discards?atype=rent"
-          need_count: false
+            role: :Purchase  
+          submenu:
+            new_rent_purchase:
+              name: "创建其他固定资产"
+              link: "/purchases?atype=rent"
+              need_count: false
+              needrole:
+                can: :new
+                role: :Purchase
+            to_do_rent_purchase:
+              name: "待处理其他固定资产"
+              link: "/purchases/to_do_index?atype=rent"
+              need_count: false
+              needrole:
+                can: :read
+                role: :Purchase
+            doing_rent_purchase:
+              name: "处理中其他固定资产"
+              link: "/purchases/doing_index?atype=rent"
+              need_count: false
+              needrole:
+                can: :read
+                role: :Purchase
+            done_rent_purchase:
+              name: "已完成其他固定资产"
+              link: "/purchases/done_index?atype=rent"
+              need_count: false
+              needrole:
+                can: :read
+                role: :Purchase
+        rent_lvc_discards:
+          name: "其他固定资产报废单"    
           needrole:
             can: :read
             role: :LvcDiscard
-    rent_inventory:    
-      name: "其他固定资产盘点单" 
-      needrole:
-        can: :read
-        role: :RentInventory   
-      submenu:    
-        new_rent_inventory:
-          name: "创建其他固定资产盘点单"
-          link: "/rent_inventories"
-          need_count: false
+          submenu:
+            lvc_discard:
+              name: "其他固定资产报废单"
+              link: "/lvc_discards?atype=rent"
+              need_count: false
+              needrole:
+                can: :read
+                role: :LvcDiscard
+        rent_inventory:    
+          name: "其他固定资产盘点单" 
           needrole:
-            can: :create
-            role: :RentInventory
-        level2_rent_inventory:
-          name: "其他单位创建盘点单"
-          link: "/rent_inventories/level2_index"
-          need_count: false
-          needrole:
-            can: :level2_index
-            role: :RentInventory
-        doing_rent_inventory:
-          name: "待处理其他固定资产盘点单"
-          link: "/rent_inventories/doing_index"
-          need_count: false
-          needrole:
-            can: :doing_index
-            role: :RentInventory
-        sample_rent_inventory:
-          name: "创建抽样盘点单"
-          link: "/rent_inventories/sample_inventory_index"
-          need_count: false
-          needrole:
-            can: :sample_inventory_index
-            role: :RentInventory
-        level2_sample_rent_inventory:
-          name: "其他创建抽样盘点单"
-          link: "/rent_inventories/sample_level2_index"
-          need_count: false
-          needrole:
-            can: :sample_level2_index
-            role: :RentInventory
-        sample_doing_rent_inventory:
-          name: "待处理抽样盘点单"
-          link: "/rent_inventories/sample_inventory_doing_index"
-          need_count: false
-          needrole:
-            can: :sample_inventory_doing_index
-            role: :RentInventory
+            can: :read
+            role: :RentInventory   
+          submenu:    
+            new_rent_inventory:
+              name: "创建其他固定资产盘点单"
+              link: "/rent_inventories"
+              need_count: false
+              needrole:
+                can: :create
+                role: :RentInventory
+            level2_rent_inventory:
+              name: "其他单位创建盘点单"
+              link: "/rent_inventories/level2_index"
+              need_count: false
+              needrole:
+                can: :level2_index
+                role: :RentInventory
+            doing_rent_inventory:
+              name: "待处理其他固定资产盘点单"
+              link: "/rent_inventories/doing_index"
+              need_count: false
+              needrole:
+                can: :doing_index
+                role: :RentInventory
+            sample_rent_inventory:
+              name: "创建抽样盘点单"
+              link: "/rent_inventories/sample_inventory_index"
+              need_count: false
+              needrole:
+                can: :sample_inventory_index
+                role: :RentInventory
+            level2_sample_rent_inventory:
+              name: "其他创建抽样盘点单"
+              link: "/rent_inventories/sample_level2_index"
+              need_count: false
+              needrole:
+                can: :sample_level2_index
+                role: :RentInventory
+            sample_doing_rent_inventory:
+              name: "待处理抽样盘点单"
+              link: "/rent_inventories/sample_inventory_doing_index"
+              need_count: false
+              needrole:
+                can: :sample_inventory_doing_index
+                role: :RentInventory
     up_downloads:
       name: "模板管理"
       needrole:

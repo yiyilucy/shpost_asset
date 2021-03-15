@@ -373,7 +373,7 @@ class PurchaseRentInfoController < ApplicationController
               end
 
               if !pay_cycle.in?(['一月','两月','一季','半年','一年','一次性付清'])
-                txt = "请填写“一月，两月，一季，半年，一年或一次性付清”_"
+                txt = "[租赁费支付周期]请填写“一月，两月，一季，半年，一年或一次性付清”_"
                 sheet_error << (rowarr << txt)
                 raise txt
                 raise ActiveRecord::Rollback 

@@ -13,6 +13,8 @@
 	<th>数量</th>
 	<% if @obj.eql?"LowValueConsumptionInfo" %>
 	<th>总值</th>
+	<% elsif @obj.eql?"RentInfo" %>
+	<th>年租金总值</th>	
 	<% end %>
 </tr>
 </thead>
@@ -21,17 +23,13 @@
 <tr>
 	<td><%= x.name %></td>
 	<td><%= @counts[x.id].blank? ? 0 : @counts[x.id] %></td>
-	<% if @obj.eql?"LowValueConsumptionInfo" %>
 	<td><%= @sums[x.id].blank? ? number_with_precision(0, precision: 2) : number_with_precision(@sums[x.id], precision: 2) %></td>
-	<% end %>
 </tr>
 <% end %>
 <tr>
 	<td>合计</td>
 	<td><%= @total_count.blank? ? 0 : @total_count %></td>
-	<% if @obj.eql?"LowValueConsumptionInfo" %>
 	<td><%= @total_sum.blank? ? number_with_precision(0, precision: 2) : number_with_precision(@total_sum, precision: 2) %></td>
-	<% end %>
 </tr>
 </tbody>
 </table>
