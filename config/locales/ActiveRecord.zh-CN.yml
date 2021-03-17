@@ -244,6 +244,7 @@ zh-CN:
     # production environment
     # fixed_asset_info: "https://sc.shpost.com.cn/shpost_asset/fixed_asset_infos"
     # low_value_consumption: "https://sc.shpost.com.cn/shpost_asset/low_value_consumption_infos"
+    # rent_info: "https://sc.shpost.com.cn/shpost_asset/rent_infos"
     
   wice_grid:
     show_filter_tooltip: 显示过滤

@@ -15,6 +15,7 @@
           </div>
           <% 
             lm = m[k][:lv2menu]
+            # 需要三级菜单
             if !lm.blank? 
           %>
             <div id="menu-0-<%=l1+1%>" class="panel-collapse collapse">
@@ -81,6 +82,7 @@
             %>
             </div>
           <% 
+            # 只需要两级，不需要第二级菜单
             else 
           %>
           <% 
