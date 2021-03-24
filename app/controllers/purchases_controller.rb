@@ -67,7 +67,7 @@ class PurchasesController < ApplicationController
       if !ori_purchase.blank?
         # raise "采购单号已存在"
         respond_to do |format|
-          format.html { redirect_to new_purchase_url, notice: I18n.t('controller.purchase_exist_no_notice', model: (ori_purchase.atype.eql?"lvc") ? '采购单' : '其他固定资产') }
+          format.html { redirect_to new_purchase_url, notice: I18n.t('controller.purchase_exist_no_notice', model: (ori_purchase.atype.eql?"lvc") ? '采购单' : '其他租赁资产') }
           format.json { head :no_content }
         end
       else
@@ -76,7 +76,7 @@ class PurchasesController < ApplicationController
           @purchase.create_unit_id = current_user.try(:unit).try :id
           @purchase.status = "waiting"
           @purchase.manage_unit_id = current_user.try(:unit).try :id
-          @purchase.change_log = Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(params[:atype].eql?'lvc') ? '采购单' : '其他固定资产'}创建" + ","
+          @purchase.change_log = Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(params[:atype].eql?'lvc') ? '采购单' : '其他租赁资产'}创建" + ","
           @purchase.atype = params[:atype]
 
           respond_to do |format|
@@ -100,7 +100,7 @@ class PurchasesController < ApplicationController
               #   amount = amount-1
               # end
 
-              format.html { redirect_to purchases_path(atype: params[:atype]), notice: I18n.t('controller.create_success_notice', model: (params[:atype].eql?"lvc") ? '采购单' : '其他固定资产') }
+              format.html { redirect_to purchases_path(atype: params[:atype]), notice: I18n.t('controller.create_success_notice', model: (params[:atype].eql?"lvc") ? '采购单' : '其他租赁资产') }
               format.json { render action: 'show', status: :created, location: @purchase }
             else
               format.html { render action: 'new' }
@@ -116,7 +116,7 @@ class PurchasesController < ApplicationController
     ActiveRecord::Base.transaction do
       respond_to do |format|
         if @purchase.update(purchase_params)
-          @purchase.update change_log:  (@purchase.change_log.blank? ? "" : @purchase.change_log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}修改" + ","
+          @purchase.update change_log:  (@purchase.change_log.blank? ? "" : @purchase.change_log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}修改" + ","
         
           # amount = @purchase.amount
           # @purchase.low_value_consumption_infos.each do |info| 
@@ -129,10 +129,10 @@ class PurchasesController < ApplicationController
           # end
 
           if @purchase.is_send || (params[:source].eql?"to_do")
-            format.html { redirect_to to_do_index_purchases_url(atype: params[:atype]), notice: I18n.t('controller.update_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}")  }
+            format.html { redirect_to to_do_index_purchases_url(atype: params[:atype]), notice: I18n.t('controller.update_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}")  }
             format.json { head :no_content }
           else
-            format.html { redirect_to purchases_path(atype: params[:atype]), notice: I18n.t('controller.update_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}")  }
+            format.html { redirect_to purchases_path(atype: params[:atype]), notice: I18n.t('controller.update_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}")  }
             format.json { head :no_content }
           end
         else
@@ -184,7 +184,7 @@ class PurchasesController < ApplicationController
       if (!@atype.blank? && (@atype.eql?"lvc") && @purchase.can_to_check?) || (!@atype.blank? && (@atype.eql?"rent") && @purchase.can_to_check_rent?)
         @purchase.status = "checking"
         @purchase.to_check_user_id = current_user.id
-        @purchase.change_log = (@purchase.change_log.blank? ? "" : @purchase.change_log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}送审" + ","
+        @purchase.change_log = (@purchase.change_log.blank? ? "" : @purchase.change_log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}送审" + ","
 
         respond_to do |format|
           if @purchase.save
@@ -194,10 +194,10 @@ class PurchasesController < ApplicationController
               @purchase.rent_infos.update_all(status: "checking")
             end
             if (@purchase.create_user_id == current_user.id) && (params[:source].eql?"index")
-              format.html { redirect_to purchases_url(atype: @atype), notice: I18n.t('controller.to_check_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}") }
+              format.html { redirect_to purchases_url(atype: @atype), notice: I18n.t('controller.to_check_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}") }
               format.json { head :no_content }
             else
-              format.html { redirect_to to_do_index_purchases_url(atype: @atype), notice: I18n.t('controller.to_check_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}") }
+              format.html { redirect_to to_do_index_purchases_url(atype: @atype), notice: I18n.t('controller.to_check_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}") }
               format.json { head :no_content }
             end
           else
@@ -214,7 +214,7 @@ class PurchasesController < ApplicationController
         if @atype.eql?"lvc"
           flash[:alert] = "低值易耗品不能为空,所在网点，所在地点，使用部门不能为空"
         elsif @atype.eql?"rent"
-          flash[:alert] = "其他固定资产明细不能为空,地点备注，使用部门不能为空"
+          flash[:alert] = "其他租赁资产明细不能为空,地点备注，使用部门不能为空"
         end
         if (@purchase.create_user_id == current_user.id) && (params[:source].eql?"index")
           respond_to do |format|
@@ -233,7 +233,7 @@ class PurchasesController < ApplicationController
 
   def approve
     ActiveRecord::Base.transaction do 
-      @purchase.update status: "done", checked_user_id: current_user.id, change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log)+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}审核通过" + ",")
+      @purchase.update status: "done", checked_user_id: current_user.id, change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log)+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}审核通过" + ",")
 
       if !params[:atype].blank? && (params[:atype].eql?"lvc")
         @purchase.low_value_consumption_infos.each do |l|
@@ -249,7 +249,7 @@ class PurchasesController < ApplicationController
     end
     
     respond_to do |format|
-      format.html { redirect_to to_do_index_purchases_url(atype: @atype), notice: I18n.t('controller.approve_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}") }
+      format.html { redirect_to to_do_index_purchases_url(atype: @atype), notice: I18n.t('controller.approve_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}") }
       format.json { head :no_content }
     end
 
@@ -257,7 +257,7 @@ class PurchasesController < ApplicationController
 
   def decline
     ActiveRecord::Base.transaction do 
-      @purchase.update status: "declined", change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log) +Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}审核否决" + ",")
+      @purchase.update status: "declined", change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log) +Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}审核否决" + ",")
 
       if !params[:atype].blank? && (params[:atype].eql?"lvc")
         @purchase.low_value_consumption_infos.update_all status: "declined"
@@ -267,7 +267,7 @@ class PurchasesController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { redirect_to to_do_index_purchases_url(atype: @atype), notice: I18n.t('controller.decline_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}") }
+      format.html { redirect_to to_do_index_purchases_url(atype: @atype), notice: I18n.t('controller.decline_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}") }
       format.json { head :no_content }
     end
   end
@@ -287,13 +287,13 @@ class PurchasesController < ApplicationController
   def cancel
     ActiveRecord::Base.transaction do
       if ["revoked", "declined"].include?@purchase.status 
-        @purchase.update status: "canceled", change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log)+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}取消" + ",")
+        @purchase.update status: "canceled", change_log: ((@purchase.change_log.blank? ? "" : @purchase.change_log)+Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}取消" + ",")
         @purchase.low_value_consumption_infos.update_all status: "canceled"
       end
     end
 
     respond_to do |format|
-      format.html { redirect_to to_do_index_purchases_url(atype: params[:atype]), notice: I18n.t('controller.cancel_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他固定资产'}") }
+      format.html { redirect_to to_do_index_purchases_url(atype: params[:atype]), notice: I18n.t('controller.cancel_success_notice', model: "#{(@purchase.atype.eql?'lvc') ? '采购单' : '其他租赁资产'}") }
       format.json { head :no_content }
     end
   end

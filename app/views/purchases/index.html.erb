@@ -3,7 +3,7 @@
   <% if @atype.eql?"lvc" %>
   <h1>创建采购单</h1>
   <% else %>
-  <h1>创建其他固定资产</h1>
+  <h1>创建其他租赁资产</h1>
   <% end %>
   <div style="float:right">
     <% if can? :new, Purchase and current_user.deviceadmin? %>

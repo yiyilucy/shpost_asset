@@ -300,7 +300,7 @@ class RentInventoriesController < ApplicationController
       end
 
       if rent_infos.blank?
-        flash[:alert] = "没有符合条件的其他固定资产"
+        flash[:alert] = "没有符合条件的其他租赁资产"
         redirect_to rent_inventories_url and return
       end
 
@@ -465,7 +465,7 @@ class RentInventoriesController < ApplicationController
       rent_infos = LowValueConsumptionInventory.get_sample_infos(RentInventory, nil, nil, catalog_id, pd_unit, current_user)
   
       if rent_infos.blank?
-        flash[:alert] = "没有符合条件的其他固定资产"
+        flash[:alert] = "没有符合条件的其他租赁资产"
         redirect_to to_sample_inventory_rent_inventories_url and return
       end
 

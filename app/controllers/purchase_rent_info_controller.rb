@@ -121,7 +121,7 @@ class PurchaseRentInfoController < ApplicationController
 
         respond_to do |format|   
           if success           
-            format.html { redirect_to purchase_rent_infos_path(@purchase), notice: I18n.t('controller.create_success_notice', model: '其他固定资产信息')}
+            format.html { redirect_to purchase_rent_infos_path(@purchase), notice: I18n.t('controller.create_success_notice', model: '其他租赁资产信息')}
             format.json { head :no_content }
           else
             format.html { render action: 'new' }
@@ -140,7 +140,7 @@ class PurchaseRentInfoController < ApplicationController
   def update
     respond_to do |format|
       if @rent_info.update(rent_info_params)
-        format.html { redirect_to purchase_rent_info_path(@purchase,@rent_info), notice: I18n.t('controller.update_success_notice', model: '其他固定资产信息')}
+        format.html { redirect_to purchase_rent_info_path(@purchase,@rent_info), notice: I18n.t('controller.update_success_notice', model: '其他租赁资产信息')}
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -471,7 +471,7 @@ class PurchaseRentInfoController < ApplicationController
       @fixed_asset_catalog = FixedAssetCatalog.find_by(id: @rent_info.fixed_asset_catalog_id).try(:name)
     else
       respond_to do |format|
-          format.html { redirect_to purchase_rent_infos_url, alert: "请勾选其他固定资产" }
+          format.html { redirect_to purchase_rent_infos_url, alert: "请勾选其他租赁资产" }
           format.json { head :no_content }
       end
     end
@@ -494,7 +494,7 @@ class PurchaseRentInfoController < ApplicationController
           if !params[:rent_info][:use_unit_id].blank?
             @rent_info.use_unit_id = params[:rent_info][:use_unit_id]
           end
-          @rent_info.update log: (@rent_info.log.blank? ? "" : @rent_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"其他固定资产信息批量修改" + ","
+          @rent_info.update log: (@rent_info.log.blank? ? "" : @rent_info.log) + Time.now.strftime("%Y-%m-%d %H:%M:%S").to_s + " " + current_user.try(:unit).try(:name) + " " + current_user.name + " " +"其他租赁资产信息批量修改" + ","
           if !params[:desc].blank? && !params[:desc].strip.blank?
             @rent_info.desc = params[:desc]
           end
@@ -506,7 +506,7 @@ class PurchaseRentInfoController < ApplicationController
         flash[:notice] = "批量修改成功"
         redirect_to purchase_rent_infos_path(@purchase)
       else
-        flash[:alert] = "请勾选其他固定资产"
+        flash[:alert] = "请勾选其他租赁资产"
         redirect_to purchase_rent_infos_path(@purchase)
       end
     end
@@ -540,7 +540,7 @@ class PurchaseRentInfoController < ApplicationController
         @result = @result + RentInfo.where(id:@selected.pop(1000))
       end
     else
-      flash[:alert] = "请勾选需要打印的其他固定资产"
+      flash[:alert] = "请勾选需要打印的其他租赁资产"
       respond_to do |format|
         format.html { redirect_to purchase_rent_infos_path(@purchase) }
         format.json { head :no_content }
