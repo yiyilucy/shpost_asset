@@ -20,6 +20,12 @@
       </div>
     </div>  
     <div class="control-group">
+      <%= label_tag(:brand_model, "结构/型号") %>
+      <div class="controls">
+      <%= text_field_tag(:brand_model, @low_value_consumption_info.brand_model, :value=>nil) %>
+      </div>
+    </div>
+    <div class="control-group">
       <%= label_tag(:branch, "所在网点") %>
       <div class="controls">
       <%= text_field_tag(:branch,@low_value_consumption_info.branch, :value=>nil) %>

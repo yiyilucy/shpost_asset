@@ -1,0 +1,47 @@
+<%- model_class = Message -%>
+<div class="page-header">
+  <h1>信息统计报表</h1>
+</div> 
+
+<%= form_tag('', name: 'form1') do %>
+
+<%= label_tag(:return_year, "年:", :style => "padding:0px") %>
+<%= select_tag "year", options_for_select(Message.select_years, :selected=>@year) %>
+<%= submit_tag "查询",:class => 'btn btn-primary', onclick: "form1.action='/shpost_asset/messages/report';form1.submit();" %>  
+<%= submit_tag "报表导出",:class => 'btn btn-primary', onclick: "form1.action='report_export.xls';form1.submit();" %>
+<% end %>
+<br><br>
+<% if !@messages.blank? %>
+<div>
+<table border="1" table-layout="fixed">
+<tr class= 'nowrapb'>
+	<th>发布单位</th>
+	<th>发布内容</th>
+	<th>推送条数</th>
+	<th>已读条数</th>
+	<th>未读单位明细</th>
+	<th>发布日期</th>
+	<th>状态</th>
+</tr>
+<% last_unit = nil %>
+<% @messages.each do |m| %>
+<tr class= 'nowrap'>
+	<td><%= (m.activate_asset.create_unit.name.eql?last_unit) ? "" : m.activate_asset.create_unit.name %></td>
+	<td><%= m.activate_asset.introduce %></td>
+	<td><%= @all_count %></td>
+	<% read_units = Unit.joins(:users).joins(:users=>[:user_messages]).where("(units.unit_level=? or units.is_facility_management_unit = ?) and user_messages.message_id = ? and user_messages.is_read = ?", 2, true, m.id, true) %>
+	<td><%= read_units.count %></td>
+	<% if read_units.count == 0 %>
+	<% unread_unints = Unit.where("unit_level=? or is_facility_management_unit = ?", 2,true).map{|x| x.print_unit_name}.compact.join(",") %>
+	<% else %>
+	<% unread_unints = Unit.where("unit_level=? or is_facility_management_unit = ?", 2,true).where.not("id in (?)", read_units.map{|u| u.id}).map{|x| x.print_unit_name}.compact.join(",") %>
+	<% end %>
+	<td><%= unread_unints %></td>
+	<td><%= m.created_at.strftime('%Y-%m-%d').to_s %></td>
+	<td><%= m.activate_asset.status_name %>
+	<% last_unit = m.activate_asset.create_unit.name %>
+</tr>
+<% end %>
+</table>
+</div>
+<% end %>

@@ -246,6 +246,16 @@ ready = function() {
     });
    return false;
   });
+
+  if($("#show_modal").val()=="true"){
+    $("div[id^=modal_]").modal('show');
+    $.ajax({
+      type : 'POST',
+      url : 'shpost_asset/user_messages/set_is_read/',
+      data: { message_id: $('#message_id').val()},
+      dataType : 'script'
+    });
+  }
 }
 
 

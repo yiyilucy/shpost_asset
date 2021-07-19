@@ -1,0 +1,45 @@
+<%- model_class = Message -%>
+<%- model_class1 = ActivateAsset -%>
+<div class="page-header">
+  <h1>查看信息</h1>
+</div>
+
+<%= grid(@messages_grid) do |g|
+    g.column name: model_class.human_attribute_name(:title), attribute: 'title'
+
+    g.column name: model_class1.human_attribute_name(:name), attribute: 'name', assoc: :activate_asset do |message|
+      message.activate_asset.try :name
+    end
+
+    g.column name: model_class1.human_attribute_name(:contact), attribute: 'contact', assoc: :activate_asset do |message|
+      message.activate_asset.try :contact
+    end
+
+    g.column name: model_class1.human_attribute_name(:tel), attribute: 'tel', assoc: :activate_asset do |message|
+      message.activate_asset.try :tel
+    end
+
+    g.column name: model_class1.human_attribute_name(:introduce), attribute: 'introduce', assoc: :activate_asset do |message|
+      [message.activate_asset.introduce.try(:truncate, 25), {title: message.activate_asset.introduce}]
+    end
+
+    g.column name: model_class1.human_attribute_name(:create_user_id), attribute: 'name', assoc: [:activate_asset, :create_user] do |message|
+      message.activate_asset.create_user.name
+    end
+
+    g.column name: model_class1.human_attribute_name(:create_unit_id), attribute: 'name', assoc: [:activate_asset, :create_unit] do |message|
+      message.activate_asset.create_unit.name
+    end
+
+    g.column name: model_class1.human_attribute_name(:status), attribute: 'status', assoc: :activate_asset do |message|
+      message.activate_asset.status_name
+    end
+   
+    g.column do |message|
+      ActiveSupport::SafeBuffer.new << 
+        (link_to t('.download', :default => t("helpers.links.download")), download_activate_asset_path(message.activate_asset),:method => 'post', :class => 'btn btn-xs btn-primary' if (can? :download, ActivateAsset) && (!message.activate_asset.blank? && !message.activate_asset.import_file.blank?)) << ' ' <<
+        (link_to '详细内容', activate_asset_path(message.activate_asset, source: "message"), :class => 'btn btn-xs btn-primary' if can? :read, message)
+      
+    end
+  end 
+%>

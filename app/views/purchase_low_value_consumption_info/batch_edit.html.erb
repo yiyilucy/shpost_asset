@@ -32,12 +32,7 @@
 	      <%= text_field_tag(:batch_no,@low_value_consumption_info.batch_no, :value=>nil) %>
 		  </div>
       </div>
-      <div class="control-group">
-	      <%= label_tag(:brand_model, "品牌型号") %><font color="#FF0000">  *</font>
-	      <div class="controls">
-	      <%= text_field_tag(:brand_model,@low_value_consumption_info.brand_model, :value=>nil) %>
-		  </div>
-      </div>
+      
       <div class="control-group">
 	      <%= label_tag(:measurement_unit, "计量单位") %>
 	      <div class="controls">
@@ -57,6 +52,12 @@
 		  </div>
       </div>
       <% end %>
+      <div class="control-group">
+	      <%= label_tag(:brand_model, "结构/型号") %><font color="#FF0000">  *</font>
+	      <div class="controls">
+	      <%= text_field_tag(:brand_model,@low_value_consumption_info.brand_model, :value=>nil) %>
+		  </div>
+      </div>
       <div class="control-group">
 	      <%= label_tag(:branch, "所在网点") %><font color="#FF0000">  *</font>
 	      <div class="controls">

@@ -21,6 +21,12 @@
       </div>
     </div>  
     <div class="control-group">
+      <%= label_tag(:brand_model, "结构/型号") %>
+      <div class="controls">
+      <%= text_field_tag(:brand_model,@rent_info.brand_model, :value=>nil) %>
+      </div>
+    </div>
+    <div class="control-group">
       <%= label_tag(:location, "所在地点") %>
       <div class="controls">
       <%= text_field_tag(:location,@rent_info.location, :value=>nil) %>

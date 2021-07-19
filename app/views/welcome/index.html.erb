@@ -1,4 +1,36 @@
+<%- model_class = ActivateAsset -%>
 <div id="bg_welcome">
 <br><br><br><br><br><br><br><br><br>
 <p class="text-center" align="center"><font color="#006030" size=20><%= t(".welcome", default: '欢迎光临') %></font></p>
 </div>
+
+<% if !@messages.blank? %>
+	<%= hidden_field_tag('show_modal', true) %>
+	<%= hidden_field_tag('message_id', @messages.map{|o| o.id}.compact.join(",")) %>
+	<% @messages.each do |m| %>
+		<div class="modal fade" id="modal_<%= m.id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+		  <div class="modal-dialog modal-lg" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+		        <h4 class="modal-title" id="exampleModalLabel"><strong><%= m.title %></h4>
+		      </div>
+		      <div class="modal-body">
+		      	<table>
+						  <tr><td height="50px" valign="top"><strong><%= model_class.human_attribute_name(:name) %>:</td>
+						  <td height="50px" valign="top"><%= m.activate_asset.name %></td></tr>
+						  <tr><td height="50px" valign="top"><strong><%= model_class.human_attribute_name(:contact) %>:</td>
+						  <td height="50px" valign="top"><%= m.activate_asset.contact %></td></tr>
+						  <tr><td height="50px" valign="top"><strong><%= model_class.human_attribute_name(:tel) %>:</td>
+						  <td height="50px" valign="top"><%= m.activate_asset.tel %></td><tr>
+						  <tr><td height="50px" valign="top"><strong><%= model_class.human_attribute_name(:introduce) %>:</td>
+						  <td height="50px" valign="top"><%= simple_format m.activate_asset.introduce %></td><tr>
+						</table>
+		      </div>
+		      <div class="modal-footer">
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	<% end %>
+<% end %>

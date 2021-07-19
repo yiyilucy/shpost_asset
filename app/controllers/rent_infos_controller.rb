@@ -115,6 +115,9 @@ class RentInfosController < ApplicationController
       if !params[:rentids].blank?
         params[:rentids].split(",").map(&:to_i).each do |id|
           @rent_info = RentInfo.find_by(id:id.to_i)
+          if !params[:brand_model].blank? && !params[:brand_model].strip.blank?
+            @rent_info.brand_model = params[:brand_model]
+          end
           if !params[:location].blank? && !params[:location].strip.blank?
             @rent_info.location = params[:location]
           end

@@ -27,6 +27,9 @@ class Ability
         # can :manage, FixedAssetInventory
         # can :manage, FixedAssetInventoryDetail
         can :manage, UpDownload
+        can :manage, ActivateAsset
+        can :manage, Message
+        can :manage, ImportFile
     end
 
     if user.sgsadmin?
@@ -158,6 +161,14 @@ class Ability
         can :update, User, id: user.id
         can [:read, :up_download_export], UpDownload
         cannot [:create, :to_import, :up_download_import,:destroy], UpDownload
+        if (user.unit.unit_level == 2) || (user.unit.is_facility_management_unit)
+            can :manage, ActivateAsset, {create_unit_id: user.unit_id}
+            can [:show, :download], ActivateAsset
+        end
+        if (user.unit.unit_level == 2) || (user.unit.is_facility_management_unit)
+            can [:read, :report, :report_export], Message
+        end
+        can :manage, ImportFile
     end
 
     if user.accountant?

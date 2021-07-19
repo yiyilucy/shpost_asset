@@ -1,0 +1,25 @@
+<h1>Listing user_messages</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @user_messages.each do |user_message| %>
+      <tr>
+        <td><%= link_to 'Show', user_message %></td>
+        <td><%= link_to 'Edit', edit_user_message_path(user_message) %></td>
+        <td><%= link_to 'Destroy', user_message, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New User message', new_user_message_path %>

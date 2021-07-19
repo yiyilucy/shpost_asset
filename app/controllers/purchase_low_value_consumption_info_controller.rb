@@ -25,9 +25,9 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
       if file = upload_low_value_consumption_info(params[:file]['file'])       
         ActiveRecord::Base.transaction do
           begin
-            catalogs = LowValueConsumptionCatalog.all.group(:code).size
+            catalogs = LowValueConsumptionCatalog.all.group(:name).size
             catalogs.each do |key, value|
-              catalogs[key] = LowValueConsumptionCatalog.find_by(code: key).id
+              catalogs[key] = LowValueConsumptionCatalog.find_by(name: key).id
             end
 
             if current_user.unit.unit_level == 2
@@ -68,7 +68,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
             instance.default_sheet = instance.sheets.first
             title_row = instance.row(1)
             
-            catalog_code_index = title_row.index("资产类别编码")
+            catalog_code_index = title_row.index("资产类别编码").blank? ? title_row.index("资产类别名称") : title_row.index("资产类别编码")
             branch_index =title_row.index("所在网点")
             batch_no_index = title_row.index("生产批次")
             asset_name_index = title_row.index("资产名称")
@@ -123,7 +123,7 @@ class PurchaseLowValueConsumptionInfoController < ApplicationController
                 raise ActiveRecord::Rollback         
               end
               if catalog_code.blank?
-                txt = "缺少资产类别编码_"
+                txt = "缺少资产类别名称_"
                 sheet_error << (rowarr << txt)
                 raise txt
                 raise ActiveRecord::Rollback 

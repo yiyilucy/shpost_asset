@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
   belongs_to :unit
   has_many :user_logs
   has_many :roles, dependent: :destroy
+  has_many :user_messages
 
   devise :database_authenticatable, #:registerable,
          :recoverable, :rememberable, :trackable, :validatable
