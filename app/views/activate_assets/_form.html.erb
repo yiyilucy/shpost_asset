@@ -1,38 +1,38 @@
-<%= form_for @activate_asset, :html => { :class => 'form-horizontal' } do |f| %>
+<%= form_tag('', :multipart => true, name: 'form1') %>
   <% @activate_asset.errors.full_messages.each do |msg| %>
       <li><%= msg %></li>
   <% end %>
-  <div class="control-group">
-    <%= f.label :name, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :name, :class => 'text_field', :id => 'name' %>
-    </div>
-  </div>
-  <div class="control-group">
-    <%= f.label :contact, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :contact, :class => 'text_field', :id => 'contact' %>
-    </div>
-  </div>
-  <div class="control-group">
-    <%= f.label :tel, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :tel, :class => 'text_field', :id => 'tel' %>
-    </div>
-  </div>
-  <div class="control-group">
-    <%= f.label :introduce, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_area :introduce, :class => 'text_field', :id => 'introduce', cols: 80, rows: 15 %>
-    </div>
-  </div>
+  <div>
+  <table>
+    <tr>
+      <td><%= label_tag 'name', '名称:', class: 'control-group' %></td>
+      <td><%= text_field_tag 'name', params[:name], class: "controls" %></td>
+    </tr>
+    <tr>
+      <td><%= label_tag 'contact', '联系人:', class: 'control-group' %><font color="#FF0000">  *</font></td>
+      <td><%= text_field_tag 'contact', params[:contact], class: "controls" %></td>
+    </tr>
+    <tr>
+      <td><%= label_tag 'tel', '联系方式:', class: 'control-group' %><font color="#FF0000">  *</font></td>
+      <td><%= text_field_tag 'tel', params[:tel], class: "controls" %></td>
+    </tr>
+    <tr>
+      <td><%= label_tag 'introduce', '资产简介:', class: 'control-group' %><font color="#FF0000">  *</font></td>
+      <td><%= text_area_tag 'introduce', params[:introduce], rows: 15, cols: 80 %></td>
+    </tr>
+  </table>
+  <font face="微软雅黑" color='#D9B300' size=3>上传清单: <font color="#FF0000">  *</font><%= file_field("file", "file",onclick: "$('#submit_button').removeAttr('disabled');") %></font> 
+  <%= submit_tag "确认上传",:id=>'import_file_submit_button', onclick: "form1.action='/shpost_asset/import_files/import';form1.submit();this.disabled='disabled';" %>
   
-  
+  </div>
+  <%= hidden_field_tag('import_file_id', params[:fid]) %>
+  <br><br>
+
   <div class="form-actions">
-    <%= f.submit nil, :class => 'btn btn-primary' %>
+    <%= submit_tag "新增盘活资产", :class => 'btn btn-primary', :method => 'post', onclick: "form1.action='/shpost_asset/activate_assets';form1.submit();" %>
     <% if can? :index, ActivateAsset%>
     <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
                 activate_assets_path, :class => 'btn' %>
     <% end %>
   </div>
-<% end %>
+</form>

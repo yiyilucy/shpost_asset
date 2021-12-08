@@ -19,18 +19,29 @@ class ActivateAssetsController < ApplicationController
   end
 
   def create
-    @activate_asset.create_unit_id = current_user.try :unit_id
-    @activate_asset.create_user_id = current_user.id
-    
-    respond_to do |format|
-      if @activate_asset.save
-        Message.create title: "你好，#{Time.now.strftime('%Y%m%d')}#{current_user.unit.blank? ? "" : current_user.unit.name}发布了一条新的资产盘活信息,详情请至信息公告查看并下载", activate_asset_id: @activate_asset.id
-        
-        format.html { redirect_to @activate_asset, notice: I18n.t('controller.create_success_notice', model: '资产盘活') }
-        format.json { render action: 'show', status: :created, location: @activate_asset }
-      else
-        format.html { render action: 'new' }
-        format.json { render json: @activate_asset.errors, status: :unprocessable_entity }
+    # binding.pry
+    if params[:import_file_id].blank?
+      flash[:error] = "必须上传附件"
+      redirect_to new_activate_asset_path
+    else
+      @activate_asset.create_unit_id = current_user.try :unit_id
+      @activate_asset.create_user_id = current_user.id
+      @activate_asset.import_file_id = params[:import_file_id].to_i
+      @activate_asset.name = params[:name]
+      @activate_asset.contact = params[:contact]
+      @activate_asset.tel = params[:tel]
+      @activate_asset.introduce = params[:introduce]
+
+      respond_to do |format|
+        if @activate_asset.save
+          Message.create title: "你好，#{Time.now.strftime('%Y%m%d')}#{current_user.unit.blank? ? "" : current_user.unit.name}发布了一条新的资产盘活信息,详情请至信息公告查看并下载", activate_asset_id: @activate_asset.id
+          
+          format.html { redirect_to @activate_asset, notice: I18n.t('controller.create_success_notice', model: '资产盘活') }
+          format.json { render action: 'show', status: :created, location: @activate_asset }
+        else
+          format.html { render action: 'new' }
+          format.json { render json: @activate_asset.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
@@ -57,30 +68,32 @@ class ActivateAssetsController < ApplicationController
     end
   end
 
-  def import
-    flash_message = "上传成功！"
+  # def import
+  #   flash_message = "上传成功！"
 
-    unless request.get?
-      @activate_asset = ActivateAsset.find(params[:id].to_i)
-      if !@activate_asset.blank?
-        if !((params[:file]['file'].original_filename.include?('.xlsx')) || (params[:file]['file'].original_filename.include?('.xls')) || (params[:file]['file'].original_filename.include?('.csv')))
-          flash_message = "上传失败！请上传xlsx，xls或csv格式的文件!"
-        else
-          if !@activate_asset.import_file.blank?
-            @activate_asset.import_file.delete
-          end
-          if !(file = ImportFile.upload_info(params[:file]['file'], @activate_asset))
-            flash_message = "上传失败!"
-          end
-        end
-      else
-        flash_message = "上传失败!"
-      end
-      flash[:notice] = flash_message
+  #   unless request.get?
+  #     @activate_asset = ActivateAsset.find(params[:id].to_i)
+  #     if !@activate_asset.blank?
+  #       if !((params[:file]['file'].original_filename.include?('.xlsx')) || (params[:file]['file'].original_filename.include?('.xls')) || (params[:file]['file'].original_filename.include?('.csv')))
+  #         flash_message = "上传失败！请上传xlsx，xls或csv格式的文件!"
+  #       else
+  #         if !@activate_asset.import_file.blank?
+  #           @activate_asset.import_file.delete
+  #         end
+  #         if !(file = ImportFile.upload_info(params[:file]['file'], @activate_asset))
+  #           flash_message = "上传失败!"
+  #         end
+  #       end
+  #     else
+  #       flash_message = "上传失败!"
+  #     end
+  #     flash[:notice] = flash_message
 
-      redirect_to activate_assets_url
-    end
-  end
+  #     redirect_to activate_assets_url
+  #   end
+  # end
+
+  
 
   def download
     file_path = nil
@@ -110,6 +123,6 @@ class ActivateAssetsController < ApplicationController
     end
 
     def activate_asset_params
-      params.require(:activate_asset).permit(:name, :contact, :tel, :introduce, :status, :file_path)
+      params.permit(:name, :contact, :tel, :introduce)
     end
 end

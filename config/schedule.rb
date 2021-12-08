@@ -47,3 +47,7 @@ end
 every 2.minutes do
   runner "RentInventory.start_inventory"
 end
+
+every 1.day, :at => '0:01 am' do
+  runner "ActivateAsset.set_invalid"
+end

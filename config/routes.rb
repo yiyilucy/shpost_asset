@@ -1,7 +1,6 @@
 ShpostAsset::Application.routes.draw do
+
   
-
-
   resources :rent_imgs
 
   scope 'shpost_asset' do
@@ -410,6 +409,34 @@ ShpostAsset::Application.routes.draw do
     end
   end 
 
+  resources :user_messages do
+    collection do 
+      post 'set_is_read'
+    end
+  end
+
+  resources :messages do 
+    collection do 
+      get 'report'
+      post 'report'
+      post 'report_export'
+    end
+  end
+
+  resources :activate_assets do
+    member do
+      get 'download'
+      post 'download' => 'activate_assets#download'
+      get 'done'
+    end
+  end
+
+  resources :import_files do
+    collection do 
+      get 'import'
+      post 'import' => 'import_files#import'
+    end
+  end
 
 end
 end

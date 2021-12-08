@@ -170,6 +170,8 @@ zh-CN:
       up_download_export: 模板下载
       sample_inventory: 抽样盘点
       print_certificate: 打印单据
+      download: 下载
+      upload: 上传
     titles:
       edit: 编辑%{model}
       new: 新增%{model}
@@ -371,6 +373,12 @@ zh-CN:
       rent_inventory_unit:
         one: 其他租赁资产盘点单位
         other: 其他租赁资产盘点单位
+      activate_asset:
+        one: 盘活资产
+        other: 盘活资产
+      message:
+        one: 消息
+        other: 消息
     attributes:
       user:
         email: "电子邮件"
@@ -741,6 +749,22 @@ zh-CN:
         inventory_user_id: "盘点人"
         end_date: "截止日期"
         annual_rent: "年租金"
+      activate_asset:
+        name: "名称"
+        create_user_id: "创建人"
+        create_unit_id: "创建单位"
+        contact: "联系人"
+        tel: "联系方式"
+        introduce: "资产简介"
+        status: "状态"
+        status_valid: "有效"
+        status_invalid: "失效"
+        status_delete: "删除"
+        status_done: "成交"
+      message:
+        title: "标题"
+        activate_asset_id: "资产盘活id"
+        is_release: "是否主动发布"
   menu:
     permission:
       name: "权限管理"
@@ -1133,6 +1157,33 @@ zh-CN:
               needrole:
                 can: :sample_inventory_doing_index
                 role: :RentInventory
+    activate_messages:
+      name: "资产盘活信息公告"
+      needrole:
+        can: :read
+        role: :Message
+      submenu:
+        activate_asset:
+          name: "发布信息"
+          link: "/activate_assets"
+          need_count: false
+          needrole:
+            can: :read
+            role: :ActivateAsset
+        message:
+          name: "查看信息"
+          link: "/messages"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Message
+        report:
+          name: "报表"
+          link: "/messages/report"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Message
     up_downloads:
       name: "模板管理"
       needrole:

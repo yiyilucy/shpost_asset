@@ -31,7 +31,7 @@
       message.activate_asset.create_unit.name
     end
 
-    g.column name: model_class1.human_attribute_name(:status), attribute: 'status', assoc: :activate_asset do |message|
+    g.column name: model_class1.human_attribute_name(:status), attribute: 'status', assoc: :activate_asset, custom_filter: ActivateAsset::STATUS.invert do |message|
       message.activate_asset.status_name
     end
    

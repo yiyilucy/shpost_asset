@@ -102,26 +102,16 @@ class MessagesController < ApplicationController
     count_row = 3
 
     if !messages.blank?
-      last_unit = nil
       messages.each do |m|
-        read_units = Unit.joins(:users).joins(:users=>[:user_messages]).where("(units.unit_level=? or units.is_facility_management_unit = ?) and user_messages.message_id = ? and user_messages.is_read = ?", 2, true, m.id, true)
-
-        if read_units.count == 0
-          unread_unints = Unit.where("unit_level=? or is_facility_management_unit = ?", 2,true).map{|x| x.print_unit_name}.compact.join(",")
-        else
-          unread_unints = Unit.where("unit_level=? or is_facility_management_unit = ?", 2,true).where.not("id in (?)", read_units.map{|u| u.id}).map{|x| x.print_unit_name}.compact.join(",")
-        end   
-
-        sheet1[count_row,0]=(m.activate_asset.create_unit.name.eql?last_unit) ? "" : m.activate_asset.create_unit.name
+        m_result = m.unread_unit_names
+        sheet1[count_row,0]=m.activate_asset.create_unit.name
         sheet1[count_row,1]=m.activate_asset.introduce
         sheet1[count_row,2]=all_count
-        sheet1[count_row,3]=read_units.count
-        sheet1[count_row,4]=unread_unints
+        sheet1[count_row,3]=m_result[0]
+        sheet1[count_row,4]=m_result[1]
         sheet1[count_row,5]=m.created_at.strftime('%Y-%m-%d').to_s
         sheet1[count_row,6]=m.activate_asset.status_name
 
-        last_unit = m.activate_asset.create_unit.name
-        
         0.upto(6) do |i|
           sheet1.row(count_row).set_format(i, body)
         end

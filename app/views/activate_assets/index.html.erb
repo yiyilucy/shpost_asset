@@ -26,7 +26,7 @@
 
     g.column name: model_class.human_attribute_name(:create_unit_id), assoc: :create_unit, attribute: 'name'
 
-    g.column name: model_class.human_attribute_name(:status), attribute: 'status' do |activate_asset|
+    g.column name: model_class.human_attribute_name(:status), attribute: 'status',custom_filter: ActivateAsset::STATUS.invert do |activate_asset|
       activate_asset.status_name
     end
 
@@ -34,10 +34,10 @@
       ActiveSupport::SafeBuffer.new << 
       # (link_to t('.edit', :default => t("helpers.links.edit")), edit_activate_asset_path(activate_asset), :class => 'btn btn-xs btn-primary' if (can? :update, activate_asset) and (activate_asset.is_valid and (activate_asset.create_user_id == current_user.id ))) << ' ' <<
       (link_to t('.destroy', :default => t("helpers.links.destroy")), activate_asset_path(activate_asset), :method => :delete, :data => { :confirm => t('wice_grid.saved_query_deletion_confirmation', :default => t("helpers.links.confirm", :default =>"确定删除?" )) }, :class => 'btn btn-xs btn-danger' if (can? :destroy, activate_asset) && (activate_asset.create_unit_id == current_user.unit_id ) && (activate_asset.status.eql?"valid")) << ' ' <<
-      (link_to t('.upload', :default => t("helpers.links.upload")), import_activate_asset_path(activate_asset),:class => 'btn btn-xs btn-primary' if (can? :import, activate_asset) and ((activate_asset.status.eql?"valid") and (activate_asset.create_unit_id == current_user.unit_id ))) << ' ' <<
+      # (link_to t('.upload', :default => t("helpers.links.upload")), import_activate_asset_path(activate_asset),:class => 'btn btn-xs btn-primary' if (can? :import, activate_asset) and ((activate_asset.status.eql?"valid") and (activate_asset.create_unit_id == current_user.unit_id ))) << ' ' <<
       (link_to t('.download', :default => t("helpers.links.download")), download_activate_asset_path(activate_asset),:method => 'post', :class => 'btn btn-xs btn-primary' if (can? :download, activate_asset) && !activate_asset.import_file.blank?)<< ' ' <<
       (link_to '成交',
-                done_activate_asset_path(activate_asset), :class => 'btn btn-xs btn-primary' if (can? :done, activate_asset) && (activate_asset.status.eql?"valid") && (activate_asset.create_unit_id == current_user.unit_id ))<< ' ' <<
+                done_activate_asset_path(activate_asset), :data => { :confirm => "确定成交?" }, :class => 'btn btn-xs btn-primary' if (can? :done, activate_asset) && (activate_asset.status.eql?"valid") && (activate_asset.create_unit_id == current_user.unit_id ))<< ' ' <<
       (link_to '详细内容', activate_asset_path(activate_asset), :class => 'btn btn-xs btn-primary' if can? :read, activate_asset)
     end
   end 

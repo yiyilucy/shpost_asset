@@ -23,23 +23,16 @@
 	<th>发布日期</th>
 	<th>状态</th>
 </tr>
-<% last_unit = nil %>
 <% @messages.each do |m| %>
 <tr class= 'nowrap'>
-	<td><%= (m.activate_asset.create_unit.name.eql?last_unit) ? "" : m.activate_asset.create_unit.name %></td>
+	<td><%= m.activate_asset.create_unit.name %></td>
 	<td><%= m.activate_asset.introduce %></td>
 	<td><%= @all_count %></td>
-	<% read_units = Unit.joins(:users).joins(:users=>[:user_messages]).where("(units.unit_level=? or units.is_facility_management_unit = ?) and user_messages.message_id = ? and user_messages.is_read = ?", 2, true, m.id, true) %>
-	<td><%= read_units.count %></td>
-	<% if read_units.count == 0 %>
-	<% unread_unints = Unit.where("unit_level=? or is_facility_management_unit = ?", 2,true).map{|x| x.print_unit_name}.compact.join(",") %>
-	<% else %>
-	<% unread_unints = Unit.where("unit_level=? or is_facility_management_unit = ?", 2,true).where.not("id in (?)", read_units.map{|u| u.id}).map{|x| x.print_unit_name}.compact.join(",") %>
-	<% end %>
-	<td><%= unread_unints %></td>
+	<% m_result = m.unread_unit_names %>
+	<td><%= m_result[0] %></td>
+	<td><%= m_result[1] %></td>
 	<td><%= m.created_at.strftime('%Y-%m-%d').to_s %></td>
 	<td><%= m.activate_asset.status_name %>
-	<% last_unit = m.activate_asset.create_unit.name %>
 </tr>
 <% end %>
 </table>

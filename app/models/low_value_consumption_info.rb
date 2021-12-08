@@ -89,7 +89,7 @@ class LowValueConsumptionInfo < ActiveRecord::Base
 	      infos = infos.joins(:fixed_asset_catalog).where("fixed_asset_catalogs.code like ?", "#{catalog2_code}%" )  
 	    elsif !catalog1.blank?
 	      catalog1_code = FixedAssetCatalog.find(catalog1.to_i).code
-	      infos = infos.joins(:low_value_consumption_catalog).where("fixed_asset_catalogs.code like ?", "#{catalog1_code}%" )  
+	      infos = infos.joins(:fixed_asset_catalog).where("fixed_asset_catalogs.code like ?", "#{catalog1_code}%" )  
 	    end
 	  end
 	  return infos

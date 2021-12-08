@@ -2,9 +2,9 @@ class ActivateAsset < ActiveRecord::Base
 	has_many :messages, dependent: :destroy
 	belongs_to :create_user, class_name: 'User'
 	belongs_to :create_unit, class_name: 'Unit'
-	has_one :import_file
-	validates_presence_of :contact, :tel, :introduce => '不能为空'
-
+	belongs_to :import_file
+	validates_presence_of :contact, :tel, :introduce, :message => '不能为空字符'
+	
 	STATUS = { valid: '有效', invalid: '失效', delete: '删除', done: '成交' }
 
 	def status_name
