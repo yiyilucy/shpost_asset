@@ -21,9 +21,10 @@
       <td><%= text_area_tag 'introduce', params[:introduce], rows: 15, cols: 80 %></td>
     </tr>
   </table>
-  <font face="微软雅黑" color='#D9B300' size=3>上传清单: <font color="#FF0000">  *</font><%= file_field("file", "file",onclick: "$('#submit_button').removeAttr('disabled');") %></font> 
-  <%= submit_tag "确认上传",:id=>'import_file_submit_button', onclick: "form1.action='/shpost_asset/import_files/import';form1.submit();this.disabled='disabled';" %>
   
+  <font face="微软雅黑" color='#D9B300' size=3>上传清单: <font color="#FF0000">  *</font><%= file_field("file", "file",onclick: "$('#submit_button').removeAttr('disabled');") %></font> 
+  <%= submit_tag "确认上传",:id=>'import_file_submit_button', onclick: "form1.action='/shpost_asset/import_files/import';form1.submit();this.disabled='disabled';" %><br>
+  <font size=5><%= "文件<#{params[:fname]}>已上传成功!" if !params[:fid].blank? %></font>
   </div>
   <%= hidden_field_tag('import_file_id', params[:fid]) %>
   <br><br>

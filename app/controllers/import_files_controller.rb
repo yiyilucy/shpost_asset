@@ -49,7 +49,7 @@ class ImportFilesController < ApplicationController
     flash[:notice] = flash_message
 
     
-    redirect_to new_activate_asset_path(fid: @fid, name: params[:name], contact: params[:contact], tel: params[:tel], introduce: params[:introduce])
+    redirect_to new_activate_asset_path(fid: @fid, name: params[:name], contact: params[:contact], tel: params[:tel], introduce: params[:introduce], fname: params[:file]['file'].original_filename)
     
   end
 

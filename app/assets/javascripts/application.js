@@ -257,7 +257,10 @@ ready = function() {
     });
   }
 
-  
+  // if($('#import_file_id').val() != ""){
+  //   $("#file_file").attr("disabled", true);
+  //   $("#import_file_submit_button").attr("disabled", true);
+  // }
 }
 
 
